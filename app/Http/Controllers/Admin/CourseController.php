@@ -19,6 +19,7 @@ class CourseController extends Controller
      */
     public function index()
     {
+        
         if (Auth::user()->status=="1") {
             return redirect()->route('home');
         }else{
