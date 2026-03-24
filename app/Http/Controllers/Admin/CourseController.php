@@ -8,7 +8,9 @@ use App\Models\Course;
 use App\Models\Category;
 use App\Models\Enrollment;
 use App\Models\Lesson_user;
-
+use App\Models\Lesson;
+use App\Models\CoursesFile;
+use DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -19,14 +21,12 @@ class CourseController extends Controller
      */
     public function index()
     {
-        
         if (Auth::user()->status=="1") {
             return redirect()->route('home');
         }else{
             $courses = Course::latest()->paginate(10);
-        return view('admin.courses.index', compact('courses'));
+            return view('admin.courses.index', compact('courses'));
         }
-        // ตอนนี้ Laravel จะรู้จัก Class Course แล้ว
 
     }
 
@@ -117,6 +117,7 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // ถ้ามีการอัปโหลดรูป
+            'status'=>'required|string|max:255',
         ]);
 
         // ถ้ามีการอัปโหลดรูปภาพใหม่
@@ -186,8 +187,6 @@ class CourseController extends Controller
             ->toArray();
 
         // 4. เช็คสถานะแบบทดสอบ (Pre-test และ Post-test)
-
-        // เช็ค Pre-quiz: ถ้ามี ID ในฐานข้อมูล (เช่น 12 หรือ 13) ให้เช็คว่าทำผ่านหรือยัง
         $hasDonePreQuiz = false;
         if ($currentLesson && $currentLesson->pre_quiz_id) {
             $hasDonePreQuiz = \App\Models\QuizAttempt::where('user_id', $user->id)
@@ -217,6 +216,10 @@ class CourseController extends Controller
         $nextLesson = $course->lessons->where('position', '>', $currentLesson->position)->first();
         $nextLessonUrl = $nextLesson ? route('courses.learn', [$course->id, $nextLesson->id]) : null;
 
+        $file = CoursesFile::select('tf.file_name','tf.file_path')
+        ->leftjoin('private_files as tf','tf.id','courses_files.file_id')
+        ->where('course_id',$course->id)->get();
+
         return view('home.courses.learn', compact(
             'course',
             'currentLesson',
@@ -224,41 +227,74 @@ class CourseController extends Controller
             'nextLessonUrl',
             'hasDonePreQuiz',
             'hasDonePostQuiz',
-            'userDonePreQuiz'
-
+            'userDonePreQuiz',
+            'file'
         ));
     }
 
     public function updateProgress(Request $request)
     {
-        // บันทึกว่าบทเรียนนี้เรียนจบแล้ว
-        Lesson_user::updateOrCreate(
-            [
-                'user_id' => auth()->id(),
-                'lesson_id' => $request->lesson_id,
-                'course_id' => $request->course_id
-            ],
-            ['is_completed' => 1]
-        );
+        $userId = auth()->id();
+        $courseId = $request->course_id;
+        $lessonId = $request->lesson_id;
 
-        return response()->json(['message' => 'Progress updated']);
+        return DB::transaction(function () use ($userId, $courseId, $lessonId) {
+            // 1. บันทึกว่าเรียน Lesson นี้จบแล้ว (ตาราง Progress รายบท)
+            // สมมติคุณมีตาราง LessonUser หรือ LessonProgress
+            $progress = Lesson_user::updateOrCreate(
+                ['user_id' => $userId, 'lesson_id' => $lessonId, 'course_id' => $courseId],
+                ['is_completed' => 1, 'completed_at' => now()]
+            );
+
+            // 2. เช็คว่านี่คือ Lesson สุดท้ายของ Course นี้หรือไม่
+            $totalLessons = Lesson::where('course_id', $courseId)->count();
+            $completedLessons = Lesson_user::where('user_id', $userId)
+                                ->where('course_id', $courseId)
+                                ->where('is_completed', 1)
+                                ->count();
+
+            // 3. ถ้าจำนวนที่เรียนจบ = จำนวนทั้งหมด ให้ Update ตาราง Enrollment
+            if ($completedLessons >= $totalLessons) {
+                Enrollment::where('user_id', $userId)
+                    ->where('course_id', $courseId)
+                    ->update([
+                        'status' => 2, // 2 = เรียนจบหลักสูตร (Completed)
+                    ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'course_completed' => true,
+                    'message' => 'ยินดีด้วย! คุณเรียนจบหลักสูตรนี้แล้ว'
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'course_completed' => false
+            ]);
+        });
     }
 
     public function addFile(Request $request)
     {
+        if(\App\Models\CoursesFile::where('file_id',$request->file_id)
+            ->where('course_id',$request->course_id)->count()==0)
+        {
+            \App\Models\CoursesFile::create([
+                'course_id' => $request->course_id,
+                'file_id' => (int)$request->file_id,
+                'user_id' => auth()->id(), // เพิ่ม user_id เพื่อเก็บว่าใครเพิ่มไฟล์นี้
+            ]);
 
-        \App\Models\CoursesFile::create([
-            'course_id' => $request->course_id,
-            'file_id' => (int)$request->file_id,
-            'user_id' => auth()->id(), // เพิ่ม user_id เพื่อเก็บว่าใครเพิ่มไฟล์นี้
-        ]);
-
-        return redirect()->back()->with('success', 'เพิ่มไฟล์เรียบร้อยแล้ว');
+            $value='เพิ่มไฟล์เรียบร้อยแล้ว';
+        }else{
+            $value='ไม่สำเร็จ!';
+        }
+        return redirect()->back()->with('success',$value);
     }
 
     public function removeFile(Request $req)
     {
-        dd($req);
         $courseFile = \App\Models\CoursesFile::findOrFail($req->file_id);
         $courseFile->delete();
 

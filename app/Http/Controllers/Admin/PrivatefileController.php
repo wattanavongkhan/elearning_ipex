@@ -13,8 +13,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
-class PrivatefileController extends Controller {
-
+class PrivatefileController extends Controller 
+{
     public function index() 
     {
         $privatefiles = \App\Models\PrivateFile::select('private_files.*','users.name as user_name')->where('user_id', Auth::id())
@@ -61,3 +61,4 @@ class PrivatefileController extends Controller {
         return redirect()->route('privatefiles.index')->with('success', 'ไฟล์ส่วนตัวถูกลบเรียบร้อยแล้ว');
     }
 }
+

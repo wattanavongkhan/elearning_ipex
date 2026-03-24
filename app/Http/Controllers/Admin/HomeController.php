@@ -6,6 +6,7 @@ use App\Models\Lesson;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Enrollment;
+use App\Models\Activity;
 use App\Models\Quiz;
 
 use Illuminate\Http\Request;
@@ -15,10 +16,17 @@ use Illuminate\Support\Facades\Storage;
 class HomeController extends Controller {
 
     public function index() {
-        
+
         $featuredCourses=Course::select("courses.*", "categories.category_name")
         ->leftJoin('categories', 'courses.category_id', '=', 'categories.id') ->get();
-        return view('dashboard', compact('featuredCourses'));
+
+        // ดึงข่าว/กิจกรรมล่าสุด 3 รายการ ที่เปิดใช้งานอยู่
+        $activities = Activity::where('status', 1)
+                              ->latest()
+                              ->take(3)
+                              ->get();
+
+        return view('dashboard', compact('featuredCourses','activities'));
     }
 
     public function courses_show($id) {
@@ -28,7 +36,7 @@ class HomeController extends Controller {
         return view('home.courses.show', compact('course', 'lessons', 'quizzes'));
     }
 
-    public function course_all(Request $request) 
+    public function course_all(Request $request)
     {
        $courses = Course::leftJoin('categories', 'courses.category_id', '=', 'categories.id')
        ->select('courses.*', 'categories.category_name')
@@ -42,9 +50,24 @@ class HomeController extends Controller {
        return view('home.courses.index', compact('courses', 'categories'));
     }
 
-    public function categories_all() 
+    public function categories_all()
     {
         $categories = Category::withCount('courses')->get();
         return view('home.courses.categories', compact('categories'));
     }
+
+    public function activities_all(Request $request)
+    {
+        $query = Activity::where('status', 1);
+
+        // กรองตามหมวดหมู่ถ้ามีการส่งค่ามา
+        if ($request->has('category') && $request->category != 'All') {
+            $query->where('category', $request->category);
+        }
+
+        $activities = $query->latest()->paginate(9); // แสดงหน้าละ 9 รายการ
+
+        return view('home.activities.showall', compact('activities'));
+    }
+
 }

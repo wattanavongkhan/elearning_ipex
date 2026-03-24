@@ -45,7 +45,7 @@
     <div class="bg-slate-800 border-b border-slate-700 py-4 px-5">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <a href="{{ route('courses.show', $course->id) }}"
+                <a href="{{ route('profile.index', $course->id) }}"
                     class="text-slate-600 hover:text-white transition-colors">
                     <i class="fas fa-chevron-left"></i>
                 </a>
@@ -71,7 +71,6 @@
     <div class="flex flex-col lg:flex-row">
         <div class="flex-1 p-6 lg:p-5">
             @if($currentLesson)
-            {{-- 1. เช็คว่ามี Pre-test และยังไม่ได้ทำหรือไม่ --}}
             @if($currentLesson->pre_quiz && !$userDonePreQuiz)
             <div
                 class="bg-slate-800 rounded-[2.5rem] p-12 text-center border border-blue-500/30 shadow-2xl shadow-blue-500/10">
@@ -85,22 +84,18 @@
                     เริ่มทำแบบทดสอบ
                 </a>
             </div>
-
-            {{-- 2. ถ้าไม่มี Pre-test หรือทำแล้ว ให้โชว์วิดีโอปกติ --}}
             @else
-         <div class="relative aspect-video bg-black rounded-[2rem] overflow-hidden shadow-2xl">
-    <video id="video-player" 
-           controls 
-           preload="none" 
-           {{-- เพิ่ม preload="none" เพื่อให้มันโชว์รูป Poster ก่อนเริ่มโหลดวิดีโอ --}}
-           class="absolute inset-0 w-full h-full object-contain"
-           {{-- ตรวจสอบว่า $course->thumbnail มีค่า ถ้าไม่มีให้ใช้รูป Default --}}
-           poster="{{ $course->thumbnail ? asset('storage/course_clip/' . $course->thumbnail) : asset('images/default-poster.jpg') }}">
-        
-        <source src="{{ asset('storage/course_clip/' . $currentLesson->video_url) }}" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-</div>
+            <div class="relative aspect-video bg-black rounded-[2rem] overflow-hidden shadow-2xl">
+                <video id="video-player" controls preload="none" autoplay muted class="absolute inset-0 w-full h-full object-contain"
+                    poster="{{ $course->thumbnail ? asset('storage/'.$course->thumbnail) : asset('images/default-poster.jpg') }}">
+                 @if($currentLesson->video_url!=null && $currentLesson->video_url!="")
+                        <source src="{{ asset('storage/'.$currentLesson->video_url) }}" type="video/mp4">
+                 @else
+                        <source src="{{ asset('storage/'.$currentLesson->video_path) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                    @endif
+                </video>
+            </div>
 
             {{-- 3. เช็คหลังเรียนจบ (Post-test) --}}
             @if($currentLesson->post_quiz)
@@ -119,8 +114,46 @@
                 <div class="prose prose-invert max-w-none text-slate-400">
                     {!! $currentLesson->content !!}
                 </div>
-            </div>
 
+                @if($file->count() > 0)
+                <div class="mt-8 border-t border-slate-800 pt-6">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <i class="fas fa-paperclip mr-2 text-blue-500"></i>
+                        เอกสารประกอบการเรียน (Downloads)
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        @foreach ($file as $files)
+                        <a href="{{ asset('storage/' . $files->file_path) }}" target="_blank"
+                            class="flex items-center p-4 bg-slate-800/50 rounded-2xl border border-slate-700 hover:border-blue-500 hover:bg-slate-800 transition-all group">
+
+                            <div
+                                class="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center mr-4 group-hover:bg-blue-600 transition-colors">
+                                @if(Str::endsWith($files->file_name, ['.pdf']))
+                                <i class="fas fa-file-pdf text-red-400 group-hover:text-white"></i>
+                                @elseif(Str::endsWith($files->file_name, ['.doc', '.docx']))
+                                <i class="fas fa-file-word text-blue-400 group-hover:text-white"></i>
+                                @elseif(Str::endsWith($files->file_name, ['.xls', '.xlsx']))
+                                <i class="fas fa-file-excel text-green-400 group-hover:text-white"></i>
+                                @else
+                                <i class="fas fa-file-alt text-slate-400 group-hover:text-white"></i>
+                                @endif
+                            </div>
+
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-bold text-slate-200 truncate">{{ $files->file_name }}</p>
+                                <p class="text-xs text-slate-500">คลิกเพื่อดาวน์โหลด</p>
+                            </div>
+
+                            <div class="text-slate-600 group-hover:text-blue-500">
+                                <i class="fas fa-download"></i>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </div>
             @endif
             @else
             <div
@@ -150,7 +183,7 @@
                     class="flex items-center gap-4 p-5 hover:bg-slate-700/50 transition-all {{ $currentLesson->id == $lesson->id ? 'bg-blue-600/10 border-l-4 border-blue-500' : '' }}">
 
                     <div
-                        class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black 
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black
             {{ $currentLesson->id == $lesson->id ? 'bg-blue-600 text-white' : ($isCompleted ? 'bg-green-500/20 text-green-500' : 'bg-slate-900 text-slate-500') }}">
                         @if($isCompleted)
                         <i class="fas fa-chevron-circle-right text-[10px]"></i>
@@ -195,115 +228,148 @@
     </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const video = document.getElementById('video-player');
-        const percentText = document.getElementById('current-lesson-percent');
-        const nextUrl = "{{ $nextLessonUrl }}";
-        const storageKey =
-            `video_progress_user_{{ auth()->id() }}_course_{{ $course->id }}_lesson_{{ $currentLesson->id }}`;
+document.addEventListener('DOMContentLoaded', function () {
+    const video = document.getElementById('video-player');
+    const percentText = document.getElementById('current-lesson-percent');
+    const nextUrl = "{{ $nextLessonUrl }}";
+    // Key แยกตามรายคน รายคอร์ส และรายบทเรียน
+    const storageKey = `video_progress_user_{{ auth()->id() }}_course_{{$course->id }}_lesson_{{ $currentLesson->id }}`;
 
-        // ตัวแปรสำหรับคุมการห้ามรี (Seek Protection)
-        let watchedTime = 0;
+    let watchedTime = 0;
+    let isSaving = false; // ป้องกันการส่ง Fetch ซ้อนกัน
 
-        if (video) {
-            // 1. ดึงเวลาเดิมมาเล่นต่อ (Resume)
-            video.addEventListener('loadedmetadata', function () {
-                const savedTime = localStorage.getItem(storageKey);
-                if (savedTime) {
-                    video.currentTime = savedTime;
-                    watchedTime = parseFloat(savedTime);
-                }
-            });
+    if (video) {
+        // --- ฟังก์ชันสำหรับสั่งเล่น (Autoplay Logic) ---
+        const attemptPlay = () => {
+            // ลองสั่ง play ทันที
+        const playPromise ="";
+        setTimeout(() => {
+            playPromise = video.play();
+        }, 1000);
+        if (playPromise !== undefined) {
+        playPromise.then(_ => {
+            // เล่นได้ปกติ (อาจเพราะเคยมียอดการเข้าชม หรือวิดีโอถูก muted ไว้)
+            console.log("Autoplay success!");
+        }).catch(error => {
+            // โดน Browser บล็อก!
+            console.log("Autoplay prevented by browser.");
 
-            // 2. คำนวณ %, บันทึกเวลา และ ห้ามรีไปข้างหน้า
-            video.addEventListener('timeupdate', function () {
-                // --- ห้ามรีวิดีโอ (Forward Seek Protection) ---
-                if (!video.seeking) {
-                    if (video.currentTime > watchedTime) {
-                        watchedTime = video.currentTime;
-                    }
-                }
+            // สร้าง UI เล็กๆ หรือ Overlay บอกให้ผู้ใช้ "คลิกเพื่อเริ่มเรียน"
+            // หรือรอให้ User คลิกที่ส่วนใดก็ได้ของหน้าจอ 1 ครั้ง
+            const playAfterClick = () => {
+                setTimeout(() => {
+                     video.play();
+                    video.muted = false; // ถ้าอยากให้มีเสียงตอนเริ่มหลังจากคลิก
+                    document.removeEventListener('click', playAfterClick);
+                }, 200);
 
-                // --- คำนวณเปอร์เซ็นต์ ---
-                if (video.duration > 0) {
-                    const percentage = Math.floor((video.currentTime / video.duration) * 100);
-                    if (percentText) {
-                        percentText.innerText = percentage + "%";
-                    }
-                }
-
-                // --- บันทึกเวลาลง localStorage ทุก 2 วินาที ---
-                if (Math.floor(video.currentTime) % 2 === 0) {
-                    localStorage.setItem(storageKey, video.currentTime);
-                }
-            });
-
-            // ดักจับการพยายามลากแถบวิดีโอ (Seeking)
-            video.addEventListener('seeking', function () {
-                if (video.currentTime > watchedTime) {
-                    video.currentTime = watchedTime;
-                }
-            });
-
-            // 3. เมื่อจบ: จัดการ Logic บันทึกผล และเช็ค Quiz
-            video.onended = function () {
-            const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
-            const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
-            console.log("Has Post-Quiz:", hasPostQuiz);
-            console.log("Already Passed Post-Quiz:", alreadyPassed);
-                if (hasPostQuiz && !alreadyPassed) {
-                    // แสดงกล่องแจ้งเตือนให้ทำ Quiz และไม่บันทึก Progress ทันที
-                    const quizBox = document.getElementById('post-quiz-trigger');
-                    if (quizBox) {
-                        quizBox.classList.remove('hidden');
-                        quizBox.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                } else {
-                    // หากไม่มี Quiz หรือเคยทำผ่านแล้ว ให้บันทึกความคืบหน้าปกติ
-                    saveProgressAndNext();
-                }
             };
-        }
+            document.addEventListener('click', playAfterClick);
+        });
+    }
+        };
 
-        // ฟังก์ชันบันทึกความคืบหน้าเข้า Database
-        function saveProgressAndNext() {
-            fetch("{{ route('course.progress.update') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        lesson_id: "{{ $currentLesson->id }}",
-                        course_id: "{{ $course->id }}"
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (nextUrl) {
-                        window.location.href = nextUrl;
-                    } else {
-                        alert("ยินดีด้วย! คุณเรียนจบหลักสูตรนี้แล้ว");
-                        window.location.reload();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
+        // 1. เมื่อ Metadata โหลดเสร็จ (รู้ความยาววิดีโอ)
+        video.addEventListener('loadedmetadata', function () {
+            const savedTime = localStorage.getItem(storageKey);
+            if (savedTime) {
+                video.currentTime = parseFloat(savedTime);
+                watchedTime = parseFloat(savedTime);
+            }
+            attemptPlay(); // เริ่มเล่นอัตโนมัติ
+        });
 
-        // --- 4. ป้องกันการกด F12 และคลิกขวา (Security) ---
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', function (e) {
-            // F12, Ctrl+Shift+I, J, C, Ctrl+U
-            if (e.keyCode == 123 ||
-                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) ||
-                (e.ctrlKey && e.keyCode == 85)) {
-                e.preventDefault();
-                return false;
+        // 2. ระหว่างเล่น: คำนวณ %, บันทึกเวลา และ กันรีไปข้างหน้า
+        video.addEventListener('timeupdate', function () {
+            // --- กันรีไปข้างหน้า (Forward Seek Protection) ---
+            if (!video.seeking) {
+                if (video.currentTime > watchedTime) {
+                    watchedTime = video.currentTime;
+                }
+            }
+
+            // --- คำนวณเปอร์เซ็นต์การเรียน ---
+            if (video.duration > 0) {
+                const percentage = Math.floor((video.currentTime / video.duration) * 100);
+                if (percentText) {
+                    percentText.innerText = percentage + "%";
+                }
+            }
+
+            // --- บันทึกเวลาลง localStorage (ทุกๆ 2 วินาที) ---
+            if (Math.floor(video.currentTime) % 2 === 0) {
+                localStorage.setItem(storageKey, video.currentTime);
             }
         });
-    });
 
+        // 3. ดักจับการพยายามลากแถบวิดีโอ (Seeking)
+        video.addEventListener('seeking', function () {
+            // ถ้าพยายามลากไปเกินจุดที่เคยดูถึง ให้ดีดกลับมาที่เดิม
+            if (video.currentTime > watchedTime) {
+                video.currentTime = watchedTime;
+            }
+        });
+
+        // 4. เมื่อวิดีโอจบ: ตรวจสอบ Quiz หรือบันทึก Progress
+        video.onended = function () {
+            const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
+            const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
+
+            if (hasPostQuiz && !alreadyPassed) {
+                const quizBox = document.getElementById('post-quiz-trigger');
+                if (quizBox) {
+                    quizBox.classList.remove('hidden');
+                    quizBox.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                saveProgressAndNext();
+            }
+            // เรียนจบแล้ว ลบเวลาที่บันทึกไว้ในเครื่องออก
+            localStorage.removeItem(storageKey);
+        };
+    }
+
+    // ฟังก์ชันส่งค่าไปบันทึกลง Database (AJAX)
+    function saveProgressAndNext() {
+        if (isSaving) return;
+        isSaving = true;
+
+        fetch("{{ route('course.progress.update') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                lesson_id: "{{ $currentLesson->id }}",
+                course_id: "{{ $course->id }}"
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (nextUrl) {
+                window.location.href = nextUrl;
+            } else {
+                alert("🎉 " +"ยินดีด้วย! คุณเรียนจบหลักสูตรนี้แล้ว");
+                // location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            isSaving = false;
+        });
+    }
+
+    // --- 5. Security: ป้องกันการแอบดู Code หรือคลิกขวาดาวน์โหลด ---
+    {{--  document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', function (e) {
+        if (e.keyCode == 123 || // F12
+            (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || // Ctrl+Shift+I/J/C
+            (e.ctrlKey && e.keyCode == 85)) { // Ctrl+U
+            e.preventDefault();
+            return false;
+        }
+    });  --}}
+});
 </script>
 @endsection

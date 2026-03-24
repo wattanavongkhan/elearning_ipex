@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name', 'E-Learning') }} | แหล่งเรียนรู้ออนไลน์</title>
+    <title>I-PEX Elearning</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,7 +82,8 @@
                 <a href="{{ route('courses.index') }}"
                     class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
                     @if(Route::currentRouteName() == 'courses.index' || Route::currentRouteName() == 'courses.create' || Route::currentRouteName() == 'courses.edit'
-                    || Route::currentRouteName() == 'lessons.index' || Route::currentRouteName() == 'lessons.create' || Route::currentRouteName() == 'lessons.edit') bg-blue-600 @endif">
+                    || Route::currentRouteName() == 'lessons.index' || Route::currentRouteName() == 'lessons.create' || Route::currentRouteName() == 'lessons.edit'
+                    || Route::currentRouteName() == 'questions.index') bg-blue-600 @endif">
                     <i class="fas fa-book w-5 text-center text-slate-400"></i> คอร์สเรียน <span
                         class="ml-auto bg-yellow-400 text-yellow-900 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
                         {{ $courses_count ?? 0 }}
@@ -96,7 +97,8 @@
                 </a>
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mt-6 mb-2">จัดการกิจกรรม</p>
 
-                <a href="#" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                 <a href="{{ route('admin.activities.index') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
+                @if(Route::currentRouteName() == 'admin.activities.index' || Route::currentRouteName() == 'admin.activities.create') bg-blue-600 @endif">
                     <i class="fas fa-regular fa-newspaper w-5 text-center text-slate-400"></i>
                     ข่าวสารและประกาศ
                 </a>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name', 'E-Learning') }} | แหล่งเรียนรู้ออนไลน์</title>
+    <title>I-PEX Elearning|แหล่งเรียนรู้ออนไลน์</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -111,7 +111,7 @@
                                 </div>
                                 <div
                                     class="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-100">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    {{ strtoupper(substr(Auth::user()->email, 0, 1)) }}
                                 </div>
                             </button>
 

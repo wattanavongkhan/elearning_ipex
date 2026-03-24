@@ -3,8 +3,7 @@
 @section('content')
 
 <div class="bg-white font-kanit">
-
-    <section class="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden bg-slate-50">
+    <section class="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden bg-slate-50 p-5">
         <div
             class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-gradient-to-br from-blue-100 to-indigo-50 rounded-full blur-3xl opacity-70">
         </div>
@@ -26,9 +25,11 @@
                         <span class="tracking-wide uppercase">NEW: คอร์ส AI For Business เปิดตัวแล้ว!</span>
                     </div>
 
-                    <h3 class="text-3xl lg:text-7xl font-black text-slate-900 leading-[1.1] mb-10" style="font-size: 35px">
+                    <h3 class="text-3xl lg:text-7xl font-black text-slate-900 leading-[1.1] mb-10"
+                        style="font-size: 35px">
                         อัปเกรดทักษะ <br> <span
-                            class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500"style="font-size: 60px">สร้างอนาคตใหม่</span>
+                            class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500"
+                            style="font-size: 60px">สร้างอนาคตใหม่</span>
                     </h3>
                     <p class="text-xl text-slate-500 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
                         รวมคอร์สออนไลน์คุณภาพจากผู้เชี่ยวชาญระดับแนวหน้า ให้คุณเก่งขึ้นได้ในทุกๆ วัน
@@ -64,7 +65,7 @@
                 <div class="lg:w-1/2 relative">
                     <div
                         class="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border-[16px] border-white">
-                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1471&auto=format&fit=crop"
+                        <img src="{{ URL::asset('images/backgroud/dashboard_bg.avif') }}"
                             class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
                     </div>
@@ -86,52 +87,68 @@
         </div>
     </section>
 
-    <section class="py-20 bg-white">
+    <section class="py-20 bg-white font-kanit">
         <div class="container mx-auto px-6">
-            <div class="flex items-center gap-4 mb-10">
-                <span class="w-12 h-1 bg-blue-600 rounded-full"></span>
-                <h2 class="text-3xl font-black text-slate-900 tracking-tight">ข่าวกิจกรรมและโปรโมชั่น</h2>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                <div class="flex items-center gap-4">
+                    <span class="w-12 h-1.5 bg-blue-600 rounded-full"></span>
+                    <h2 class="text-3xl md:text-4xl font-black text-slate-950 tracking-tight">
+                        ข่าวกิจกรรมและประกาศล่าสุด
+                    </h2>
+                </div>
+
+                <div class="flex">
+                    <a href="{{route('activities.all')}}"
+                        class="px-8 py-3 bg-white text-blue-600 border-2 border-blue-600 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:shadow-blue-200 active:scale-95">
+                        ดูทั้งหมด <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="group cursor-pointer">
-                    <div class="rounded-3xl overflow-hidden mb-5 aspect-video relative">
-                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div
-                            class="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                            สัมมนาฟรี</div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                @forelse($activities as $activity)
+                <a href="{{ route('activities.show', $activity->slug) }}" class="group block cursor-pointer">
+                    <div
+                        class="rounded-3xl overflow-hidden mb-6 aspect-video relative shadow-inner bg-slate-100 border border-slate-50">
+                        @if($activity->thumbnail)
+                        <img src="{{ asset('storage/' . $activity->thumbnail) }}"
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            alt="{{ $activity->title }}">
+                        @else
+                        <div class="w-full h-full flex items-center justify-center bg-slate-50 text-slate-300">
+                            <i class="fas fa-image text-5xl"></i>
+                        </div>
+                        @endif
+
+                        <div class="absolute top-4 left-4 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-lg
+                            {{ $activity->category == 'Activity' ? 'bg-indigo-600 text-white' : '' }}
+                            {{ $activity->category == 'News' ? 'bg-blue-500 text-white' : '' }}">
+                            {{ $activity->category }}
+                        </div>
                     </div>
-                    <h4 class="font-bold text-slate-800 text-xl mb-2 group-hover:text-blue-600 transition">
-                        เจาะลึกเทรนด์การพัฒนาเว็บปี 2026</h4>
-                    <p class="text-slate-500 text-sm">พบกับกูรูระดับโลกที่จะมาแชร์ประสบการณ์ในวันอาทิตย์ที่ 15
-                        มีนาคมนี้...</p>
-                </div>
-                <div class="group cursor-pointer">
-                    <div class="rounded-3xl overflow-hidden mb-5 aspect-video relative">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div
-                            class="absolute top-4 left-4 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                            Promotion</div>
+
+                    <div class="px-2">
+                        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-2">
+                            <i class="fas fa-clock mr-1 text-slate-300"></i>
+                            {{ $activity->created_at->format('d M Y') }}
+                        </p>
+                        <h4
+                            class="font-black text-slate-900 text-xl mb-3 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">
+                            {{ $activity->title }}
+                        </h4>
+
+                        <p class="text-slate-500 text-sm font-medium leading-relaxed line-clamp-2">
+                            {{ $activity->short_description ?? Str::limit(strip_tags($activity->content), 120) }}
+                        </p>
                     </div>
-                    <h4 class="font-bold text-slate-800 text-xl mb-2 group-hover:text-blue-600 transition">Summer Sale
-                        ลดแรง 50%!</h4>
-                    <p class="text-slate-500 text-sm">คอร์สหมวดธุรกิจและภาษา ลดทันทีครึ่งราคา เมื่อกรอกโค้ด SUMMER2026
-                    </p>
+                </a>
+                @empty
+                <div class="col-span-full text-center py-20 bg-slate-50 rounded-3xl border border-slate-100">
+                    <i class="fas fa-folder-open text-5xl text-slate-300 mb-5 block"></i>
+                    <p class="text-xl font-bold text-slate-700">ยังไม่มีข่าวสารหรือกิจกรรมใหม่</p>
+                    <p class="text-slate-500 mt-2">โปรดติดตามประกาศจากบริษัทเร็วๆ นี้</p>
                 </div>
-                <div class="group cursor-pointer">
-                    <div class="rounded-3xl overflow-hidden mb-5 aspect-video relative">
-                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div
-                            class="absolute top-4 left-4 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                            New Course</div>
-                    </div>
-                    <h4 class="font-bold text-slate-800 text-xl mb-2 group-hover:text-blue-600 transition">
-                        เปิดตัวคอร์สถ่ายภาพมืออาชีพ</h4>
-                    <p class="text-slate-500 text-sm">เรียนรู้การใช้กล้องและเทคนิคการจัดแสงตั้งแต่พื้นฐานจนรับงานได้จริง
-                    </p>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
@@ -205,8 +222,8 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 relative z-10">
                 <div class="text-center lg:text-left">
-                    <h4 class="text-4xl lg:text-5xl font-black text-white mb-6 leading-tight" style="font-size: 28px">เริ่มต้นการเรียนรู้ 
-                        ที่ไม่มีวันสิ้นสุด</h4>
+                    <h4 class="text-4xl lg:text-5xl font-black text-white mb-6 leading-tight" style="font-size: 28px">
+                        เริ่มต้นการเรียนรู้ ที่ไม่มีวันสิ้นสุด</h4>
                     <p class="text-blue-100 text-lg mb-10 opacity-80">รับสิทธิพิเศษ Code ส่วนลด 20%
                         และเข้าถึงคอร์สเรียนฟรีกว่า 50 คอร์ส เพียงแค่สมัครสมาชิกวันนี้</p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">

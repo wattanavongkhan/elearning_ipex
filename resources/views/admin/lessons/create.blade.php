@@ -14,7 +14,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <form action="{{ route('lessons.store', $course->id) }}" method="POST" enctype="multipart/form-data" class="p-8">
             @csrf
-            
+
             <div class="grid grid-cols-1 gap-y-6">
                 <div>
                     <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">หัวข้อบทเรียน <span class="text-red-500">*</span></label>
@@ -27,10 +27,10 @@
                     <h4 class="text-sm font-bold text-blue-700 mb-4 flex items-center">
                         <i class="fas fa-video mr-2"></i> แหล่งที่มาของวิดีโอ (เลือกอย่างใดอย่างหนึ่ง)
                     </h4>
-                    
+
                     <div class="grid grid-cols-1 gap-y-4">
                         <div>
-                            <label for="video_url" class="block text-xs font-semibold text-gray-600 mb-1">Link วิดีโอ (YouTube / Vimeo)</label>
+                            <label for="video_url" class="block text-xs font-semibold text-gray-600 mb-1">Link วิดีโอ (Vimeo)</label>
                             <input type="url" name="video_url" id="video_url" value="{{ old('video_url') }}"
                                 class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm"
                                 placeholder="https://www.youtube.com/watch?v=...">

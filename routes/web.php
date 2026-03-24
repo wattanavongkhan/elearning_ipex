@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\CourseRegisterController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\PrivatefileController;
+use App\Http\Controllers\Admin\ActivityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,7 @@ use App\Http\Controllers\Admin\PrivatefileController;
 // });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/activities-all', [HomeController::class, 'activities_all'])->name('activities.all');
 
 Route::get('/admin/courses', [CourseController::class, 'index'])->name('courses.index');
 
@@ -95,10 +97,12 @@ Route::post('courses/add_file', [CourseController::class, 'addFile'])->name('cou
 Route::delete('courses/remove_file', [CourseController::class, 'removeFile'])->name('courses.remove_file');
 Route::get('/courses/files/{id}', [CourseController::class, 'showFiles'])->name('courses.files.show');
 
+// ส่วนของหน้าบ้าน (Public)
 
+Route::get('/activities/{slug}', [ActivityController::class, 'show'])->name('activities.show');
 // ตรวจสอบว่ามีการครอบด้วย 'admin.' หรือไม่
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
-    
+
     // จัดการชุดข้อสอบ (Quizzes)
     // Route::get('quizzes', [QuizController::class, 'index'])->name('quizzes.index');
     Route::resource('courses.quizzes', QuizController::class)->shallow();
@@ -114,6 +118,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     // เพิ่มบรรทัดนี้เพื่อให้เปิดหน้าฟอร์มแก้ไขได้
     Route::get('quizzes/{quiz}/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 
+    Route::resource('activities', ActivityController::class);
+
+    // (Option) เพิ่ม Route พิเศษสำหรับการเปลี่ยนสถานะแบบเร็ว (Toggle Status)
+    Route::post('activities/{id}/toggle-status', [ActivityController::class, 'toggleStatus'])
+        ->name('activities.toggle-status');
+
 });
 
 Route::get('/quiz/{quiz_id}', [QuizController::class, 'show'])->name('quiz.show');
@@ -124,10 +134,10 @@ Route::get('/districts/{amphurCode}', [StudentController::class, 'getDistricts']
 
 // กลุ่ม Route สำหรับ Admin
 Route::middleware(['auth'])->prefix('admin')->group(function () {
-    
+
     // 1. หน้า List รายการ
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
-    
+
     // 2. หน้า Create (ต้องวางไว้ก่อน {id})
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
@@ -143,9 +153,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/privatefiles/create', [PrivatefileController::class, 'create'])->name('privatefiles.create');
     Route::post('/privatefiles', [PrivatefileController::class, 'store'])->name('privatefiles.store');
     Route::delete('/privatefiles/{id}', [PrivatefileController::class, 'destroy'])->name('privatefiles.destroy');
-    
+
 
 });
+
+
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
 
 require __DIR__.'/auth.php';
