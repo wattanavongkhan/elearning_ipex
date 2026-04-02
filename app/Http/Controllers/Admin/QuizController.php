@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use App\Models\Quiz;
 use App\Models\Question;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller {
 
@@ -42,7 +43,8 @@ class QuizController extends Controller {
     }
 
 
-    public function edit(Course $course, Quiz $quiz) {
+    public function edit(Course $course,$id) {
+        $quiz=Quiz::find($id);
         return view('admin.quizzes.edit', compact('course', 'quiz'));
     }
 
@@ -57,6 +59,9 @@ class QuizController extends Controller {
         try {
             // 2. อัปเดตข้อมูลลงฐานข้อมูล
             $quiz->update($validated);
+            Lesson::where('id', $request->lesson_id)
+            ->update(['pre_quiz_id' => $request->type == 'pre-test' ? $quiz->id : null,
+                'post_quiz_id' => $request->type == 'post-test' ? $quiz->id : null]);
 
             // 3. Redirect กลับไปหน้า Index ของ Quizzes โดยใช้ course_id จากตัว Quiz เอง
             return $this->index($quiz->course); // หรือจะใช้ redirect()->route('admin.quizzes.index', $quiz->course_id) ก็ได้ครับ
@@ -124,12 +129,13 @@ class QuizController extends Controller {
 
     public function show($quiz_id)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'กรุณาเข้าสู่ระบบก่อนลงทะเบียนคอร์ส');    
+        }
+
         $quiz = Quiz::findOrFail($quiz_id);
         
-        // ดึงคำถามจากตารางที่มีฟิลด์ options และ correct_answer
         $questions = Question::where('quiz_id', $quiz_id)->get();
-
-        // หาบทเรียนที่มี Quiz นี้ (เช็คทั้ง Pre และ Post)
         $lesson = \App\Models\Lesson::where('pre_quiz_id', $quiz_id)
                     ->orWhere('post_quiz_id', $quiz_id)
                     ->first();

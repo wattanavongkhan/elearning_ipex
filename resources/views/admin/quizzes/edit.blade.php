@@ -2,30 +2,45 @@
 
 @section('content')
 <div class="max-w-12xl mx-auto">
-    <div class="mb-6">
-        <nav class="text-sm text-gray-500 mb-2">
-            <a href="{{ route('courses.index') }}" class="hover:text-blue-600 transition">จัดการคอร์สเรียน</a>
-            <span class="mx-2">/</span>
-         <a href="" class="hover:text-blue-600 transition">จัดการแบบทดสอบ</a>
-            <span class="text-gray-800 font-medium">แก้ไขชุดข้อสอบ</span>
-        </nav>
-        <h3 class="text-2xl font-bold text-gray-800">แก้ไขชุดข้อสอบ: <span
-                class="text-blue-600">{{ $quiz->title }}</span></h3>
-    </div>
-
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <form action="{{ route('admin.quizzes.update', $quiz->id) }}" method="POST" class="p-8">
+        <form action="{{ route('admin.quizzes.update', $quiz->id) }}" method="POST" class="p-7">
+            <div class="mb-6">
+                <nav class="text-sm text-gray-500 mb-2">
+                    <a href="{{ route('courses.index') }}" class="hover:text-blue-600 transition">จัดการคอร์สเรียน</a>
+                    <span class="mx-2">/</span>
+                    <a href="" class="hover:text-blue-600 transition">จัดการแบบทดสอบ</a>
+                    <span class="text-gray-800 font-medium">แก้ไขชุดข้อสอบ</span>
+                </nav>
+                <h3 class="text-2xl font-bold text-gray-800">แก้ไขชุดข้อสอบ: <span
+                        class="text-blue-600">{{ $quiz->title }}</span></h3>
+            </div>
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 gap-y-8">
-                <div>
-                    <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
-                        ชื่อชุดข้อสอบ <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="title" id="title" value="{{ old('title', $quiz->title) }}" required
-                        class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        placeholder="ระบุชื่อชุดข้อสอบ">
-                    @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
+                            ชื่อชุดข้อสอบ <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="title" id="title" value="{{ old('title', $quiz->title) }}" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            placeholder="ระบุชื่อชุดข้อสอบ">
+                        @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
+                            ชื่อบทเรียน <span class="text-red-500">*</span>
+                        </label>
+                        <select name="lesson_id" id="lesson_id"
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            @foreach (App\Models\Lesson::where('course_id', $quiz->course_id)->get() as $item)
+                            <option value="{{ $item->id }}"
+                                {{ old('lesson_id', $quiz->lesson_id) == $item->id ? 'selected' : '' }}>
+                                {{ $item->title }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 <div>
@@ -73,12 +88,9 @@
                 </div>
             </div>
             <div class="mt-10 pt-6 border-t border-gray-100 flex items-center justify-end gap-4">
-                <a href="" class="text-gray-500 font-semibold px-6 py-3 hover:text-gray-700 transition">
-                    Cancel
-                </a>
                 <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-10 py-3 rounded-xl shadow-lg transition-all active:scale-95">
-                    <i class="fas fa-save mr-2"></i> Update
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-lg shadow-lg transition-all active:scale-95">
+                    <i class="fas fa-save mr-2"></i> Save
                 </button>
             </div>
         </form>

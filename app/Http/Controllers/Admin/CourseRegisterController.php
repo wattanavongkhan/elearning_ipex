@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Auth;
 class CourseRegisterController extends Controller 
 {
     public function courses_register($id) {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'กรุณาเข้าสู่ระบบก่อนลงทะเบียนคอร์ส');    
+        }
         $course = Course::findOrFail($id);
         // ตรวจสอบว่าเคยลงทะเบียนไปแล้วหรือยัง
         $alreadyEnrolled = Enrollment::where('user_id', Auth::id())
@@ -26,16 +29,13 @@ class CourseRegisterController extends Controller
             return redirect()->route('courses.show', $id)
                              ->with('error', 'คุณได้ลงทะเบียนคอร์สนี้ไปแล้ว');
         }
-
         return view('home.courses.register', compact('course'));
-
     }
 
     public function courses_store(Request $request, $id) 
     {
         $course = Course::findOrFail($id);
         $user = Auth::user();
-        // dd($course, $user);
         // เช็คซ้ำอีกรอบว่าเคยสมัครไปยัง (ป้องกันการกดเบิ้ล)
         $exists = Enrollment::where('user_id', $user->id)
                             ->where('course_id', $course->id)

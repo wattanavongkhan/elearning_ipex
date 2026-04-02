@@ -2,35 +2,25 @@
 
 @section('content')
 <div class="max-w-12xl mx-auto">
-    <div class="mb-6 flex justify-between items-center">
-        <h3 class="text-2xl font-bold text-gray-800">แก้ไขคอร์ส: {{ $course->title }}</h3>
-        <a href="{{ route('courses.index') }}" class="text-gray-500 hover:text-gray-700">
-            <i class="fas fa-times"></i> ยกเลิก
-        </a>
-    </div>
+
 
     <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+        <div class="mb-6 flex justify-between items-center">
+            <div>
+                <h3 class="text-2xl font-bold text-gray-800">แก้ไขคอร์ส : {{ $course->title }}</h3>
+                <p class="text-sm text-gray-500">รายละเอียดคอร์ส</p>
+            </div>
+
+        </div>
         <form action="{{ route('courses.update', $course->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-2">
-                <div class="md:col-span-10">
+                <div class="md:col-span-12">
                     <label class="block font-bold text-gray-700 mb-2">ชื่อคอร์สเรียน</label>
                     <input type="text" name="title" value="{{ old('title', $course->title) }}"
                         class="w-full border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
                         required>
-                </div>
-
-                <div class="md:col-span-2">
-                    <label class="block font-bold text-gray-700 mb-2">สถานะ</label>
-                    <select class="w-full border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none" name="status" id="status" >
-                        <option value="0">รอดำเนินการ</option>
-                        <option value="1">ส่งอนุมัติ</option>
-                        @if(Auth::user()->status=="3")
-                        <option value="2">อนุมัติ</option>
-                        <option value="3">ไม่อนุมัติ</option>
-                        @endif
-                    </select>
                 </div>
             </div>
 
@@ -69,10 +59,15 @@
                     <div id="file_show"></div>
                 </div>
             </div>
-            <div class="flex gap-4 border-t pt-6 text-end">
+            <div class="mt-10 pt-6 border-t border-gray-100 flex items-center justify-end gap-4">
+
+                <a href="{{ route('courses.index') }}"
+                    class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-lg shadow-lg transition-all active:scale-95">
+                    <i class="fa fa-repeat" aria-hidden="true"></i> Cancel
+                </a>
                 <button type="submit"
-                    class="bg-blue-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all">
-                    <i class="fas fa-save mr-1"></i> Update
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-lg shadow-lg transition-all active:scale-95">
+                    <i class="fas fa-save mr-2"></i> Save
                 </button>
             </div>
         </form>

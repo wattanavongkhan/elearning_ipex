@@ -5,12 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I-PEX Elearning|แหล่งเรียนรู้ออนไลน์</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -70,10 +69,11 @@
                     <img src="{{ URL::asset('images/icont/logo.jpg') }}" alt="I-PEX" style="width: 220px">
                 </a>
                 <div class="hidden md:flex flex-1 max-w-xl relative">
-                    <form action="#" method="GET" class="w-full">
+                    <form action="{{ route('courses.all') }}" method="GET" class="w-full">
                         <input type="text" name="search" placeholder="วันนี้คุณอยากเรียนรู้อะไร..."
                             class="w-full bg-slate-100 border border-transparent rounded-2xl py-3 pl-12 pr-4 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-sm outline-none">
                         <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="submit" hidden>
                     </form>
                 </div>
                 <div class="hidden lg:flex items-center gap-8 text-[15px] font-semibold text-slate-600">
@@ -84,7 +84,7 @@
                     <a href="{{ route('courses.all') }}" class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-graduation-cap text-xs text-slate-400"></i> คอร์สทั้งหมด
                     </a>
-                    <a href="{{ route('courses.all') }}" class="hover:text-blue-600 transition flex items-center gap-2">
+                    <a href="#navigation" class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-folder-open text-xs text-slate-400"></i> ระบบอื่นๆ
                     </a>
                 </div>
@@ -149,6 +149,7 @@
 
     <main class="min-h-[70vh]">
         @yield('content')
+        @yield('scripts')
     </main>
 
     <footer class="bg-white border-t border-slate-100 pt-20 pb-10">
@@ -197,14 +198,6 @@
                         <li><a href="#" class="hover:text-blue-600">นโยบายความเป็นส่วนตัว</a></li>
                     </ul>
                 </div>
-
-                {{-- <div>
-                    <h5 class="font-bold text-slate-800 mb-8 uppercase tracking-widest text-xs">ติดดาวน์โหลดแอป</h5>
-                    <div class="flex flex-col gap-3">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" class="h-11 w-fit cursor-pointer hover:opacity-80 transition">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" class="h-11 w-fit cursor-pointer hover:opacity-80 transition">
-                    </div>
-                </div> --}}
             </div>
 
             <div
@@ -218,7 +211,6 @@
         </div>
     </footer>
 
-    @stack('scripts')
 </body>
 
 </html>

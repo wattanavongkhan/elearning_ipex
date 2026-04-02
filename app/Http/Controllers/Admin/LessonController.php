@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class LessonController extends Controller
 {
     // 1. หน้าแสดงรายการบทเรียนทั้งหมดของคอร์สนั้นๆ
-    public function index(Course $course)
+    public function index(Course $course,Request $request)
     {
         $lessons = $course->lessons()->orderBy('position', 'asc')->get();
         

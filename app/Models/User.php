@@ -19,7 +19,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password','img','status','password_member','status_activate',
         'address','province','amphur','district','zipcode','phone','backgroud','online_time',
-        'last_session'
+        'last_session','created_at'
     ];
 
     /**
@@ -30,7 +30,7 @@ class User extends Authenticatable
     protected $hidden = [
         'name', 'email', 'password','img','status','password_member','status_activate',
         'address','province','amphur','district','zipcode','phone','backgroud','online_time',
-        'last_session'
+        'last_session','created_at'
     ];
 
     /**

@@ -3,9 +3,8 @@
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Lesson;
-use App\Models\User;
+use App\Models\Patal;
 use App\Models\Category;
-use App\Models\Enrollment;
 use App\Models\Activity;
 use App\Models\Quiz;
 
@@ -15,18 +14,25 @@ use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller {
 
-    public function index() {
+    public function index(Request $request)
+    {
+        if(auth()->check()) 
+        {
+            if(auth()->user()->status == 0) {
+                return redirect()->route('courses.index');
+            }   
+        } 
 
-        $featuredCourses=Course::select("courses.*", "categories.category_name")
-        ->leftJoin('categories', 'courses.category_id', '=', 'categories.id') ->get();
+            $featuredCourses=Course::select("courses.*", "categories.category_name")
+            ->leftJoin('categories', 'courses.category_id', '=', 'categories.id') ->get();
 
-        // ดึงข่าว/กิจกรรมล่าสุด 3 รายการ ที่เปิดใช้งานอยู่
-        $activities = Activity::where('status', 1)
-                              ->latest()
-                              ->take(3)
-                              ->get();
-
-        return view('dashboard', compact('featuredCourses','activities'));
+            // ดึงข่าว/กิจกรรมล่าสุด 3 รายการ ที่เปิดใช้งานอยู่
+            $activities = Activity::where('status', 1)
+                                ->latest()
+                                ->take(3)
+                                ->get();
+            $patals = Patal::orderBy('seq_no', 'asc')->get();
+            return view('dashboard', compact('featuredCourses','activities','patals'));
     }
 
     public function courses_show($id) {
@@ -42,8 +48,12 @@ class HomeController extends Controller {
        ->select('courses.*', 'categories.category_name')
        ->when($request->category_id, function ($query, $category_id) {
            return $query->where('courses.category_id', $category_id);
-       })
-       ->latest()->paginate(9);
+       });
+
+       if ($request->search!=null) {
+        $courses = $courses->where('courses.title', 'like', '%' . $request->search . '%');
+       }
+       $courses=$courses->latest()->paginate(9);
 
        $categories = Category::withCount('courses') // นับจำนวน courses ในแต่ละ category
        ->get();

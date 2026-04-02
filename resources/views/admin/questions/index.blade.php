@@ -38,19 +38,18 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2 ml-6">
-                    <a href="{{ route('admin.questions.edit', [$quiz->id, $question->id]) }}"
-                        class="p-2 text-yellow-500 hover:bg-yellow-50 rounded-lg transition" title="แก้ไขข้อนี้">
-                        <i class="fas fa-edit text-lg"></i>
+                <div class="flex flex-col gap-3 ml-6">
+                    <a href="{{ route('admin.questions.edit',  [$quiz->id, $question->id]) }}"
+                        class="bg-yellow-50 text-yellow-500 hover:bg-yellow-100 hover:text-yellow-700 transition px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-edit"></i>
                     </a>
-
                     <form action="{{ route('admin.questions.destroy', [$quiz->id, $question->id]) }}" method="POST"
                         onsubmit="return confirm('ยืนยันการลบคำถามข้อนี้?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
-                            title="ลบข้อนี้">
-                            <i class="fas fa-trash text-lg"></i>
+                        <button type="submit"
+                            class="bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition px-3 py-1.5 rounded-lg">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </form>
                 </div>

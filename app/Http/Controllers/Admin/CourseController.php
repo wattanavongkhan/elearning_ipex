@@ -240,7 +240,6 @@ class CourseController extends Controller
 
         return DB::transaction(function () use ($userId, $courseId, $lessonId) {
             // 1. บันทึกว่าเรียน Lesson นี้จบแล้ว (ตาราง Progress รายบท)
-            // สมมติคุณมีตาราง LessonUser หรือ LessonProgress
             $progress = Lesson_user::updateOrCreate(
                 ['user_id' => $userId, 'lesson_id' => $lessonId, 'course_id' => $courseId],
                 ['is_completed' => 1, 'completed_at' => now()]
@@ -295,7 +294,8 @@ class CourseController extends Controller
 
     public function removeFile(Request $req)
     {
-        $courseFile = \App\Models\CoursesFile::findOrFail($req->file_id);
+        $courseFile = \App\Models\CoursesFile::where('file_id', $req->file_id)->first();
+
         $courseFile->delete();
 
         return redirect()->back()->with('success', 'ลบไฟล์เรียบร้อยแล้ว');

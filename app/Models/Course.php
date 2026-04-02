@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-    use HasFactory;
+    // use HasFactory;
 
     /**
      * กำหนดฟิลด์ที่อนุญาตให้บันทึกข้อมูลแบบ Array หรือ Mass Assignment
@@ -48,4 +48,11 @@ class Course extends Model
     {
         return $this->hasMany(Quiz::class);
     }
+
+    public function enrollments(): HasMany
+    {
+        // ตรวจสอบชื่อ Model 'Enrollment' ให้ตรงกับที่คุณสร้าง
+        return $this->hasMany(Enrollment::class); 
+    }
+
 }

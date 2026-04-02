@@ -2,6 +2,42 @@
 
 @section('content')
 
+<el-dialog>
+    <dialog id="dialog" aria-labelledby="dialog-title"
+        class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-slate-950/80 backdrop:backdrop-blur-sm">
+        <el-dialog-backdrop
+            class="fixed inset-0 bg-slate-900/40 transition-opacity data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in">
+        </el-dialog-backdrop>
+
+        <div tabindex="0" class="flex min-h-full items-center justify-center p-4 text-center focus:outline-none sm:p-6">
+
+            <el-dialog-panel class="relative transform overflow-hidden rounded-[2.5rem] bg-slate-900/90 border border-white/10 text-left shadow-2xl transition-all 
+                data-closed:translate-y-8 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in 
+                w-full max-w-7xl">
+
+                <div class="p-8 sm:p-12">
+                    <h3 id="dialog-title"
+                        class="text-2xl font-bold text-white mb-8 tracking-tight flex items-center gap-3">
+                        <i class="fas fa-th-large text-blue-400"></i>
+                        เลือกระบบงานที่ต้องการเข้าใช้งาน
+                    </h3>
+
+                    <div id="system-1" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+                    </div>
+                </div>
+
+                <div class="bg-white/5 px-8 py-6 flex justify-end border-t border-white/5">
+                    <button type="button" command="close" commandfor="dialog"
+                        class="px-6 py-2.5 rounded-2xl bg-white/10 text-sm font-semibold text-white hover:bg-white/20 transition-colors border border-white/10">
+                        ปิดหน้าต่าง
+                    </button>
+                </div>
+
+            </el-dialog-panel>
+        </div>
+    </dialog>
+</el-dialog>
+
 <div class="bg-white font-kanit">
     <section class="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden bg-slate-50 p-5">
         <div
@@ -24,7 +60,6 @@
                         </span>
                         <span class="tracking-wide uppercase">NEW: คอร์ส AI For Business เปิดตัวแล้ว!</span>
                     </div>
-
                     <h3 class="text-3xl lg:text-7xl font-black text-slate-900 leading-[1.1] mb-10"
                         style="font-size: 35px">
                         อัปเกรดทักษะ <br> <span
@@ -34,14 +69,14 @@
                     <p class="text-xl text-slate-500 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
                         รวมคอร์สออนไลน์คุณภาพจากผู้เชี่ยวชาญระดับแนวหน้า ให้คุณเก่งขึ้นได้ในทุกๆ วัน
                     </p>
-
                     <div class="max-w-xl mx-auto lg:mx-0 mb-10">
-                        <form action="#" class="relative group">
+                        <form action="{{ route('courses.all') }}" class="relative group">
                             <input type="text" placeholder="ค้นหาคอร์สที่คุณสนใจ... (เช่น Laravel, Design)"
-                                class="w-full bg-white border-2 border-transparent shadow-2xl shadow-blue-100 rounded-2xl py-5 pl-14 pr-6 focus:border-blue-500 outline-none transition-all text-slate-700">
+                                class="w-full bg-white border-2 border-transparent shadow-2xl shadow-blue-100 rounded-2xl py-5 pl-14 pr-6 focus:border-blue-500 outline-none transition-all text-slate-700"
+                                name="search">
                             <i
                                 class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 text-xl group-focus-within:text-blue-600 transition-colors"></i>
-                            <button
+                            <button type="submit"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200">ค้นหา</button>
                         </form>
                     </div>
@@ -184,8 +219,8 @@
                     <div class="p-8">
                         <div class="flex items-center gap-2 mb-4">
                             <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                            <span
-                                class="text-[10px] font-black text-blue-500 uppercase tracking-[0.1em]">{{ $course->category_name }}</span>
+                            <span class="text-[10px] font-black text-blue-500 uppercase tracking-[0.1em]">{{
+                                $course->category_name }}</span>
                         </div>
                         <h3
                             class="font-bold text-slate-800 text-lg leading-snug h-14 line-clamp-2 mb-6 group-hover:text-blue-600 transition-colors">
@@ -214,53 +249,97 @@
         </div>
     </section>
 
-    <section class="py-24 container mx-auto px-6">
-        <div
-            class="bg-gradient-to-br from-blue-700 to-indigo-900 rounded-[3.5rem] p-10 md:p-20 relative overflow-hidden shadow-2xl shadow-blue-200">
-            <div class="absolute -top-20 -left-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl"></div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 relative z-10">
-                <div class="text-center lg:text-left">
-                    <h4 class="text-4xl lg:text-5xl font-black text-white mb-6 leading-tight" style="font-size: 28px">
-                        เริ่มต้นการเรียนรู้ ที่ไม่มีวันสิ้นสุด</h4>
-                    <p class="text-blue-100 text-lg mb-10 opacity-80">รับสิทธิพิเศษ Code ส่วนลด 20%
-                        และเข้าถึงคอร์สเรียนฟรีกว่า 50 คอร์ส เพียงแค่สมัครสมาชิกวันนี้</p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="{{ route('register') }}"
-                            class="bg-white text-blue-900 px-10 py-5 rounded-2xl font-black hover:bg-blue-50 transition-all text-center">สมัครสมาชิกฟรี</a>
-                        <a href="#"
-                            class="border-2 border-white/30 text-white px-10 py-5 rounded-2xl font-black hover:bg-white/10 transition-all text-center">ดูคอร์สฟรี</a>
+    <section class="py-24 container mx-auto font-kanit px-6" id="navigation">
+        <div
+            class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 rounded-[3.5rem] p-6 md:p-10 relative overflow-hidden shadow-[0_35px_60px_-15px_rgba(59,130,246,0.3)] border border-white/10">
+            <div class="absolute -top-20 -left-20 w-96 h-96 bg-sky-400/30 rounded-full blur-[100px] animate-pulse">
+            </div>
+            <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-indigo-400/20 rounded-full blur-[100px]"></div>
+
+            <div class="relative z-10">
+                <div class="mb-12 text-center lg:text-left">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-blue-100 text-[10px] font-bold mb-4 backdrop-blur-md">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-300"></span>
+                        </span>
+                        <span class="tracking-widest uppercase">Smart Factory Shortcuts</span>
                     </div>
+                    <h2 class="text-3xl md:text-5xl font-black text-white">
+                        WEB CENTER I-PEX</h2>
                 </div>
-                <div class="flex justify-center lg:justify-end">
-                    <div class="bg-white/5 backdrop-blur-xl rounded-[3rem] p-10 border border-white/10 w-full max-w-sm">
-                        <div class="text-center mb-8 text-white">
-                            <p class="text-sm font-bold opacity-60 uppercase mb-2">Weekly Stats</p>
-                            <p class="text-3xl font-black">+1,200 นักเรียนใหม่</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+                    @forelse($patals->take(20) as $link)
+                    <a @if($link->id != 16 && $link->id != 18)
+                        href="{{ $link->url }}" target="_blank"
+                        @else
+                        href="javascript:void(0)"
+                        onclick="openModal('{{ $link->id }}')"
+                        data-command="show-modal"
+                        @endif
+                        class="group flex flex-col p-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl rounded-[2.2rem]
+                        border border-white/10 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl
+                        hover:shadow-blue-950/40 relative overflow-hidden">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                         </div>
-                        <div class="space-y-4">
-                            @foreach(['Business', 'Design', 'Coding'] as $item)
+                        <div
+                            class="size-12 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white shadow-lg mb-5 group-hover:scale-110 transition-transform relative z-10">
+                            @if($link->icon)
+                            <img src="{{ asset('storage/' . $link->icon) }}"
+                                class="w-full h-full object-contain filter drop-shadow-md" alt="{{ $link->title }}"
+                                onerror="this.src='{{ asset('assets/img/default-icon.png') }}'">
+                            @else
+                            <i class="fas fa-link text-white/50 text-xl"></i>
+                            @endif
+                        </div>
+                        <div class="flex flex-col relative z-10">
+                            <span
+                                class="text-white font-bold text-base tracking-tight mb-2 group-hover:text-sky-300 transition-colors line-clamp-1">
+                                {{ $link->title }}
+                            </span>
                             <div
-                                class="flex items-center justify-between bg-white/10 p-4 rounded-2xl border border-white/5">
-                                <span class="text-white font-bold">{{$item}}</span>
-                                <span class="text-blue-300 font-black">↗ 24%</span>
+                                class="flex items-center gap-2 text-blue-200/50 text-[9px] font-bold uppercase tracking-widest">
+                                <span>คลิกเพื่อเข้าใช้งาน</span>
+                                <i
+                                    class="fas fa-chevron-right text-[8px] group-hover:translate-x-1 transition-transform"></i>
                             </div>
-                            @endforeach
                         </div>
+                    </a>
+                    @empty
+                    <div class="col-span-full text-center py-20 bg-white/5 rounded-[2.5rem] border border-white/5">
+                        <p class="text-blue-200/50 text-lg italic font-light">ยังไม่มีรายการที่เปิดใช้งาน</p>
+                    </div>
+                    @endforelse
+                </div>
+
+                {{-- Footer --}}
+                <div
+                    class="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-[10px] text-blue-200/30 font-bold uppercase tracking-[0.4em]">Managed by ICT
+                        Department</p>
+                    <div class="flex gap-2">
+                        <div class="h-1 w-8 rounded-full bg-white/10"></div>
+                        <div class="h-1 w-8 rounded-full bg-white/10"></div>
+                        <div class="h-1 w-8 rounded-full bg-sky-400/40"></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
 </div>
+
+
+
+
 <style>
     .font-kanit {
         font-family: 'Kanit', sans-serif;
     }
 
-    /* 1. Breathing Effect: กระพริบช้าๆ แบบเนียนๆ */
     @keyframes breathe {
 
         0%,
@@ -330,4 +409,53 @@
     }
 
 </style>
+@endsection
+
+@section('scripts')
+<script>
+    function openModal(id) {
+
+        document.getElementById('dialog').showModal();
+        let url = "{{ route('admin.patals.detail.show', ':id') }}".replace(':id', id);
+
+        $.get(url, function (res) {
+
+            res.forEach((item, index) => {
+                // สร้าง Template String
+                const card = `
+        <a href="${item.url}" target="_blank" 
+           class="group flex flex-col p-6 bg-white/5 hover:bg-white/10 backdrop-blur-xl rounded-[2.2rem]
+                  border border-white/10 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl
+                  hover:shadow-blue-500/20 relative overflow-hidden opacity-0 translate-y-4" 
+           style="transition-delay: ${index * 100}ms;"> <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            <div class="size-12 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white shadow-lg mb-5 group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <i class="fas fa-link text-white text-xl"></i>
+            </div>
+
+            <div class="flex flex-col relative z-10">
+                <span class="text-white font-bold text-base tracking-tight mb-2 group-hover:text-sky-300 transition-colors line-clamp-1">
+                    ${item.title}
+                </span>
+                <div class="flex items-center gap-2 text-blue-200/50 text-[9px] font-bold uppercase tracking-widest">
+                    <span>คลิกเพื่อเข้าใช้งาน</span>
+                    <i class="fas fa-chevron-right text-[8px] group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </div>
+        </a>
+    `;
+
+                const $card = $(card);
+                $('#system-1').append($card);
+
+                // ใช้ setTimeout เพื่อกระตุ้น Animation หลังจาก Append เข้าไปใน DOM แล้ว
+                setTimeout(() => {
+                    $card.removeClass('opacity-0 translate-y-4').addClass(
+                        'opacity-100 translate-y-0');
+                }, 50);
+            });
+        });
+    }
+
+</script>
 @endsection

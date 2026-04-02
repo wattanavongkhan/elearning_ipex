@@ -2,19 +2,15 @@
 
 @section('content')
 <div class="max-w-12xl mx-auto">
-        <div class="flex justify-between items-center mb-6">
-        <div>
-            <h3 class="text-2xl font-bold text-gray-800">เพิ่มคำถามใน: {{ $quiz->title }}</h3>
-            <p class="text-sm text-gray-500">เพิ่มเนื้อหาคำถามและตัวเลือก</p>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-6">
+        <div class="flex justify-between items-center mb-5">
+            <div>
+                <h3 class="text-2xl font-bold text-gray-800">เพิ่มคำถามใน : {{ $quiz->title }}</h3>
+                <p class="text-sm text-gray-500">เพิ่มเนื้อหาคำถามและตัวเลือก</p>
+            </div>
         </div>
-        <a href="{{ route('admin.questions.index', $quiz->id) }}" class="text-gray-600 hover:text-gray-800 transition">
-            <i class="fas fa-arrow-left"></i> ย้อนกลับ
-        </a>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="space-y-4">
-            <form action="{{ route('admin.questions.store', $quiz->id) }}" method="POST" class="p-6">
+        <div class="space-y-3 mt-3">
+            <form action="{{ route('admin.questions.store', $quiz->id) }}" method="POST">
                 @csrf
                 <div class="mb-4">
                     <label class="block font-bold mb-2">โจทย์คำถาม</label>
@@ -29,7 +25,6 @@
                     </div>
                     @endforeach
                 </div>
-
                 <div class="mb-6">
                     <label class="block font-bold mb-2">เฉลยข้อที่ถูกต้อง</label>
                     <select name="correct_answer" class="w-full border rounded-lg p-2">
@@ -39,10 +34,17 @@
                         <option value="D">ข้อ D</option>
                     </select>
                 </div>
+                <div class="mt-10 pt-6 border-t border-gray-100 flex items-center justify-end gap-4">
+                    <a href="{{ route('admin.questions.index', $quiz->id) }}"
+                        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold px-5 py-3 rounded-lg shadow-lg transition-all active:scale-95">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                    <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-lg shadow-lg transition-all active:scale-95">
+                        <i class="fas fa-save mr-2"></i> Save
+                    </button>
 
-                <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold">
-                    บันทึกคำถาม
-                </button>
+                </div>
             </form>
         </div>
     </div>

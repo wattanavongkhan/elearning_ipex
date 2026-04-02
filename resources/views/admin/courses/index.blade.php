@@ -2,16 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="flex justify-between items-center mb-5">
-        <div>
-            <h3 class="text-2xl font-bold text-gray-800">จัดการคอร์สเรียน</h3>
-            <p class="text-gray-500 text-sm">รวมคอร์สเรียนทั้งหมดในระบบที่คุณดูแลอยู่</p>
-        </div>
-        <a href="{{ route('courses.create') }}"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-lg transition-all active:scale-95">
-            <i class="fas fa-plus"></i> เพิ่มคอร์สใหม่
-        </a>
-    </div>
+
 
     @if(session('success'))
     <div
@@ -25,17 +16,26 @@
         </button>
     </div>
     @endif
-
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-5">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+            <div class="flex justify-between items-center mb-5">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">จัดการคอร์สเรียน</h3>
+                    <p class="text-gray-500 text-sm">รวมคอร์สเรียนทั้งหมดในระบบที่คุณดูแลอยู่</p>
+                </div>
+                <a href="{{ route('courses.create') }}"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-lg transition-all active:scale-95">
+                    <i class="fas fa-plus"></i> เพิ่มคอร์สใหม่
+                </a>
+            </div>
+            <table class="w-full text-left border-collapse" id="courses_tb">
+                <thead class="bg-gray-50 text-gray-500 text-lg uppercase tracking-wider">
                     <tr>
                         <th class="p-4 font-semibold">ชื่อคอร์ส</th>
                         <th class="p-4 font-semibold">ราคา</th>
                         <th class="p-4 font-semibold">ผู้สร้าง</th>
                         <th class="p-4 font-semibold">สถานะ</th>
-                        <th class="p-4 font-semibold text-center">จัดการ</th>
+                        <th class="p-4 font-semibold flex justify-center ">จัดการ</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm text-gray-600 divide-y divide-gray-50">
@@ -72,7 +72,7 @@
                         </td>
                         <td class="p-4 text-center">
                             <div class="flex justify-center gap-2">
-                                      <a href="{{ route('quizzes.index', ['course' => $course->id]) }}"
+                                <a href="{{ route('quizzes.index', ['course' => $course->id]) }}"
                                     class="text-sm font-semibold text-orange-600 hover:text-orange-700 flex items-center bg-orange-50 px-3 py-1 rounded-lg transition">
                                     <i class="fas fa-file-alt mr-2"></i> แบบทดสอบ
                                 </a>
@@ -90,17 +90,13 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="p-2 text-red-500 hover:bg-red-100 rounded-lg transition bg-red-100"
-                                        title="ลบ">
-                                        <i class="fas fa-trash"></i>
+                                        class="w-8 h-8 bg-red-100 text-red-500 rounded-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                                        <i class="fas fa-trash-alt text-xs"></i>
                                     </button>
                                 </form>
                             </div>
-
-                            
                         </td>
                     </tr>
-
                     @empty
                     <tr>
                         <td colspan="5" class="p-12 text-center">
@@ -116,12 +112,17 @@
                 </tbody>
             </table>
         </div>
-
-        @if($courses->hasPages())
-        <div class="p-4 bg-gray-50 border-t border-gray-100">
-            {{ $courses->links() }}
-        </div>
-        @endif
     </div>
 </div>
+@endsection
+@section('scripts')
+<script>
+    $(document).ready(function () {
+        $('.select2').select2();
+        if ('{{$courses}}'.trim() !== '[]') {
+            $('#courses_tb').DataTable();
+        }
+    });
+
+</script>
 @endsection

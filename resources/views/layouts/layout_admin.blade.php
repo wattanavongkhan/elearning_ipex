@@ -5,67 +5,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I-PEX Elearning</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: "Kanit", sans-serif;
-            font-weight: 200;
+            font-weight: 300;
             font-style: normal;
-            font-size: 14px;
+            font-size: 13px;
         }
-
         .select2-container--default .select2-selection--single {
-            background-color: #1e293b;
-            /* slate-800 */
-            border: 1px solid #334155;
-            /* slate-700 */
-            border-radius: 1rem;
-            height: 52px;
-            display: flex;
-            align-items: center;
+            border-color: #e2e8f0;
+            border-radius: 0.75rem;
+            height: 40px;
+            padding-top: 8px;
         }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: white;
-            padding-left: 1.5rem;
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
         }
-
         .select2-dropdown {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            color: white;
+            border-radius: 1rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
-
-        .select2-search__field {
-            background-color: #0f172a !important;
-            /* slate-950 */
+        .dataTables_wrapper {
+            padding: 10px 0;
+        }
+        /* เพิ่มระยะห่างระหว่างช่อง Search/Show Entries กับตัวตาราง */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 25px !important;
+            /* เพิ่มระยะห่างตรงนี้ */
+            padding: 5px 0;
+        }
+        table.dataTable.no-footer {
+            border-bottom: 1px solid #f1f5f9 !important;
+        }
+        table.dataTable thead th {
+            border-bottom: 1px solid #f1f5f9 !important;
+            background-color: #f8fafc;
+            color: #94a3b8;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            padding: 20px 20px !important;
+        }
+        table.dataTable tbody td {
+            border-bottom: 1px solid #f8fafc !important;
+            /* slate-50 จางมาก */
+            padding: 15px !important;
+            vertical-align: middle;
+        }
+        /* 2. ปรับแต่งช่อง Search และ Show Entries ให้ดู Modern */
+        .dataTables_filter input {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            padding: 8px 16px !important;
+            /* เพิ่ม padding ให้ช่องพิมพ์ดูใหญ่ขึ้น */
+            outline: none !important;
+            background-color: #ffffff;
+            margin-left: 10px !important;
+            transition: all 0.2s;
+        }
+        .dataTables_filter input:focus {
+            border-color: #3b82f6 !important;
+            /* เน้นสีน้ำเงินเวลาคลิก */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.05);
+        }
+        .dataTables_length select {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 10px !important;
+            padding: 6px 12px !important;
+            outline: none !important;
+            background-color: #ffffff;
+        }
+        /* 3. ส่วนล่างของตาราง (Pagination) */
+        .dataTables_wrapper .dataTables_info {
+            padding-top: 20px !important;
+            color: #94a3b8 !important;
+            font-size: 12px;
+        }
+        .dataTables_wrapper .dataTables_paginate {
+            padding-top: 15px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #3b82f6 !important;
+            /* สีน้ำเงิน Blue-500 */
             color: white !important;
-            border-radius: 0.5rem !important;
+            border: none !important;
+            border-radius: 10px !important;
+            padding: 6px 15px !important;
         }
-
     </style>
 </head>
 
 <body class="bg-gray-100 text-gray-800">
-
     <div class="flex h-screen overflow-hidden">
-
         <aside class="w-64 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col">
             <div class="p-5 text-2xl font-bold border-b border-slate-800 flex items-center gap-3">
-                <img src="{{ URL::asset('images/icont/logo.jpg') }}" alt="I-PEX" style="width: 210px;border-radius: 5px;">
+                <img src="{{ URL::asset('images/icont/logo.jpg') }}" alt="I-PEX"
+                    style="width: 200px;border-radius: 5px;">
             </div>
 
             <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
@@ -76,14 +127,18 @@
 
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mb-2">จัดการข้อมูลหลัก</p>
                 <a href="{{ route('categories.index') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
-                    @if(Route::currentRouteName() == 'categories.index') bg-blue-600 @endif">
+                    @if(Route::currentRouteName() == 'categories.index' ||
+                    Route::currentRouteName() == 'categories.create' ||
+                    Route::currentRouteName() == 'categories.edit'
+                    ) bg-blue-600 @endif">
                     <i class="fas fa-layer-group w-5 text-center text-slate-400"></i> หมวดหมู่
                 </a>
-                <a href="{{ route('courses.index') }}"
-                    class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
+                <a href="{{ route('courses.index') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
                     @if(Route::currentRouteName() == 'courses.index' || Route::currentRouteName() == 'courses.create' || Route::currentRouteName() == 'courses.edit'
                     || Route::currentRouteName() == 'lessons.index' || Route::currentRouteName() == 'lessons.create' || Route::currentRouteName() == 'lessons.edit'
-                    || Route::currentRouteName() == 'questions.index') bg-blue-600 @endif">
+                    || Route::currentRouteName() == 'questions.index'
+                    || Route::currentRouteName() == 'quizzes.create' 
+                    || Route::currentRouteName() == 'quizzes.index') bg-blue-600 @endif">
                     <i class="fas fa-book w-5 text-center text-slate-400"></i> คอร์สเรียน <span
                         class="ml-auto bg-yellow-400 text-yellow-900 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
                         {{ $courses_count ?? 0 }}
@@ -97,25 +152,31 @@
                 </a>
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mt-6 mb-2">จัดการกิจกรรม</p>
 
-                 <a href="{{ route('admin.activities.index') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
+                <a href="{{ route('admin.activities.index') }}"
+                    class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
                 @if(Route::currentRouteName() == 'admin.activities.index' || Route::currentRouteName() == 'admin.activities.create') bg-blue-600 @endif">
                     <i class="fas fa-regular fa-newspaper w-5 text-center text-slate-400"></i>
                     ข่าวสารและประกาศ
                 </a>
-
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mt-6 mb-2">รายงาน/สรุปผล</p>
-
-
-                <a href="#" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                <a href="{{ route('admin.reports.student') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
+                @if(Route::currentRouteName() == 'admin.reports.student') bg-blue-600 @endif">
                     <i class="fas fa-solid fa-chart-area w-5 text-center text-slate-400"></i> รายงานผู้เรียน
                 </a>
-                <a href="#" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                <a href="{{ route('admin.reports.course') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
+                @if(Route::currentRouteName() == 'admin.reports.course' ) bg-blue-600 @endif">
                     <i class="fas fa-solid fa-chart-line w-5 text-center text-slate-400"></i> รายงานคอร์สเรียน
                 </a>
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mt-6 mb-2">Support</p>
-                <a href="#" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                <a href="{{route('admin.patals.index')}}"
+                    class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
+                    @if(Route::currentRouteName() == 'admin.patals.index' || Route::currentRouteName() == 'admin.patals.detail') bg-blue-600 @endif">
+                    <i class="fas fa-sliders w-5 text-center text-slate-400"></i> Web Center
+                </a>
+                <a href="" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition">
                     <i class="fas fa-cog w-5 text-center text-slate-400"></i> ตั้งค่า
                 </a>
+
             </nav>
 
             <div class="p-4 border-t border-slate-800">
@@ -163,7 +224,6 @@
             </main>
         </div>
     </div>
-
 </body>
 <script src="{{ asset('assets/js/address-lookup.js') }}"></script>
 

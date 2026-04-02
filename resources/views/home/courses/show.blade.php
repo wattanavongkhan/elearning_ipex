@@ -1,8 +1,5 @@
 @extends('layouts.layout_public')
-
 @section('content')
-
-{{session('success')}}
 @if(session('success'))
 <div id="success-overlay" class="fixed inset-0 z-[100] flex items-center justify-center px-6">
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>

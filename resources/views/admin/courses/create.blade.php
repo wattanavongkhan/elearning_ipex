@@ -2,19 +2,17 @@
 
 @section('content')
 <div class="max-w-12xl mx-auto">
-    <div class="mb-5">
-        <nav class="text-sm text-gray-500 mb-1">
-            <a href="{{ route('courses.index') }}" class="hover:text-blue-600 transition">จัดการคอร์สเรียน</a>
-            <span class="mx-2">/</span>
-            <span class="text-gray-800 font-medium">เพิ่มคอร์สใหม่</span>
-        </nav>
-        <h3 class="text-xl font-bold text-gray-700">สร้างคอร์สเรียนใหม่</h3>
-    </div>
-
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <form action="{{ route('courses.store') }}" method="POST" enctype="multipart/form-data" class="p-8">
+        <form action="{{ route('courses.store') }}" method="POST" enctype="multipart/form-data" class="p-5">
             @csrf
-            <div class="grid grid-cols-1 gap-y-6">
+            <div class="mb-5">
+                <nav class="text-sm text-gray-500">
+                    <h3 class="text-xl font-bold text-gray-700">สร้างคอร์สเรียนใหม่</h3>
+                </nav>
+                <a href="#" class="hover:text-blue-600 transition">เพิ่มคอร์สใหม่</a>
+
+            </div>
+            <div class="grid grid-cols-1 gap-y-6 mt-2">
                 <div>
                     <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">ประเภทคอร์ส <span
                             class="text-red-500">*</span></label>
@@ -113,11 +111,11 @@
 
             <div class="mt-10 pt-6 border-t border-gray-100 flex items-center justify-end gap-4">
                 <a href="{{ route('courses.index') }}"
-                    class="text-gray-500 font-semibold px-6 py-3 hover:text-gray-700 transition">
-                    Cancel
+                    class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-lg shadow-lg transition-all active:scale-95">
+                    <i class="fa fa-repeat" aria-hidden="true"></i> Cancel
                 </a>
                 <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-10 py-3 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95">
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-lg shadow-lg transition-all active:scale-95">
                     <i class="fas fa-save mr-2"></i> Save
                 </button>
             </div>
@@ -125,7 +123,6 @@
     </div>
 </div>
 
-{{-- Script สำหรับ Gen Slug อัตโนมัติ --}}
 <script>
     document.getElementById('title').addEventListener('input', function () {
         let title = this.value;

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\PrivatefileController;
 use App\Http\Controllers\Admin\ActivityController;
+use App\Http\Controllers\Admin\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/activities-all', [HomeController::class, 'activities_all'])->name('activities.all');
 
 Route::get('/admin/courses', [CourseController::class, 'index'])->name('courses.index');
+
 
 // หรือถ้าใช้ Resource Route (แนะนำ)
 Route::resource('admin/courses', CourseController::class);
@@ -103,11 +105,8 @@ Route::get('/activities/{slug}', [ActivityController::class, 'show'])->name('act
 // ตรวจสอบว่ามีการครอบด้วย 'admin.' หรือไม่
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
-    // จัดการชุดข้อสอบ (Quizzes)
-    // Route::get('quizzes', [QuizController::class, 'index'])->name('quizzes.index');
     Route::resource('courses.quizzes', QuizController::class)->shallow();
 
-    // จัดการคำถาม (Questions) - ตรวจสอบบรรทัดนี้ครับ!
     Route::get('quizzes/{quiz}/questions', [QuestionController::class, 'index'])->name('questions.index');
 
     Route::get('quizzes/{quiz}/questions/create', [QuestionController::class, 'create'])->name('questions.create');
@@ -115,14 +114,29 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::put('quizzes/{quiz}/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
     Route::delete('quizzes/{quiz}/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 
-    // เพิ่มบรรทัดนี้เพื่อให้เปิดหน้าฟอร์มแก้ไขได้
     Route::get('quizzes/{quiz}/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 
     Route::resource('activities', ActivityController::class);
 
-    // (Option) เพิ่ม Route พิเศษสำหรับการเปลี่ยนสถานะแบบเร็ว (Toggle Status)
     Route::post('activities/{id}/toggle-status', [ActivityController::class, 'toggleStatus'])
         ->name('activities.toggle-status');
+
+    Route::post('/patals', [InstructorController::class, 'patals_store'])->name('patals.store');
+    Route::get('patals', [InstructorController::class, 'patals'])->name('patals.index');
+    // Route สำหรับลบทางลัด
+    Route::delete('/patals/{id}', [InstructorController::class, 'patals_destroy'])->name('patals.destroy');
+
+    Route::get('/patals/{id}', [InstructorController::class, 'patals_show'])->name('patals.show');
+    Route::post('/patals', [InstructorController::class, 'patals_store'])->name('patals.store');
+    Route::post('/patals.detail.store', [InstructorController::class, 'patals_detail_store'])->name('patals_detail.store');
+    Route::post('/patals_detail.destroy', [InstructorController::class, 'patals_detail_destroy'])->name('patals_detail.destroy');
+    
+    Route::get('/patals.detail/{id}', [InstructorController::class, 'patals_detail'])->name('patals.detail');
+    Route::get('/patals.detail.show/{id}', [InstructorController::class, 'patals_detail_show'])->name('patals.detail.show');
+    
+    Route::get('patals', [InstructorController::class, 'patals'])->name('patals.index');
+    Route::get('reports/student', [ReportController::class, 'index'])->name('reports.student');
+    Route::get('reports/course', [ReportController::class, 'course_report'])->name('reports.course');
 
 });
 
