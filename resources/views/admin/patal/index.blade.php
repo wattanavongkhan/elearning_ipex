@@ -197,15 +197,15 @@
                         </span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-3 text-right">
                         <div class="flex justify-end gap-2">
                             <a href="{{ route('admin.patals.detail', $patal->id) }}"
-                                class="p-2.5 bg-green-50 text-green-500 hover:bg-green-500 hover:text-white transition-all rounded-xl shadow-sm border border-green-100"
+                                class="p-3 bg-green-50 text-green-500 hover:bg-green-500 hover:text-white transition-all rounded-xl shadow-sm border border-green-100"
                                 title="จัดการเมนูย่อย">
                                 <i class="fas fa-sliders"></i>
                             </a>
                             <button onclick="create({{$patal->id}})"
-                                class="p-2.5 bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white transition-all rounded-xl shadow-sm border border-amber-100">
+                                class="p-3 bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white transition-all rounded-xl shadow-sm border border-amber-100">
                                 <i class="fas fa-edit"></i>
                             </button>
 

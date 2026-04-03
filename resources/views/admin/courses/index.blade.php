@@ -20,7 +20,7 @@
         <div class="overflow-x-auto">
             <div class="flex justify-between items-center mb-5">
                 <div>
-                    <h3 class="text-2xl font-bold text-gray-800">จัดการคอร์สเรียน</h3>
+                    <h3 class="text-xl  text-black-800">จัดการคอร์สเรียน</h3>
                     <p class="text-gray-500 text-sm">รวมคอร์สเรียนทั้งหมดในระบบที่คุณดูแลอยู่</p>
                 </div>
                 <a href="{{ route('courses.create') }}"

@@ -2,14 +2,11 @@
 @section('content')
 
 <div class="flex flex-wrap justify-end gap-6 mb-3 font-kanit">
-
     <div
         class="bg-white p-6 rounded-[1rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-green-100 transition-all duration-500 hover:-translate-y-1">
-
         <div
             class="absolute -right-8 -bottom-8 size-32 bg-gradient-to-br from-green-100 to-teal-100 rounded-full blur-3xl group-hover:from-green-200 group-hover:to-teal-200 transition-colors opacity-70">
         </div>
-
         <div
             class="size-16 bg-gradient-to-br from-green-400 to-teal-700 text-white rounded-[1.5rem] flex items-center justify-center text-3xl shadow-lg shadow-green-200/50 border-4 border-white group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700 relative z-10">
             <i class="fas fa-user-graduate"></i>
@@ -32,7 +29,6 @@
             class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 via-teal-600 to-green-400 rounded-full group-hover:h-2 transition-all duration-300">
         </div>
     </div>
-
     <div
         class="bg-white p-6 rounded-[1rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-1">
 
@@ -63,7 +59,7 @@
 </div>
 
 <div class="max-w-12xl mx-auto">
-    <div class="bg-white rounded-[1rem] shadow-sm border border-gray-100 overflow-hidden p-8">
+    <div class="bg-white rounded-[1rem] shadow-sm border border-gray-100 overflow-hidden p-5">
         <div class="flex justify-between items-center mb-4">
             <div>
                 <h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter">รายงานคอร์สเรียน

@@ -8,11 +8,49 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Patal;
 use App\Models\Patal_detail;
+use Illuminate\Support\Facades\DB;
 
 class InstructorController extends Controller {
 
     public function index()
     {
+        $filePath = storage_path('app/manpower.csv');
+    
+        if (!file_exists($filePath)) {
+            return "File not found!";
+        }
+
+        $file = fopen($filePath, 'r');
+        $header = fgetcsv($file);
+        
+        $dataToInsert = [];
+        
+        // เริ่มต้น Transaction เพื่อความเร็วและความปลอดภัย
+        DB::beginTransaction();
+
+           while (($row = fgetcsv($file)) !== FALSE) {
+    
+    // ระบุ .connection('central_staff') เพื่อให้ลง Database กลาง
+    DB::connection('central_staff_db')->table('tblemployee')->insert([
+        'em_code'       => trim($row[1]),
+        'full_name_th'  => trim($row[2]),
+        'full_name_eng' => trim($row[3]),
+        'start_date'    => trim($row[4]),
+        'section'       => trim($row[5]),
+        'position'      => trim($row[6]),
+    ]);
+}
+
+            // Insert แถวที่เหลือ
+            if (!empty($dataToInsert)) {
+                DB::table('tblemployee')->insert($dataToInsert);
+            }
+
+            DB::commit();
+            fclose($file);
+            return "Import Success!";
+
+
         $user=User::where('status', '1')->get();
 
         return view('admin.instructor.lecturer', compact('user'));
@@ -175,26 +213,19 @@ class InstructorController extends Controller {
         }
     }
 
-    public function patals_detail_destroy(Request $req)
+    public function patals_detail_destroy($id)
     {
-        dd($req);
         try {
-            // 1. ค้นหาข้อมูลจาก ID
             $patal_detail = Patal_detail::findOrFail($id);
-
-            // 2. (เพิ่มเติม) ลบไฟล์ไอคอนออกจาก Storage ถ้ามีการเก็บไฟล์ไว้
-            // สมมติว่าคอลัมน์ชื่อ 'icon' เก็บพาธไฟล์เอาไว้
             if ($patal_detail->icon && \Storage::exists('public/' . $patal_detail->icon)) {
                 \Storage::delete('public/' . $patal_detail->icon);
             }
 
-            // 3. ลบข้อมูลจาก Database (แก้ไขชื่อตัวแปรให้ตรงกัน)
             $patal_detail->delete();
 
             return redirect()->back()->with('success', 'ลบรายการและไฟล์ไอคอนเรียบร้อยแล้ว');
 
         } catch (\Exception $e) {
-            // บันทึก Log ไว้ดูย้อนหลังได้ถ้าเกิด Error รุนแรง
             \Log::error("Error deleting patal_detail ID {$id}: " . $e->getMessage());
             
             return redirect()->back()->with('error', 'ไม่สามารถลบข้อมูลได้: ' . $e->getMessage());
@@ -205,7 +236,4 @@ class InstructorController extends Controller {
     {
         return response()->json(Patal_detail::where('patal_id',$id)->where('status',1)->get());
     }
-
-
-
 }

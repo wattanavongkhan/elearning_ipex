@@ -18,7 +18,7 @@
         <div class="overflow-x-auto">
             <div class="flex justify-between items-center mb-5">
                 <div>
-                    <h3 class="text-2xl font-bold text-gray-800">จัดการหมวดหมู่</h3>
+                    <h3 class="text-xl font-bold text-black-800">จัดการหมวดหมู่</h3>
                     <p class="text-gray-500 text-sm">รวมหมวดหมู่ทั้งหมดในระบบที่คุณดูแลอยู่</p>
                 </div>
                 <a href="{{ route('categories.create') }}"

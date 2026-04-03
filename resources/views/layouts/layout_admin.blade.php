@@ -25,23 +25,28 @@
             font-style: normal;
             font-size: 13px;
         }
+
         .select2-container--default .select2-selection--single {
             border-color: #e2e8f0;
             border-radius: 0.75rem;
             height: 40px;
             padding-top: 8px;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 40px;
         }
+
         .select2-dropdown {
             border-radius: 1rem;
             border: 1px solid #f1f5f9;
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
+
         .dataTables_wrapper {
             padding: 10px 0;
         }
+
         /* เพิ่มระยะห่างระหว่างช่อง Search/Show Entries กับตัวตาราง */
         .dataTables_wrapper .dataTables_length,
         .dataTables_wrapper .dataTables_filter {
@@ -49,9 +54,11 @@
             /* เพิ่มระยะห่างตรงนี้ */
             padding: 5px 0;
         }
+
         table.dataTable.no-footer {
             border-bottom: 1px solid #f1f5f9 !important;
         }
+
         table.dataTable thead th {
             border-bottom: 1px solid #f1f5f9 !important;
             background-color: #f8fafc;
@@ -62,12 +69,14 @@
             letter-spacing: 0.05em;
             padding: 20px 20px !important;
         }
+
         table.dataTable tbody td {
             border-bottom: 1px solid #f8fafc !important;
             /* slate-50 จางมาก */
             padding: 15px !important;
             vertical-align: middle;
         }
+
         /* 2. ปรับแต่งช่อง Search และ Show Entries ให้ดู Modern */
         .dataTables_filter input {
             border: 1px solid #e2e8f0 !important;
@@ -79,11 +88,13 @@
             margin-left: 10px !important;
             transition: all 0.2s;
         }
+
         .dataTables_filter input:focus {
             border-color: #3b82f6 !important;
             /* เน้นสีน้ำเงินเวลาคลิก */
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.05);
         }
+
         .dataTables_length select {
             border: 1px solid #e2e8f0 !important;
             border-radius: 10px !important;
@@ -91,15 +102,18 @@
             outline: none !important;
             background-color: #ffffff;
         }
+
         /* 3. ส่วนล่างของตาราง (Pagination) */
         .dataTables_wrapper .dataTables_info {
             padding-top: 20px !important;
             color: #94a3b8 !important;
             font-size: 12px;
         }
+
         .dataTables_wrapper .dataTables_paginate {
             padding-top: 15px !important;
         }
+
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
             background: #3b82f6 !important;
             /* สีน้ำเงิน Blue-500 */
@@ -108,6 +122,7 @@
             border-radius: 10px !important;
             padding: 6px 15px !important;
         }
+
     </style>
 </head>
 
@@ -173,9 +188,9 @@
                     @if(Route::currentRouteName() == 'admin.patals.index' || Route::currentRouteName() == 'admin.patals.detail') bg-blue-600 @endif">
                     <i class="fas fa-sliders w-5 text-center text-slate-400"></i> Web Center
                 </a>
-                <a href="" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition">
+                {{--  <a href="" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition">
                     <i class="fas fa-cog w-5 text-center text-slate-400"></i> ตั้งค่า
-                </a>
+                </a>  --}}
 
             </nav>
 

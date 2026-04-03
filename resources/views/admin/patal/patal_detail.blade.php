@@ -107,12 +107,12 @@
                         ลำดับแสดง</th>
                     <th class="px-6 py-5 text-xs font-black uppercase tracking-wider text-gray-400 text-center">
                         สถานะ</th>
-                    <th class="px-6 py-5 text-xs font-black uppercase tracking-wider text-gray-400 w-44 text-center">
+                    <th class="px-6 py-5 text-xs">
                         จัดการ</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
-                @forelse($patals as $patal)
+                @forelse($patals as $patal_detail)
                 <tr class="hover:bg-blue-50/30 transition-colors group">
                     <td class="px-6 py-4 text-sm text-gray-400 font-mono text-center">
                         {{ $loop->iteration }}
@@ -125,15 +125,16 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="font-bold text-gray-700 group-hover:text-blue-600 transition-colors">
-                            {{ $patal->title }}</div>
-                        <div class="text-[11px] text-gray-400 font-medium truncate max-w-xs">{{ $patal->url }}</div>
+                            {{ $patal_detail->title }}</div>
+                        <div class="text-[11px] text-gray-400 font-medium truncate max-w-xs">{{ $patal_detail->url }}
+                        </div>
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="font-bold text-gray-700 group-hover:text-blue-600 transition-colors">
-                            {{ $patal->seq_no }}</div>
+                            {{ $patal_detail->seq_no }}</div>
                     </td>
                     <td class="px-6 py-4 text-center">
-                        @if($patal->status)
+                        @if($patal_detail->status)
                         <span
                             class="inline-flex items-center gap-1.5 text-green-600 text-xs font-bold bg-green-50 px-3 py-1 rounded-full">
                             <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> เปิดใช้งาน
@@ -145,16 +146,15 @@
                         </span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="flex justify-center gap-2">
-                            <button onclick="create({{$patal->id}})"
+                     <td class="px-6 py-3">
+                        <div class="flex gap-2">
+                            <button onclick="create({{$patal_detail->id}})"
                                 class="p-2.5 bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white transition-all rounded-xl shadow-sm border border-amber-100">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form action="{{ route('patals_detail.destroy') }}" method="POST"
-                                onsubmit="return confirm('คุณต้องการลบทางลัดนี้ใช่หรือไม่?')">
-                                @csrf @method('POST')
-                                <input name="id" value="{{$patal->id}}">
+                            <form action="{{ route('admin.patals_detail.destroy', $item->id ?? $patal_detail->id) }}"
+                                method="POST" onsubmit="return confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')">
+                                @csrf @method('DELETE')
                                 <button type="submit"
                                     class="p-2.5 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all rounded-xl shadow-sm border border-red-100">
                                     <i class="fas fa-trash"></i>

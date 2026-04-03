@@ -129,8 +129,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/patals/{id}', [InstructorController::class, 'patals_show'])->name('patals.show');
     Route::post('/patals', [InstructorController::class, 'patals_store'])->name('patals.store');
     Route::post('/patals.detail.store', [InstructorController::class, 'patals_detail_store'])->name('patals_detail.store');
-    Route::post('/patals_detail.destroy', [InstructorController::class, 'patals_detail_destroy'])->name('patals_detail.destroy');
-    
+   // ตรวจสอบว่าไม่มีจุดทศนิยมหรือตัวสะกดสลับกัน
+Route::delete('/patals.detail/{id}', [InstructorController::class, 'patals_detail_destroy'])
+    ->name('patals_detail.destroy');
+
     Route::get('/patals.detail/{id}', [InstructorController::class, 'patals_detail'])->name('patals.detail');
     Route::get('/patals.detail.show/{id}', [InstructorController::class, 'patals_detail_show'])->name('patals.detail.show');
     

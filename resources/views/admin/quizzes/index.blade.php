@@ -1,8 +1,5 @@
 @extends('layouts.layout_admin')
-
 @section('content')
-
-
 @if(session('success'))
 <div
     class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-lg flex items-center justify-between">
@@ -12,7 +9,7 @@
     </div>
 </div>
 @endif
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-6">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-5">
     <div class="flex justify-between items-center mb-6">
         <div>
             <nav class="text-sm text-gray-500 mb-1">
@@ -115,6 +112,5 @@
             $('#quizzes_tb').DataTable();
         }
     });
-
 </script>
 @endsection

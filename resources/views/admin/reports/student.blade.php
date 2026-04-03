@@ -1,50 +1,77 @@
 @extends('layouts.layout_admin')
 @section('content')
-<div class="flex justify-between items-end mb-5">
-    <div>
-        <h4 class="text-2xl font-black tracking-tighter">รายงานผู้เรียน</h4>
-        <p class="">Paid Enrollment & Revenue Tracker</p>
+<div class="flex flex-wrap justify-end gap-6 mb-6 font-kanit">
+    <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-orange-100 transition-all duration-500 hover:-translate-y-1">
+        <div class="absolute -right-8 -bottom-8 size-32 bg-gradient-to-br from-orange-100 to-amber-50 rounded-full blur-3xl group-hover:from-orange-200 transition-colors opacity-70"></div>
+        <div class="size-16 bg-gradient-to-br from-orange-400 to-amber-600 text-white rounded-[1.25rem] flex items-center justify-center text-3xl shadow-lg shadow-orange-200/50 border-4 border-white group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700 relative z-10">
+            <i class="fas fa-running"></i>
+        </div>
+        <div class="relative z-10">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                กำลังเรียน
+                <span class="size-1.5 bg-gradient-to-r from-orange-400 to-amber-500 rounded-full animate-pulse"></span>
+            </p>
+            <div class="flex items-baseline gap-1.5">
+                <h3 class="text-4xl font-black text-slate-900 leading-none tracking-tighter">
+                    {{ number_format($student->where('status', 1)->count()) }}
+                </h3>
+                <span class="text-[11px] font-bold text-slate-400 uppercase">คน</span>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 via-amber-500 to-orange-400 rounded-full group-hover:h-2 transition-all duration-300"></div>
     </div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-    <div class="bg-white p-6 rounded-[1rem] shadow-sm border border-slate-100 flex items-center justify-between group">
-        <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">กำลังเรียน</p>
-            <h3 class="text-2xl font-black text-yellow-600">{{ number_format($student->where('status', 1)->count()) }}
-                <span class="text-sm font-normal text-slate-400 ml-1">คน</span></h3>
+
+    <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-emerald-100 transition-all duration-500 hover:-translate-y-1">
+        <div class="absolute -right-8 -bottom-8 size-32 bg-gradient-to-br from-emerald-100 to-teal-50 rounded-full blur-3xl group-hover:from-emerald-200 transition-colors opacity-70"></div>
+        <div class="size-16 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-[1.25rem] flex items-center justify-center text-3xl shadow-lg shadow-emerald-200/50 border-4 border-white group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700 relative z-10">
+            <i class="fas fa-check-circle"></i>
         </div>
-        <div
-            class="size-12 bg-yellow-50 text-bg-yellow-500 rounded-2xl flex items-center justify-center text-xl shadow-inner">
-            <i class="fas fa-book-reader text-yellow-500"></i>
+        <div class="relative z-10">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                เรียนจบแล้ว
+                <span class="size-1.5 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></span>
+            </p>
+            <div class="flex items-baseline gap-1.5">
+                <h3 class="text-4xl font-black text-slate-900 leading-none tracking-tighter">
+                    {{ number_format($student->where('status', '!=', 1)->count()) }}
+                </h3>
+                <span class="text-[11px] font-bold text-slate-400 uppercase">คอร์ส</span>
+            </div>
         </div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-400 rounded-full group-hover:h-2 transition-all duration-300"></div>
     </div>
-    <div class="bg-white p-6 rounded-[1rem] shadow-sm border border-slate-100 flex items-center justify-between group">
-        <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">เรียนจบแล้ว</p>
-            <h3 class="text-2xl font-black text-green-600">
-                {{ number_format($student->where('status', '!=', 1)->count()) }} <span
-                    class="text-sm font-normal text-slate-400 ml-1">คน</span></h3>
-        </div>
-        <div
-            class="size-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-xl shadow-inner">
-            <i class="fas fa-graduation-cap"></i>
-        </div>
-    </div>
-    <div class="bg-white p-6 rounded-[1rem] shadow-sm border border-slate-100 flex items-center justify-between group">
-        <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">ผู้เรียนทั้งหมด</p>
-            <h3 class="text-2xl font-black text-slate-800">{{ number_format(count($student)) }} <span
-                    class="text-sm font-normal text-slate-400 ml-1">คน</span></h3>
-        </div>
-        <div
-            class="size-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-xl shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-all">
+
+    <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-1">
+        <div class="absolute -right-8 -bottom-8 size-32 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-full blur-3xl group-hover:from-blue-200 transition-colors opacity-70"></div>
+        <div class="size-16 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-[1.25rem] flex items-center justify-center text-3xl shadow-lg shadow-blue-200/50 border-4 border-white group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700 relative z-10">
             <i class="fas fa-users"></i>
         </div>
+        <div class="relative z-10">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                ผู้เรียนทั้งหมด
+                <span class="size-1.5 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full animate-pulse"></span>
+            </p>
+            <div class="flex items-baseline gap-1.5">
+                <h3 class="text-4xl font-black text-slate-900 leading-none tracking-tighter">
+                    {{ number_format(count($student)) }}
+                </h3>
+                <span class="text-[11px] font-bold text-slate-400 uppercase">คอร์ส</span>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-500 to-blue-400 rounded-full group-hover:h-2 transition-all duration-300"></div>
     </div>
+
 </div>
+
 <div class="max-w-12xl mx-auto">
-    <div class="bg-white rounded-[1rem] shadow-sm border border-gray-100 overflow-hidden">
-        <form action="{{ route('admin.reports.student') }}" method="get" enctype="multipart/form-data" class="p-8">
+    <div class="bg-white rounded-[1rem] shadow-sm border border-gray-100 overflow-hidden p-5">
+        <div class="flex justify-between items-end mb-5">
+            <div>
+                <h4 class="text-xl font-black tracking-tighter">รายงานผู้เรียน</h4>
+                <p class="text-sm text-slate-500">Paid Enrollment & Revenue Tracker</p>
+            </div>
+        </div>
+        <form action="{{ route('admin.reports.student') }}" method="get" enctype="multipart/form-data">
             @csrf
             <div id="event-fields" class="md:col-span-4 grid grid-cols-4 md:grid-cols-4 gap-6">
                 <div class="space-y-2 w-100">
@@ -86,7 +113,7 @@
     </div>
 </div>
 
-<div class="bg-white rounded-[1rem] shadow-sm border border-slate-100 overflow-hidden p-3 mt-4">
+<div class="bg-white rounded-[1rem] shadow-sm border border-slate-100 overflow-hidden p-5 mt-4">
     <table class="w-full text-left" id="studentDetailTable">
         <thead class="bg-slate-50">
             <tr>

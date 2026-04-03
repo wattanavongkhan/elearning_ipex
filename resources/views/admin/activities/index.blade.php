@@ -4,7 +4,7 @@
     <div class="bg-white rounded-[1rem] shadow-sm border border-slate-100 overflow-hidden p-5">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-                <h1 class="font-black text-gray-500 text-2xl">
+                <h1 class="font-black text-black-500 text-xl">
                     <p>จัดการข่าวสารและกิจกรรม</p>
                 </h1>
                 <span class="text-gray-800 text-sm tracking-tight">ศูนย์รวมข้อมูลประชาสัมพันธ์และกิจกรรม DX

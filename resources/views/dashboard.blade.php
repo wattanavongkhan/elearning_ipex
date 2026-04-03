@@ -100,7 +100,7 @@
                 <div class="lg:w-1/2 relative">
                     <div
                         class="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border-[16px] border-white">
-                        <img src="{{ URL::asset('images/backgroud/dashboard_bg.avif') }}"
+                        <img src="{{ URL::asset('images/backgroud/heard_bg.jpg') }}"
                             class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
                     </div>
