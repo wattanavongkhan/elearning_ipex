@@ -1,7 +1,5 @@
 @extends('layouts.layout_public')
-
 @section('content')
-
 <el-dialog>
     <dialog id="dialog" aria-labelledby="dialog-title"
         class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-slate-950/80 backdrop:backdrop-blur-sm">
@@ -38,7 +36,7 @@
     </dialog>
 </el-dialog>
 
-<div class="bg-white font-kanit">
+<div class="bg-white">
     <section class="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden bg-slate-50 p-5">
         <div
             class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-gradient-to-br from-blue-100 to-indigo-50 rounded-full blur-3xl opacity-70">

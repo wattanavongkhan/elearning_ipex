@@ -14,6 +14,9 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\PrivatefileController;
 use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\PowerbiController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -130,7 +133,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::post('/patals', [InstructorController::class, 'patals_store'])->name('patals.store');
     Route::post('/patals.detail.store', [InstructorController::class, 'patals_detail_store'])->name('patals_detail.store');
    // ตรวจสอบว่าไม่มีจุดทศนิยมหรือตัวสะกดสลับกัน
-Route::delete('/patals.detail/{id}', [InstructorController::class, 'patals_detail_destroy'])
+    Route::delete('/patals.detail/{id}', [InstructorController::class, 'patals_detail_destroy'])
     ->name('patals_detail.destroy');
 
     Route::get('/patals.detail/{id}', [InstructorController::class, 'patals_detail'])->name('patals.detail');
@@ -139,6 +142,7 @@ Route::delete('/patals.detail/{id}', [InstructorController::class, 'patals_detai
     Route::get('patals', [InstructorController::class, 'patals'])->name('patals.index');
     Route::get('reports/student', [ReportController::class, 'index'])->name('reports.student');
     Route::get('reports/course', [ReportController::class, 'course_report'])->name('reports.course');
+    Route::get('dashboard/index', [ReportController::class, 'dashboard'])->name('dashboard.index');
 
 });
 
@@ -170,12 +174,18 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/privatefiles', [PrivatefileController::class, 'store'])->name('privatefiles.store');
     Route::delete('/privatefiles/{id}', [PrivatefileController::class, 'destroy'])->name('privatefiles.destroy');
 
+    Route::get('/dashboardall', [PowerbiController::class, 'index'])->name('dashboardall.index');
+    Route::get('/dashboardall.show/{id}', [PowerbiController::class, 'show'])->name('dashboardall.show');
+
+    Route::get('/dashboard.mng/{id}', [PowerbiController::class, 'dashboard_mng'])->name('dashboard.mng');
 
 });
 
 
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::post('/login.store', [AuthenticatedSessionController::class, 'login_store'])->name('login.store');
 
 
 require __DIR__.'/auth.php';

@@ -84,9 +84,15 @@
                     <a href="{{ route('courses.all') }}" class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-graduation-cap text-xs text-slate-400"></i> คอร์สทั้งหมด
                     </a>
-                    <a href="#navigation" class="hover:text-blue-600 transition flex items-center gap-2">
-                        <i class="fas fa-folder-open text-xs text-slate-400"></i> ระบบอื่นๆ
+                    <a 
+                    {{--  href="#navigation"   --}}
+                    href="{{ route('courses.all') }}"
+                    class="hover:text-blue-600 transition flex items-center gap-2">
+                        <i class="fas fa-folder-open text-xs text-slate-400"></i> Web Portal
                     </a>
+                     {{--  <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex items-center gap-2">
+                        <i class="fa fa-pie-chart" aria-hidden="true"></i> แดชบอร์ด
+                    </a>  --}}
                 </div>
                 <div class="flex items-center gap-3">
                     @guest
@@ -105,29 +111,28 @@
                             <button
                                 class="flex items-center gap-3 pl-4 border-l border-slate-100 hover:text-blue-600 transition">
                                 <div class="text-right hidden sm:block">
-                                    <p class="text-xs font-bold text-slate-800 leading-none">{{ Auth::user()->name }}
+                                    <p class="text-xs font-bold text-slate-800 leading-none">{{ Auth::user()->full_name_eng }}
                                     </p>
-                                    <p class="text-[10px] text-slate-400 mt-1">ผู้เรียน</p>
+
+                                    <p class="text-[10px] text-slate-400 mt-1">ผู้ใช้งาน</p>
                                 </div>
                                 <div
                                     class="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-100">
-                                    {{ strtoupper(substr(Auth::user()->email, 0, 1)) }}
+                                    {{ strtoupper(substr(Auth::user()->user_login, 0, 2)) }}
                                 </div>
                             </button>
-
                             <div
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                 <div class="p-4 border-b border-slate-100">
-                                    <p class="text-sm font-bold text-slate-800">{{ Auth::user()->name }}</p>
+                                    <p class="text-sm font-bold text-slate-800">{{ Auth::user()->full_name_eng }}</p>
                                     <p class="text-xs text-slate-400 mt-1">
-                                        {{ Auth::user()->email ?? 'user@example.com' }}</p>
+                                        {{ Auth::user()->user_login ?? 'user@example.com' }}</p>
                                 </div>
                                 <div class="p-2">
                                     <a href="{{ route('profile.index') }}"
                                         class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition flex items-center gap-2">
                                         <i class="fas fa-user text-xs"></i> โปรไฟล์ของฉัน
                                     </a>
-
                                 </div>
                                 <div class="p-2 border-t border-slate-100">
                                     <form action="{{ route('logout') }}" method="POST">
@@ -146,7 +151,6 @@
             </div>
         </div>
     </nav>
-
     <main class="min-h-[70vh]">
         @yield('content')
         @yield('scripts')

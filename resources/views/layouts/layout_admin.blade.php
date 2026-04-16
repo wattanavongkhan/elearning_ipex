@@ -136,7 +136,8 @@
 
             <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mb-2">ควบคุมระบบ</p>
-                <a href="#" class="flex items-center gap-3 p-3  rounded-lg text-white">
+                <a href="{{ route('admin.dashboard.index') }}" class="flex items-center gap-3 p-3  rounded-lg text-white
+                @if(Route::currentRouteName() == 'admin.dashboard.index') bg-blue-600 @endif">
                     <i class="fas fa-chart-line w-5 text-center"></i> แดชบอร์ด
                 </a>
 
@@ -159,7 +160,6 @@
                         {{ $courses_count ?? 0 }}
                     </span>
                 </a>
-
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mt-6 mb-2">ผู้ใช้งาน</p>
                 <a href="{{ route('students.index') }}"
                     class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition @if(Route::currentRouteName() == 'students.index' || Route::currentRouteName() == 'students.create' || Route::currentRouteName() == 'students.edit') bg-blue-600 @endif">
@@ -240,6 +240,7 @@
         </div>
     </div>
 </body>
+
 <script src="{{ asset('assets/js/address-lookup.js') }}"></script>
 
 </html>

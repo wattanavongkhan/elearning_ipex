@@ -11,6 +11,9 @@ use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use DB;
+use Illuminate\Support\Facades\Hash;
+
 
 class HomeController extends Controller {
 
@@ -23,16 +26,15 @@ class HomeController extends Controller {
             }   
         } 
 
-            $featuredCourses=Course::select("courses.*", "categories.category_name")
+        $featuredCourses=Course::select("courses.*", "categories.category_name")
             ->leftJoin('categories', 'courses.category_id', '=', 'categories.id') ->get();
 
-            // ดึงข่าว/กิจกรรมล่าสุด 3 รายการ ที่เปิดใช้งานอยู่
-            $activities = Activity::where('status', 1)
+        $activities = Activity::where('status', 1)
                                 ->latest()
                                 ->take(3)
                                 ->get();
-            $patals = Patal::orderBy('seq_no', 'asc')->get();
-            return view('dashboard', compact('featuredCourses','activities','patals'));
+        $patals = Patal::orderBy('seq_no', 'asc')->get();
+        return view('dashboard', compact('featuredCourses','activities','patals'));
     }
 
     public function courses_show($id) {
