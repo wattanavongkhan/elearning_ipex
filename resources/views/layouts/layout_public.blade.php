@@ -90,9 +90,9 @@
                     class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-folder-open text-xs text-slate-400"></i> Web Portal
                     </a>
-                     {{--  <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex items-center gap-2">
+                     <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fa fa-pie-chart" aria-hidden="true"></i> แดชบอร์ด
-                    </a>  --}}
+                    </a>
                 </div>
                 <div class="flex items-center gap-3">
                     @guest

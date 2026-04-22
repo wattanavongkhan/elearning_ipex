@@ -19,6 +19,7 @@ class HomeController extends Controller {
 
     public function index(Request $request)
     {
+        
         if(auth()->check()) 
         {
             if(auth()->user()->status == 0) {

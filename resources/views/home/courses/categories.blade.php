@@ -79,6 +79,9 @@
         display: inline-block;
     }
 </style>
+
+<iframe title="IT Support Request" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=ce9e7eda-25d3-4560-b382-26dbad577286&autoAuth=true&ctid=f381c23b-842e-4f83-87c1-6949b79e4e26" frameborder="0" allowFullScreen="true"></iframe>
+
 <div class="bg-slate-50 min-h-screen pb-24 font-kanit">
     
     <section class="relative pt-20 pb-16 overflow-hidden bg-white">

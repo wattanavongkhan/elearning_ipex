@@ -47,6 +47,7 @@
 
         <div class="container mx-auto px-6 relative z-10">
             <div class="flex flex-col lg:flex-row items-center gap-16">
+
                 <div class="lg:w-1/2 text-center lg:text-left">
                     <div
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm text-blue-600 text-xs font-bold mb-8 border border-blue-50">

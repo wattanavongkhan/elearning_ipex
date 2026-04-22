@@ -1,7 +1,7 @@
 @extends('layouts.layout_public')
 
 @section('content')
-<div class="bg-slate-50 min-h-screen pb-24">
+
     <div class="bg-white border-b border-slate-100 pt-16 pb-12">
         <div class="container mx-auto px-6">
             <div class="max-w-4xl mx-auto text-center">

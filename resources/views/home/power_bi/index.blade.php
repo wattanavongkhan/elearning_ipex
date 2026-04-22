@@ -27,10 +27,15 @@
     }
 
 </style>
-
+<div class="min-h-screen bg-[#f8fafc] p-6 font-kanit">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <iframe title="IT Support Request" width="1500" height="800"
+            src="https://app.powerbi.com/reportEmbed?reportId=ce9e7eda-25d3-4560-b382-26dbad577286&autoAuth=true&ctid=f381c23b-842e-4f83-87c1-6949b79e4e26"
+            frameborder="0" allowFullScreen="true"></iframe>
+    </div>
+</div>
 
 <div class="min-h-screen bg-[#f8fafc] p-6 font-kanit">
-
     <button
         class="px-6 py-3 mb-5 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
         <i class="fas fa-sync-alt"></i> Refresh Data
