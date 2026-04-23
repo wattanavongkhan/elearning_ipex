@@ -201,7 +201,6 @@
                         class="px-8 py-2.5 text-slate-500 font-bold hover:text-blue-600 transition-colors">มาใหม่</button>
                 </div>
             </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 @forelse($featuredCourses as $course)
                 <div
@@ -224,12 +223,14 @@
                         <h3
                             class="font-bold text-slate-800 text-lg leading-snug h-14 line-clamp-2 mb-6 group-hover:text-blue-600 transition-colors">
                             <a href="{{ route('courses.show', $course->id) }}">{{ $course->title }}</a>
+                            <br>
+                            <small class="text-sm text-gray-500">{{ $course->description ? Str::limit(strip_tags($course->description), 50) : 'รายละเอียดคอร์ส' }}</small>
                         </h3>
                         <div class="flex items-center justify-between pt-6 border-t border-slate-50">
                             <div>
-                                {{-- <p class="text-xs text-slate-400 line-through mb-1">฿3,500</p> --}}
-                                <p class="text-2xl font-black text-blue-600 tracking-tight">
-                                    ฿{{ number_format($course->price ?? 990) }}</p>
+                                <p class="text-xl font-black text-blue-500 tracking-tight">
+                                    {{--  ฿{{ number_format($course->price ?? 990) }}  --}}
+                                    </p>
                             </div>
                             <a href="{{ route('courses.show', $course->id) }}"
                                 class="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-blue-600 transition-all shadow-xl shadow-slate-200">

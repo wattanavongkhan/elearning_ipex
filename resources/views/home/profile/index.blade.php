@@ -9,23 +9,23 @@
                     <div
                         class="w-32 h-32 rounded-[2.5rem] bg-gradient-to-tr from-blue-600 to-indigo-400 p-1 shadow-2xl shadow-blue-200">
                         @if($user->profile_image)
-                            <img src="{{ asset('storage/'.$user->profile_image) }}"
-                                class="w-full h-full rounded-[2.3rem] object-cover border-4 border-white">
+                        <img src="{{ asset('storage/'.$user->profile_image) }}"
+                            class="w-full h-full rounded-[2.3rem] object-cover border-4 border-white">
                         @else
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=fff&color=2563eb&size=128"
-                                class="w-full h-full rounded-[2.3rem] object-cover border-4 border-white">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->user_login) }}&background=fff&color=2563eb&size=128"
+                            class="w-full h-full rounded-[2.3rem] object-cover border-4 border-white">
                         @endif
                     </div>
                 </div>
 
                 <div class="text-center md:text-left flex-1">
                     <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                        <h1 class="text-3xl font-black text-slate-900">{{ $user->name }}</h1>
+                        <h1 class="text-3xl font-black text-slate-900">{{ $user->full_name_eng }}</h1>
                         <span
                             class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black rounded-lg w-max mx-auto md:mx-0 uppercase tracking-widest">Premium
                             Member</span>
                     </div>
-                    <p class="text-slate-400 font-medium mb-6">{{ $user->email }}</p>
+                    <p class="text-slate-400 font-medium mb-6">{{ $user->full_name_th }}</p>
 
                     <div class="flex flex-wrap justify-center md:justify-start gap-4">
                         <div class="px-6 py-3 bg-slate-50 rounded-2xl border border-slate-100">
@@ -69,7 +69,7 @@
                 class="group bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500">
                 <div class="flex flex-col sm:flex-row gap-6">
                     <div
-                        class="w-full sm:w-40 aspect-video sm:aspect-square rounded-3xl overflow-hidden shadow-inner flex-shrink-0">
+                        class="w-full sm:w-60 aspect-video sm:aspect-square rounded-3xl overflow-hidden shadow-inner flex-shrink-0">
                         <img src="{{ asset('storage/'.$item->course->thumbnail) }}"
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     </div>
@@ -106,7 +106,7 @@
                             </div>
                         </div>
 
-                        @if($item->status == '1' ||  $item->status == '2')
+                        @if($item->status == '1' || $item->status == '2')
                         <a href="{{ route('courses.learn', $item->course->id) }}"
                             class="mt-6 flex items-center justify-center gap-2 w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-blue-600 transition-all shadow-lg shadow-slate-100">
                             {{ $progressPercent > 0 ? 'เรียนต่อจากเดิม' : 'เริ่มเรียนบทแรก' }}

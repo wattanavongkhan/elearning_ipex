@@ -47,8 +47,8 @@
                             class="text-slate-900 font-black">{{ $courses->count() }}</span> รายการ</p>
                     <select class="bg-transparent border-none text-slate-600 font-bold focus:ring-0 cursor-pointer">
                         <option>ล่าสุด</option>
-                        <option>ราคาสูง - ต่ำ</option>
-                        <option>ราคาต่ำ - สูง</option>
+                        {{--  <option>ราคาสูง - ต่ำ</option>
+                        <option>ราคาต่ำ - สูง</option>  --}}
                     </select>
                 </div>
 
@@ -86,7 +86,7 @@
                                 {{ $course->title }}
                             </h3>
                             <p class="text-slate-500 text-sm line-clamp-2 mb-6 leading-relaxed">
-                                {{ Str::limit($course->description, 80) }}
+                                {{ Str::limit($course->description, 40) }}
                             </p>
 
                             <div class="flex items-center justify-between pt-6 border-t border-slate-50">
@@ -101,7 +101,7 @@
                                 @else
                                 <div class="flex flex-col">
                                     <span class="text-2xl font-black text-slate-900">
-                                        {{ $course->price > 0 ? '฿'.number_format($course->price) : 'FREE' }}
+                                        {{--  {{ $course->price > 0 ? '฿'.number_format($course->price) : 'FREE' }}  --}}
                                     </span>
                                 </div>
                                 <a href="{{ route('courses.show', $course->id) }}"

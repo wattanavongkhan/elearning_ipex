@@ -8,17 +8,44 @@
                 <p class="text-sm text-gray-500">เนื้อหาคำถามและตัวเลือก</p>
             </div>
         </div>
-        <form action="{{ route('admin.questions.update', [$quiz->id, $question->id]) }}" method="POST">
+        <form action="{{ route('admin.questions.update', [$quiz->id, $question->id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="mb-6">
+            <div class="mb-4">
                 <label class="block font-bold text-gray-700 mb-2">โจทย์คำถาม</label>
                 <textarea name="question_text" rows="3"
                     class="w-full border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
                     required>{{ old('question_text', $question->question_text) }}</textarea>
             </div>
+            <div class="bg-blue-50/50 rounded-[1rem] p-8 border-2 border-dashed border-blue-100 group">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <label class="block text-[11px] font-black text-blue-400 uppercase tracking-widest mb-4 ml-1">Question
+                    Image (Optional)</label>
+                <div class="flex items-center gap-6">
+                    @if($question->question_image)
+                    <div class="mb-3">
+                        <img src="{{ asset($question->question_image) }}"
+                            class="w-40 h-24 object-cover rounded-lg shadow">
+                    </div>
+                    @else
+                    <div
+                        class="size-20 bg-white rounded-2xl flex items-center justify-center text-blue-200 border border-blue-50 shadow-inner group-hover:text-blue-500 transition-colors">
+                        <i class="fas fa-image text-3xl"></i>
+                    </div>
+                    @endif
+                    <div class="flex-1">
+                        <input type="file" name="question_image" accept="image/*"
+                            class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
+                        <p class="text-[10px] text-slate-400 mt-2 font-bold italic">* รองรับไฟล์ JPG, PNG
+                            (ขนาดไม่เกิน 2MB)</p>
+                    </div>
+                </div>
+                <br>
+                <input type="checkbox" name="no_image" id="no_images" class="form-control mr-2">
+                <label for="no_images">ไม่มีรูปภาพ</label>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mt-5">
                 @foreach(['A', 'B', 'C', 'D'] as $choice)
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">ตัวเลือก {{ $choice }}</label>

@@ -5,7 +5,7 @@
     <div class="container mx-auto px-6">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
-                <h1 class="text-4xl font-black text-slate-900 mb-4">สรุปการสั่งซื้อ</h1>
+                <h1 class="text-4xl font-black text-slate-900 mb-4">ยืนยันการลงทะเบียน</h1>
                 <p class="text-slate-500 italic">อีกเพียงก้าวเดียว เพื่อเริ่มต้นการเรียนรู้ที่ยอดเยี่ยม</p>
             </div>
 
@@ -63,7 +63,7 @@
                                 <div class="text-right">
                                     <span
                                         class="block text-[10px] font-black text-green-500 uppercase">ไม่มีค่าใช้จ่าย</span>
-                                    <span class="text-4xl font-black text-slate-900 leading-none">FREE</span>
+                                    <span class="text-xl font-black text-slate-900 leading-none">FREE</span>
                                 </div>
                             </div>
                         </div>

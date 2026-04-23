@@ -136,6 +136,7 @@ class QuizController extends Controller {
         $quiz = Quiz::findOrFail($quiz_id);
         
         $questions = Question::where('quiz_id', $quiz_id)->get();
+
         $lesson = \App\Models\Lesson::where('pre_quiz_id', $quiz_id)
                     ->orWhere('post_quiz_id', $quiz_id)
                     ->first();

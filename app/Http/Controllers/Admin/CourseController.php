@@ -21,7 +21,6 @@ class CourseController extends Controller
      */
     public function index()
     {
-        dd(0);
         if (Auth::user()->status=="1") {
             return redirect()->route('home');
         }else{
@@ -107,8 +106,8 @@ class CourseController extends Controller
         ->get();
 
         $privatefile=\App\Models\PrivateFile::where('user_id', Auth::id())->get();
-
-        return view('admin.courses.edit', compact('course', 'categories', 'course_files', 'privatefile'));
+      
+        return view('admin.courses.edit', compact('course', 'categories','course_files','privatefile'));
     }
 
     // 2. รับข้อมูลจากฟอร์มเพื่อบันทึกลงฐานข้อมูล
@@ -118,7 +117,8 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // ถ้ามีการอัปโหลดรูป
-            'status'=>'required|string|max:255',
+            'status' => 'required|in:0,1',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         // ถ้ามีการอัปโหลดรูปภาพใหม่
@@ -296,9 +296,7 @@ class CourseController extends Controller
     public function removeFile(Request $req)
     {
         $courseFile = \App\Models\CoursesFile::where('file_id', $req->file_id)->first();
-
         $courseFile->delete();
-
         return redirect()->back()->with('success', 'ลบไฟล์เรียบร้อยแล้ว');
     }
 

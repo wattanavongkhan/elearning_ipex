@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I-PEX Elearning|แหล่งเรียนรู้ออนไลน์</title>
+    <title>I-PEX Elearning</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -79,7 +79,7 @@
                 <div class="hidden lg:flex items-center gap-8 text-[15px] font-semibold text-slate-600">
                     <a href="{{ route('categories.all') }}"
                         class="hover:text-blue-600 transition flex items-center gap-2">
-                        <i class="fas fa-th-large text-xs text-slate-400"></i> หมวดหมู่
+                        <i class="fas fa-folder-open text-xs text-slate-400"></i> หมวดหมู่
                     </a>
                     <a href="{{ route('courses.all') }}" class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-graduation-cap text-xs text-slate-400"></i> คอร์สทั้งหมด
@@ -88,11 +88,11 @@
                     {{--  href="#navigation"   --}}
                     href="{{ route('courses.all') }}"
                     class="hover:text-blue-600 transition flex items-center gap-2">
-                        <i class="fas fa-folder-open text-xs text-slate-400"></i> Web Portal
+                        <i class="fas fa-solid fa-bell text-xs text-slate-400"></i> Web Portal
                     </a>
-                     <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex items-center gap-2">
+                     {{--  <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fa fa-pie-chart" aria-hidden="true"></i> แดชบอร์ด
-                    </a>
+                    </a>  --}}
                 </div>
                 <div class="flex items-center gap-3">
                     @guest

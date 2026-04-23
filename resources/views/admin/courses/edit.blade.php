@@ -15,7 +15,25 @@
         <form action="{{ route('courses.update', $course->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-2">
+            <div>
+                <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">ประเภทคอร์ส <span
+                        class="text-red-500">*</span></label>
+                <select name="category_id" id="category_id"
+                    class="w-full px-4 py-3 border @error('category_id') border-red-500 @else border-gray-200 @enderror rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white"
+                    required>
+                    <option value="">- กรุณาเลือกประเภทคอร์ส -</option>
+                    @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ $course->category_id == $category->id ? 'selected' : '' }}>
+                        {{ $category->category_name }}
+                    </option>
+                    @endforeach
+                </select>
+                @error('category_id')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-2 mt-2">
                 <div class="md:col-span-12">
                     <label class="block font-bold text-gray-700 mb-2">ชื่อคอร์สเรียน</label>
                     <input type="text" name="title" value="{{ old('title', $course->title) }}"
@@ -41,7 +59,7 @@
                 <input type="file" name="thumbnail"
                     class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
             </div>
-            <div class="mb-6">
+            <div>
                 <label class="block font-bold text-gray-700 mb-2">ไฟล์ประกอบ (ถ้ามี)</label>
                 <div class="flex gap-2">
                     <select name="file_id" id="file_id"
@@ -54,13 +72,22 @@
                     <button type="button" onclick="addCodeInput(this)"
                         class="bg-green-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-600">Add</button>
                 </div>
-
                 <div class="mt-4">
                     <div id="file_show"></div>
                 </div>
             </div>
-            <div class="mt-10 pt-6 border-t border-gray-100 flex items-center justify-end gap-4">
 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="mb-4">
+                    <label class="block font-bold mb-2">การเผยแพร่ <b class="text-red-500">*</b></label>
+                    <select name="status" id="status" class="w-full border rounded-lg p-2" required>
+                        <option value="0" @if($course->status == 0) selected @endif>Active</option>
+                        <option value="1" @if($course->status == 1) selected @endif>Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-10 pt-6 border-t border-gray-100 flex items-center justify-end gap-2">
                 <a href="{{ route('courses.index') }}"
                     class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-lg shadow-lg transition-all active:scale-95">
                     <i class="fa fa-repeat" aria-hidden="true"></i> Cancel
@@ -105,7 +132,6 @@
     }
 
     function showFile(courseId) {
-        // Prepare AJAX GET
         fetch(`/courses/files/${courseId}`, {
                 method: 'GET',
                 headers: {

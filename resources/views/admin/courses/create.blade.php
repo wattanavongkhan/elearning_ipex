@@ -13,11 +13,12 @@
 
             </div>
             <div class="grid grid-cols-1 gap-y-6 mt-2">
+
                 <div>
                     <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">ประเภทคอร์ส <span
                             class="text-red-500">*</span></label>
                     <select name="category_id" id="category_id"
-                        class="w-full px-4 py-3 border @error('category_id') border-red-500 @else border-gray-200 @enderror rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white">
+                        class="w-full px-4 py-3 border @error('category_id') border-red-500 @else border-gray-200 @enderror rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white" required>
                         <option value="">-- กรุณาเลือกประเภทคอร์ส --</option>
                         @foreach($categories as $category)
                         <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>

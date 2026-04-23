@@ -26,23 +26,33 @@ class QuestionController extends Controller {
         return view('admin.questions.create', compact('quiz', 'questions'));
     }
 
-    public function store(Request $request, Quiz $quiz) {
-        // $request->validate([ 'question_text'=> 'required',
-        //     'options'=> 'required|array|min:4',
-        //     'correct_answer'=> 'required|in:A,B,C,D',
-        //     ]);
+    public function store(Request $request, Quiz $quiz) 
+    {
+         // 1. Validation: เพิ่มการเช็คไฟล์รูปภาพ
+        $validated = $request->validate([ 
+            'question_text' => 'required|string',
+            'options' => 'required|array',
+            'correct_answer' => 'required|in:A,B,C,D',
+        ]);
 
-        // $validated['user_id']=auth()->id();
+        // 2. จัดการรูปภาพหลักของคำถาม
+        if($request->hasFile('question_image')) {
+            $path = $request->file('question_image')->store('question_images', 'public');
+            $validated['question_image'] = 'storage/' . $path;
+        }
 
-        // $quiz->questions()->create($validated + $request->all());
+        $optionImagePaths = [];
+        if($request->hasFile('option_images')) {
+            foreach($request->file('option_images') as $choice => $file) {
+                $fileName = "quiz_{$quiz->id}_opt_{$choice}_" . time() . "." . $file->getClientOriginalExtension();
+                $path = $file->storeAs('option_images', $fileName, 'public');
+                $optionImagePaths[$choice] = 'storage/' . $path;
+            }
+        }
+        
+        $validated['option_images'] =  $optionImagePaths; 
 
-        // return redirect()->route('admin.questions.index', $quiz->id)->with('success', 'เพิ่มข้อสอบเรียบร้อยแล้ว');
-        $validated=$request->validate([ 'question_text'=> 'required|string',
-            'options'=> 'required|array',
-            'correct_answer'=> 'required|in:A,B,C,D',
-            ]);
-
-        // สร้างคำถามโดยผูกกับ quiz_id (ID 12)
+        // 4. บันทึกข้อมูลลงฐานข้อมูล
         $quiz->questions()->create($validated);
 
         return redirect()->route('admin.questions.index', $quiz->id) ->with('success', 'เพิ่มคำถามเรียบร้อยแล้ว');
@@ -54,11 +64,22 @@ class QuestionController extends Controller {
     }
 
     // 2. ฟังก์ชันประมวลผลการแก้ไข
-    public function update(Request $request, Quiz $quiz, Question $question) {
-        $validated=$request->validate([ 'question_text'=> 'required|string',
+    public function update(Request $request, Quiz $quiz, Question $question) 
+    {
+        
+        $validated=$request->validate(['question_text'=> 'required|string',
             'options'=> 'required|array|min:4',
             'correct_answer'=> 'required|in:A,B,C,D',
             ]);
+
+        if($request->hasFile('question_image')) {
+            $path=$request->file('question_image')->store('public/question_images');
+            $validated['question_image']=Str::replaceFirst('public/', 'storage/', $path);
+        }
+
+        if($request->filled('no_image')) {
+            $validated['question_image']=null;
+        }
 
         $question->update($validated);
 

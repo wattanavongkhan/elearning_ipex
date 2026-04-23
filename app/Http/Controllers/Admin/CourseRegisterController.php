@@ -56,13 +56,13 @@ class CourseRegisterController extends Controller
         ]);
        
 
-        if ($status == '1') {
+        // if ($status == '1') {
             return redirect()->route('courses.show', $id)
                             ->with('success', 'ลงทะเบียนสำเร็จ! พร้อมเข้าเรียนได้ทันที');
-        } else {
-            return redirect()->route('courses.show', $id)
-                            ->with('success', 'ลงทะเบียนสำเร็จ! กรุณารอเจ้าหน้าที่ตรวจสอบการชำระเงิน');
-        }
+        // } else {
+        //     return redirect()->route('courses.show', $id)
+        //                     ->with('success', 'ลงทะเบียนสำเร็จ! กรุณารอเจ้าหน้าที่ตรวจสอบการชำระเงิน');
+        // }
 
     }
 

@@ -113,11 +113,11 @@
                     icon.innerHTML = '<i class="fas fa-check-circle text-4xl"></i>';
                     title.innerText = "ยินดีด้วย คุณสอบผ่าน!";
                     text.innerText = "คุณทำคะแนนได้ยอดเยี่ยม ตอนนี้คุณสามารถเข้าเรียนต่อได้แล้ว";
-                    btnAction.innerText = "กลับสู่บทเรียน";
+                    btnAction.innerText = "เข้าเรียนต่อ";
 
                     // ใช้ตัวแปรที่ส่งมาจาก Controller เพื่อระบุ Route ให้ชัดเจน
                     btnAction.onclick = () => window.location.href =
-                        "{{ route('courses.learn', [$course->id, $lesson->id]) }}";
+                        "{{ route('profile.index'}}";
                 } else {
                     icon.className =
                         "w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6";

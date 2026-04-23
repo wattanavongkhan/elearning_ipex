@@ -24,6 +24,7 @@ class Course extends Model
         'price',
         'thumbnail',
         'user_id',
+        'status'
     ];
 
     /**

@@ -222,188 +222,147 @@
     </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const video = document.getElementById('video-player');
-        const percentText = document.getElementById('current-lesson-percent');
-        const nextUrl = "{{ $nextLessonUrl }}";
-        // Key แยกตามรายคน รายคอร์ส และรายบทเรียน
-        const storageKey =
-            `video_progress_user_{{ auth()->id() }}_course_{{$course->id }}_lesson_{{ $currentLesson->id }}`;
+   document.addEventListener('DOMContentLoaded', function () {
+    const video = document.getElementById('video-player');
+    const percentText = document.getElementById('current-lesson-percent');
+    const nextUrl = "{{ $nextLessonUrl }}";
+    const storageKey = `video_progress_user_{{ auth()->id() }}_course_{{ $course->id }}_lesson_{{ $currentLesson->id }}`;
 
-        let watchedTime = 0;
-        let isSaving = false; // ป้องกันการส่ง Fetch ซ้อนกัน
+    let watchedTime = 0;
+    let isSaving = false;
 
-        if (video) {
-            // --- ฟังก์ชันสำหรับสั่งเล่น (Autoplay Logic) ---
-            const attemptPlay = () => {
-                // ลองสั่ง play ทันที
-                const playPromise = "";
-                setTimeout(() => {
-                    playPromise = video.play();
-                }, 1000);
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        // เล่นได้ปกติ (อาจเพราะเคยมียอดการเข้าชม หรือวิดีโอถูก muted ไว้)
-                        console.log("Autoplay success!");
-                    }).catch(error => {
-                        // โดน Browser บล็อก!
-                        console.log("Autoplay prevented by browser.");
-
-                        // สร้าง UI เล็กๆ หรือ Overlay บอกให้ผู้ใช้ "คลิกเพื่อเริ่มเรียน"
-                        // หรือรอให้ User คลิกที่ส่วนใดก็ได้ของหน้าจอ 1 ครั้ง
-                        const playAfterClick = () => {
-                            setTimeout(() => {
-                                video.play();
-                                video.muted =
-                                false; // ถ้าอยากให้มีเสียงตอนเริ่มหลังจากคลิก
-                                document.removeEventListener('click', playAfterClick);
-                            }, 200);
-
-                        };
-                        document.addEventListener('click', playAfterClick);
-                    });
-                }
-            };
-
-            // 1. เมื่อ Metadata โหลดเสร็จ (รู้ความยาววิดีโอ)
-            video.addEventListener('loadedmetadata', function () {
-                const savedTime = localStorage.getItem(storageKey);
-                if (savedTime) {
-                    video.currentTime = parseFloat(savedTime);
-                    watchedTime = parseFloat(savedTime);
-                }
-                attemptPlay(); // เริ่มเล่นอัตโนมัติ
-            });
-
-            // 2. ระหว่างเล่น: คำนวณ %, บันทึกเวลา และ กันรีไปข้างหน้า
-            video.addEventListener('timeupdate', function () {
-                // --- กันรีไปข้างหน้า (Forward Seek Protection) ---
-                if (!video.seeking) {
-                    if (video.currentTime > watchedTime) {
-                        watchedTime = video.currentTime;
-                    }
-                }
-
-                // --- คำนวณเปอร์เซ็นต์การเรียน ---
-                if (video.duration > 0) {
-                    const percentage = Math.floor((video.currentTime / video.duration) * 100);
-                    if (percentText) {
-                        percentText.innerText = percentage + "%";
-                    }
-                }
-
-                // --- บันทึกเวลาลง localStorage (ทุกๆ 2 วินาที) ---
-                if (Math.floor(video.currentTime) % 2 === 0) {
-                    localStorage.setItem(storageKey, video.currentTime);
-                }
-            });
-
-            // 3. ดักจับการพยายามลากแถบวิดีโอ (Seeking)
-            video.addEventListener('seeking', function () {
-                // ถ้าพยายามลากไปเกินจุดที่เคยดูถึง ให้ดีดกลับมาที่เดิม
-                if (video.currentTime > watchedTime) {
-                    video.currentTime = watchedTime;
-                }
-            });
-
-            // 4. เมื่อวิดีโอจบ: ตรวจสอบ Quiz หรือบันทึก Progress
-            video.onended = function () {
-                const hasPostQuiz = {
-                    {
-                        $currentLesson - > post_quiz_id ? 'true' : 'false'
-                    }
+    if (video) {
+        // --- ฟังก์ชันสำหรับสั่งเล่น (Autoplay Logic) ---
+        const attemptPlay = () => {
+            // แก้ไขจาก "" เป็น null และไม่ต้องรอ setTimeout นานเกินไป
+            video.play().then(() => {
+                console.log("Autoplay success!");
+            }).catch(error => {
+                console.log("Autoplay prevented. Waiting for user interaction.");
+                const playAfterClick = () => {
+                    video.play();
+                    video.muted = false;
+                    document.removeEventListener('click', playAfterClick);
                 };
-                const alreadyPassed = {
-                    {
-                        $hasDonePostQuiz ? 'true' : 'false'
-                    }
-                };
+                document.addEventListener('click', playAfterClick);
+            });
+        };
 
-                if (hasPostQuiz && !alreadyPassed) {
-                    const quizBox = document.getElementById('post-quiz-trigger');
-                    if (quizBox) {
-                        quizBox.classList.remove('hidden');
-                        quizBox.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                } else {
-                    saveProgressAndNext();
-                }
-                // เรียนจบแล้ว ลบเวลาที่บันทึกไว้ในเครื่องออก
-                localStorage.removeItem(storageKey);
-            };
-        }
-
-        // ฟังก์ชันส่งค่าไปบันทึกลง Database (AJAX)
-        function saveProgressAndNext() {
-            if (isSaving) return;
-            isSaving = true;
-
-            fetch("{{ route('course.progress.update') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        lesson_id: "{{ $currentLesson->id }}",
-                        course_id: "{{ $course->id }}"
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (nextUrl) {
-                        window.location.href = nextUrl;
-                    } else {
-                        alert("🎉 " + "ยินดีด้วย! คุณเรียนจบหลักสูตรนี้แล้ว");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    isSaving = false;
-                });
-        }
-
-        // --- 5. Security: ป้องกันการแอบดู Code หรือคลิกขวาดาวน์โหลด ---
-        {
-            {
-                --
-                document.addEventListener('contextmenu', e => e.preventDefault());
-                document.addEventListener('keydown', function (e) {
-                    if (e.keyCode == 123 || // F12
-                        (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode ==
-                            67)) || // Ctrl+Shift+I/J/C
-                        (e.ctrlKey && e.keyCode == 85)) { // Ctrl+U
-                        e.preventDefault();
-                        return false;
-                    }
-                });
-                --
+        video.addEventListener('loadedmetadata', function () {
+            const savedTime = localStorage.getItem(storageKey);
+            if (savedTime) {
+                video.currentTime = parseFloat(savedTime);
+                watchedTime = parseFloat(savedTime);
             }
-        }
-    });
+            attemptPlay();
+        });
 
-    $(document).ready(function () {
-        if ("{{ $currentLesson->pre_quiz}}" != "" && "{{ !$userDonePreQuiz }}" != "") {
-            generateQRCode();
-        }
+        video.addEventListener('timeupdate', function () {
+            if (!video.seeking && video.currentTime > watchedTime) {
+                watchedTime = video.currentTime;
+            }
+            if (video.duration > 0) {
+                const percentage = Math.floor((video.currentTime / video.duration) * 100);
+                if (percentText) { percentText.innerText = percentage + "%"; }
+            }
+            if (Math.floor(video.currentTime) % 2 === 0) {
+                localStorage.setItem(storageKey, video.currentTime);
+            }
+        });
 
-    });
+        video.addEventListener('seeking', function () {
+            if (video.currentTime > watchedTime) {
+                video.currentTime = watchedTime;
+            }
+        });
 
-    function generateQRCode() {
-        const qrcodeContainer = document.getElementById('qrcode');
-        if (qrcodeContainer) {
-            const quizUrl = "{{ route('quiz.show', '$currentLesson->pre_quiz->id') }}";
-            new QRCode(qrcodeContainer, {
-                text: quizUrl,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-            });
-        }
+        video.onended = function () {
+            // แก้ไขจุดที่ Error: เขียนให้จบในบรรทัดเดียวและไม่มีปีกกา JS ครอบซ้ำ
+            const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
+            const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
+
+            if (hasPostQuiz && !alreadyPassed) {
+                const quizBox = document.getElementById('post-quiz-trigger');
+                if (quizBox) {
+                    quizBox.classList.remove('hidden');
+                    quizBox.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                saveProgressAndNext();
+            }
+            localStorage.removeItem(storageKey);
+        };
     }
 
+   function saveProgressAndNext() {
+    if (isSaving) return;
+    isSaving = true;
+
+    // 1. ดักเช็คก่อนว่าบทเรียนนี้มี Post-Quiz และผู้ใช้ทำหรือยัง (เช็คจาก Blade Variable)
+    const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
+    const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
+console.log("Has Post-Quiz:", hasPostQuiz, "Already Passed:", alreadyPassed);
+    if (hasPostQuiz && !alreadyPassed) {
+        // ถ้ามีควิซและยังไม่ทำ ให้โชว์กล่องควิซแล้วหยุดการทำงานของฟังก์ชันนี้
+        const quizBox = document.getElementById('post-quiz-trigger');
+        if (quizBox) {
+            quizBox.classList.remove('hidden');
+            quizBox.scrollIntoView({ behavior: 'smooth' });
+        }
+        isSaving = false; // ปลดล็อคเพื่อให้ส่งใหม่ได้ในภายหลัง
+        return; // <--- หยุดตรงนี้ ไม่ให้รัน Fetch ด้านล่าง
+    }
+
+    // 2. ถ้าไม่มีควิซ หรือทำผ่านแล้ว ถึงจะรันส่วนการบันทึก Progress
+    fetch("{{ route('course.progress.update') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({
+            lesson_id: "{{ $currentLesson->id }}",
+            course_id: "{{ $course->id }}"
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (nextUrl) {
+            window.location.href = nextUrl;
+        } else {
+            alert("ยินดีด้วย! คุณเรียนจบหลักสูตรนี้แล้ว");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        isSaving = false;
+    });
+}
+
+
+
+});
+
+$(document).ready(function () {
+    // เช็คค่าว่างด้วย PHP ตั้งแต่แรกจะชัวร์กว่า
+    @if($currentLesson->pre_quiz && !$userDonePreQuiz)
+        generateQRCode();
+    @endif
+});
+
+function generateQRCode() {
+    const qrcodeContainer = document.getElementById('qrcode');
+    if (qrcodeContainer) {
+        // แก้ไข: นำเครื่องหมายคำพูดครอบตัวแปร PHP ออก
+        const quizUrl = "{{ route('quiz.show', $currentLesson->pre_quiz->id ?? 0) }}";
+        new QRCode(qrcodeContainer, {
+            text: quizUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+        });
+    }
+}
 </script>
 @endsection

@@ -1,9 +1,6 @@
-@extends('layouts.layout_admin') {{-- อ้างอิงจากไฟล์ Layout หลักที่เราสร้างไว้ --}}
-
+@extends('layouts.layout_admin')
 @section('content')
 <div class="container-fluid">
-
-
     @if(session('success'))
     <div
         class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-lg flex items-center justify-between">
@@ -20,7 +17,7 @@
         <div class="overflow-x-auto">
             <div class="flex justify-between items-center mb-5">
                 <div>
-                    <h3 class="text-xl  text-black-800">จัดการคอร์สเรียน</h3>
+                    <h3 class="text-xl font-bold text-black-800">จัดการคอร์สเรียน</h3>
                     <p class="text-gray-500 text-sm">รวมคอร์สเรียนทั้งหมดในระบบที่คุณดูแลอยู่</p>
                 </div>
                 <a href="{{ route('courses.create') }}"
@@ -32,7 +29,6 @@
                 <thead class="bg-gray-50 text-gray-500 text-lg uppercase tracking-wider">
                     <tr>
                         <th class="p-4 font-semibold">ชื่อคอร์ส</th>
-                        <th class="p-4 font-semibold">ราคา</th>
                         <th class="p-4 font-semibold">ผู้สร้าง</th>
                         <th class="p-4 font-semibold">สถานะ</th>
                         <th class="p-4 font-semibold flex justify-center ">จัดการ</th>
@@ -58,16 +54,13 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="p-4 font-semibold text-gray-700">
-                            ฿{{ number_format($course->price, 2) }}
-                        </td>
                         <td class="p-4 italic">
                             {{ $course->user->name ?? 'N/A' }}
                         </td>
                         <td class="p-4">
                             <span
-                                class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700 uppercase">
-                                Active
+                                class="px-3 py-1 rounded-full text-xs font-semibold {{ $course->status == 0 ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500' }}">
+                                {{ $course->status == 0 ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
                         <td class="p-4 text-center">

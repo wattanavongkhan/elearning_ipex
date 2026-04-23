@@ -25,15 +25,34 @@
                     </div>
                     <h4 class="text-lg font-semibold text-gray-800 mb-4">{{ $question->question_text }}</h4>
 
+                    @if($question->question_image)
+                    <div class="mb-5">
+                        <img src="{{ asset($question->question_image) }}"
+                            class="object-cover rounded-lg shadow" style="max-width: 100%; max-height: 200px;">
+                    </div>
+                    @endif
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         @foreach($question->options as $key => $value)
                         <div
-                            class="p-3 rounded-xl border {{ $question->correct_answer == $key ? 'bg-green-50 border-green-200 text-green-700 font-bold' : 'bg-gray-50 border-gray-100 text-gray-600' }}">
+                            class="p-3 rounded-xl border {{ $question->correct_answer == $key ? 'bg-green-50 border-green-200 
+                            text-green-700 font-bold' : 'bg-gray-50 border-gray-100 text-gray-600' }}">
                             <span class="mr-2">{{ $key }}.</span> {{ $value }}
                             @if($question->correct_answer == $key)
                             <i class="fas fa-check-circle ml-2"></i>
                             @endif
+                            <br>
+                          @if(isset($question->option_images[$key]))
+                         <img src="{{ asset($question->option_images[$key]) }}"
+                                    class="object-cover rounded-lg shadow" style="max-width: 100px; max-height: 50px;">
+                        
+                            @endif 
                         </div>
+                         {{--  @if(isset($question->option_images[$key]))
+                         <img src="{{ asset($question->option_images[$key]) }}"
+                                    class="object-cover rounded-lg shadow" style="max-width: 100%; max-height: 150px;">
+                        
+                            @endif  --}}
                         @endforeach
                     </div>
                 </div>

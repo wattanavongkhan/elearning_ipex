@@ -44,7 +44,7 @@ Route::get('/admin/courses', [CourseController::class, 'index'])->name('courses.
 Route::resource('admin/courses', CourseController::class);
 
 Route::get('/dashboard', function () {
-        return redirect()->route('courses.index');
+        return redirect()->route('admin.dashboard.index');
 })->middleware(['auth'])->name('dashboard');
 
 
@@ -99,7 +99,7 @@ Route::get('/courses/{id}/learn/{lesson_id?}', [CourseController::class, 'learn'
 Route::post('/course/update-progress', [CourseController::class, 'updateProgress'])->name('course.progress.update');
 
 Route::post('courses/add_file', [CourseController::class, 'addFile'])->name('courses.add_file');
-Route::delete('courses/remove_file', [CourseController::class, 'removeFile'])->name('courses.remove_file');
+Route::post('courses/remove_file', [CourseController::class, 'removeFile'])->name('courses.remove_file');
 Route::get('/courses/files/{id}', [CourseController::class, 'showFiles'])->name('courses.files.show');
 
 // ส่วนของหน้าบ้าน (Public)

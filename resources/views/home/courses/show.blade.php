@@ -58,29 +58,34 @@
 
                         <div class="space-y-4 mb-8">
                             <div class="flex items-center gap-3 text-slate-600 text-sm font-semibold">
-                                <i class="far fa-clock text-blue-500"></i> ระยะเวลาเรียน 12 ชม.
+                                <i class="far fa-clock text-blue-500"></i>{{ $course->duration ?? 'ไม่ระบุ' }} ชั่วโมง
                             </div>
                             <div class="flex items-center gap-3 text-slate-600 text-sm font-semibold">
-                                <i class="far fa-file-alt text-blue-500"></i> เอกสารประกอบการเรียน
+                                <i class="far fa-file-alt text-blue-500"></i> จำนวน {{ $lessons->count() }} บทเรียน
                             </div>
                             <div class="flex items-center gap-3 text-slate-600 text-sm font-semibold">
-                                <i class="fas fa-certificate text-blue-500"></i> มีใบประกาศนียบัตร
+                                <i class="fas fa-certificate text-blue-500"></i> สามารถเรียนรู้ได้ตลอดชีพ
                             </div>
                         </div>
 
                         <div class="flex items-end justify-between mb-8">
                             <div>
-                                {{-- <p class="text-xs text-slate-400 line-through">฿3,500</p> --}}
-                                <p class="text-4xl font-black text-blue-600">฿{{ number_format($course->price ?? 990) }}
+                                {{--  <p class="text-4xl font-black text-blue-600">฿{{ number_format($course->price ?? 990) }}  --}}
                                 </p>
                             </div>
-                            {{-- <span class="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-md">Save 70%</span> --}}
                         </div>
 
+                        @if($alreadyEnrolled)
+                        <a href="{{ route('profile.index') }}"
+                            class="block w-full text-center py-5 bg-green-600 text-white rounded-2xl font-black shadow-xl shadow-green-200 hover:bg-green-700 hover:-translate-y-1 transition-all active:scale-95">
+                            เข้าเรียนต่อเลย
+                        </a>
+                        @else
                         <a href="{{ route('courses.register.view', $course->id) }}"
                             class="block w-full text-center py-5 bg-blue-600 text-white rounded-2xl font-black shadow-xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all active:scale-95">
-                            สมัครเรียนตอนนี้
+                            ลงทะเบียนเรียน
                         </a>
+                        @endif
                     </div>
                 </div>
             </div>
