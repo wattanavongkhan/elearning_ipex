@@ -27,6 +27,7 @@
                         <h3 class="text-lg font-bold text-slate-800 mb-6 leading-relaxed">
                             {{ $question->question_text }}
                         </h3>
+                        
 
                         <div class="space-y-3">
                             {{-- ปรับการ Loop ตาม JSON Options --}}
@@ -34,12 +35,23 @@
                             // หากไม่ได้ Cast ใน Model ให้ใส่ json_decode($question->options, true)
                             $options = is_array($question->options) ? $question->options :
                             json_decode($question->options, true);
+
+                            $option_images = is_array($question->option_images) ? $question->option_images :
+                            json_decode($question->option_images, true);
                             @endphp
 
                             @foreach($options as $key => $text)
                             <label
                                 class="group flex items-center p-4 rounded-2xl border-2 border-slate-50 cursor-pointer transition-all hover:border-blue-200 hover:bg-blue-50/50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
                                 {{-- เก็บค่า Value เป็น A, B, C หรือ D --}}
+
+                                @if(isset($option_images[$key]) && $option_images[$key])
+                                <div class="aspect-video w-20 rounded-xl overflow-hidden bg-slate-100 mr-5">
+                                    <img src="{{ asset($option_images[$key]) }}"
+                                        class="w-20 transition-transform">
+                                </div>
+                                @endif
+
                                 <input type="radio" name="question_{{ $question->id }}" value="{{ $key }}"
                                     class="hidden peer" required>
 
@@ -116,8 +128,7 @@
                     btnAction.innerText = "เข้าเรียนต่อ";
 
                     // ใช้ตัวแปรที่ส่งมาจาก Controller เพื่อระบุ Route ให้ชัดเจน
-                    btnAction.onclick = () => window.location.href =
-                        "{{ route('profile.index'}}";
+                    btnAction.onclick = () => window.location.href ="{{route('profile.index')}}";
                 } else {
                     icon.className =
                         "w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6";

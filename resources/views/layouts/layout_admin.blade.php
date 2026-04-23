@@ -179,7 +179,7 @@
                     <i class="fas fa-solid fa-chart-area w-5 text-center text-slate-400"></i> รายงานผู้เรียน
                 </a>
                 <a href="{{ route('admin.reports.course') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
-                @if(Route::currentRouteName() == 'admin.reports.course' ) bg-blue-600 @endif">
+                @if(Route::currentRouteName() == 'admin.reports.course' || Route::currentRouteName() == 'admin.reports.quiz') bg-blue-600 @endif">
                     <i class="fas fa-solid fa-chart-line w-5 text-center text-slate-400"></i> รายงานคอร์สเรียน
                 </a>
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mt-6 mb-2">Support</p>

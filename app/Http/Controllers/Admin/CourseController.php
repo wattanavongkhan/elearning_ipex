@@ -11,7 +11,6 @@ use App\Models\Lesson_user;
 use App\Models\Lesson;
 use App\Models\CoursesFile;
 use DB;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 class CourseController extends Controller
@@ -254,12 +253,48 @@ class CourseController extends Controller
                                 ->count();
 
             // 3. ถ้าจำนวนที่เรียนจบ = จำนวนทั้งหมด ให้ Update ตาราง Enrollment
+            // 1. เช็คข้อมูล Enrollment เดิม
+            $enrollment = Enrollment::where('user_id', $userId)
+                            ->where('course_id', $courseId)
+                            ->first();
+
+            // 2. เช็คว่าบทเรียนปัจจุบันมี Post-Quiz หรือไม่ และทำผ่านหรือยัง
+            $currentLesson = Lesson::find($lessonId); // รับค่า lesson_id มาจาก Request
+            $hasPostQuiz = !empty($currentLesson->post_quiz_id);
+
+            // ตรวจสอบผลการสอบของบทเรียนนี้
+            $isQuizPassed = false;
+            if ($hasPostQuiz) {
+                $isQuizPassed = UserQuizResult::where('user_id', $userId)
+                                ->where('quiz_id', $currentLesson->post_quiz_id)
+                                // ->where('score', '>=', 50) // ถ้าคุณมีเกณฑ์คะแนนขั้นต่ำ
+                                ->exists();
+            }
+
+            // 3. เช็คเงื่อนไขการจบหลักสูตร
+            // เงื่อนไข: (เรียนครบทุกบท) และ (ถ้าบทนี้มีควิซ ต้องทำควิซผ่านแล้ว)
             if ($completedLessons >= $totalLessons) {
-                Enrollment::where('user_id', $userId)
-                    ->where('course_id', $courseId)
-                    ->update([
-                        'status' => 2, // 2 = เรียนจบหลักสูตร (Completed)
+                
+                if ($hasPostQuiz && !$isQuizPassed) {
+                    // กรณีเรียนครบจำนวนบทแล้ว แต่ "ติด" ควิซบทสุดท้ายยังไม่ได้ทำ/ไม่ผ่าน
+                    return response()->json([
+                        'status' => 'success',
+                        'course_completed' => false,
+                        'message' => 'คุณเรียนเนื้อหาครบแล้ว กรุณาทำแบบทดสอบหลังเรียนให้ผ่านเพื่อจบหลักสูตร'
                     ]);
+                }else {
+                    // กรณีเรียนครบทุกบทแล้ว และไม่มีควิซ หรือมีควิซแต่ทำผ่านแล้ว -> อัปเดต Enrollment เป็นจบหลักสูตร (2)
+                    $enrollment->update(['status' => 2]);
+
+                    return response()->json([
+                        'status' => 'success',
+                        'course_completed' => true,
+                        'message' => 'ยินดีด้วย! คุณเรียนจบหลักสูตรนี้แล้ว'
+                    ]);
+                }
+
+                // ถ้าผ่านทุกเงื่อนไข -> อัปเดต Enrollment เป็นจบหลักสูตร (2)
+                $enrollment->update(['status' => 2]);
 
                 return response()->json([
                     'status' => 'success',
@@ -268,11 +303,80 @@ class CourseController extends Controller
                 ]);
             }
 
+            // กรณีปกติ (ยังเรียนไม่ครบทุกบท)
+            return response()->json([
+                'status' => 'success',
+                'course_completed' => false,
+                'message' => 'บันทึกความคืบหน้าเรียบร้อย'
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'course_completed' => false
             ]);
         });
+    }
+
+    public function updateProgressPercent(Request $request)
+    {
+        $userId = auth()->id();
+        $courseId = $request->course_id;
+        $currentPercent = $request->progress_percent; // ส่งมาจาก JavaScript (0-100)
+
+        // 1. ดึง Enrollment
+        $enrollment = Enrollment::where('user_id', $userId)
+                        ->where('course_id', $courseId)
+                        ->first();
+
+        if (!$enrollment) {
+            return response()->json(['message' => 'Enrollment not found'], 404);
+        }
+
+        // 2. อัปเดต Percentage เฉพาะเมื่อค่าใหม่มากกว่าเดิม (ป้องกันการส่งค่าถอยหลัง)
+        if ($currentPercent > $enrollment->progress_percent) {
+            $enrollment->progress_percent = $currentPercent;
+        }
+
+        // 3. เช็คเงื่อนไขการจบหลักสูตร (Status = 2)
+        // เงื่อนไข: (เปอร์เซ็นต์รวม == 100) และ (ทำแบบทดสอบครบทุกอัน)
+        
+        // ดึง ID ควิซทั้งหมดที่มีในคอร์สนี้
+        $requiredQuizIds = Lesson::where('course_id', $courseId)
+                            ->whereNotNull('post_quiz_id')
+                            ->pluck('post_quiz_id')
+                            ->toArray();
+
+        // เช็คว่าทำผ่านกี่อัน (สมมติใช้ table user_quiz_results)
+        $passedQuizzesCount = UserQuizResult::where('user_id', $userId)
+                                ->whereIn('quiz_id', $requiredQuizIds)
+                                ->where('is_passed', true) 
+                                ->count();
+
+        $totalRequiredQuizzes = count($requiredQuizIds);
+
+        // ตรรกะตัดสินใจเปลี่ยนสถานะ
+        if ($enrollment->progress_percent >= 100 && $passedQuizzesCount >= $totalRequiredQuizzes) {
+            $enrollment->status = 2; // 2 = Completed
+            $enrollment->completed_at = now();
+            $message = "ยินดีด้วย! คุณเรียนจบหลักสูตรและผ่านแบบทดสอบครบถ้วนแล้ว";
+        } else {
+            $enrollment->status = 1; // 1 = In Progress
+            $message = "บันทึกความคืบหน้าเรียบร้อย (" . $enrollment->progress_percent . "%)";
+            
+            // ถ้าดูจบแต่ควิซยังไม่ครบ ให้แจ้งเตือนเสริม
+            if ($enrollment->progress_percent >= 100 && $passedQuizzesCount < $totalRequiredQuizzes) {
+                $message .= " แต่อย่าลืมทำแบบทดสอบให้ครบเพื่อจบหลักสูตร";
+            }
+        }
+
+        $enrollment->save();
+
+        return response()->json([
+            'status' => 'success',
+            'progress' => $enrollment->progress_percent,
+            'course_completed' => ($enrollment->status == 2),
+            'message' => $message
+        ]);
     }
 
     public function addFile(Request $request)

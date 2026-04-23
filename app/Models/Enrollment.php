@@ -10,7 +10,8 @@ class Enrollment extends Model
     use HasFactory;
     public $table = "enrollments"; // กำหนดชื่อ table ให้ตรงกับฐานข้อมูล (ถ้าไม่ใส่ Laravel จะใช้ชื่อแบบ plural คือ categories)
 
-    protected $fillable = ['user_id', 'course_id', 'status','amount','payment_method','created_at'];
+    protected $fillable = ['user_id', 'course_id', 'status','amount','payment_method','created_at'
+    ,'progress_percent'];
     public function user() {
         return $this->belongsTo(User::class);
     }

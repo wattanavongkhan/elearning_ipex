@@ -3,10 +3,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use App\Models\Quiz;
 use App\Models\Question;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller {
@@ -120,6 +118,20 @@ class QuizController extends Controller {
             ]
         );
 
+        if($passed) {
+            // ถ้าเป็น post-test และผ่าน ให้บันทึกว่าเรียนบทเรียนนี้แล้ว
+            $quiz = Quiz::find($quiz_id);
+            if ($quiz->type == 'post-test') {
+                $lesson = Lesson::where('post_quiz_id', $quiz_id)->first();
+                if ($lesson) {
+                    \App\Models\Enrollment::updateOrCreate(
+                        ['user_id' => auth()->id(), 'course_id' => $lesson->course_id],
+                        ['progress_percent' => 100, 'status' => '2'] // status 2 = completed
+                    );
+                }
+            }
+        }
+
         return response()->json([
             'passed' => $passed,
             'score' => $score,
@@ -136,7 +148,7 @@ class QuizController extends Controller {
         $quiz = Quiz::findOrFail($quiz_id);
         
         $questions = Question::where('quiz_id', $quiz_id)->get();
-
+      
         $lesson = \App\Models\Lesson::where('pre_quiz_id', $quiz_id)
                     ->orWhere('post_quiz_id', $quiz_id)
                     ->first();

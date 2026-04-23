@@ -111,6 +111,7 @@
                 <th class="px-8 py-6 text-center">ผู้เข้าเรียน</th>
                 <th class="px-8 py-6 text-center">สถานะ</th>
                 <th class="px-8 py-6 text-center">วันที่สร้าง</th>
+                <th class="px-8 py-6 text-center">Actions</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-50">
@@ -137,6 +138,12 @@
                 </td>
                 <td class="px-8 py-5 text-center">
                     {{ $course->created_at->format('d/m/Y') }}
+                </td>
+                <td class="px-8 py-5 text-center">
+                    <a class="bg-yellow-400 hover:bg-yellow-600 text-white px-2 py-1 rounded-xl transition-all active:scale-50" 
+                    href="{{ route('admin.reports.quiz', $course->id) }}">
+                         Score
+                    </a>
                 </td>
             </tr>
             @endforeach

@@ -57,7 +57,7 @@
                             <span
                                 class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600 animate-breathe"></span>
                         </span>
-                        <span class="tracking-wide uppercase">NEW: คอร์ส AI For Business เปิดตัวแล้ว!</span>
+                        <span class="tracking-wide uppercase">NEW: คอร์ส {{ App\Models\Course::latest()->first()->title }} เปิดตัวแล้ว!</span>
                     </div>
                     <h3 class="text-3xl lg:text-7xl font-black text-slate-900 leading-[1.1] mb-10"
                         style="font-size: 35px">
@@ -87,7 +87,7 @@
                                 @endfor
                         </div>
                         <div class="text-left">
-                            <p class="text-sm font-black text-slate-800 tracking-tight">+15,000 นักเรียน</p>
+                            <p class="text-sm font-black text-slate-800 tracking-tight">เพิ่มทักษะให้คุณได้เร็วขึ้น</p>
                             <div class="flex text-yellow-400 text-xs mt-0.5">
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
                                     class="fas fa-star"></i><i class="fas fa-star"></i>
@@ -99,7 +99,7 @@
                 <div class="lg:w-1/2 relative">
                     <div
                         class="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border-[16px] border-white">
-                        <img src="{{ URL::asset('images/backgroud/heard_bg.jpg') }}"
+                        <img src="{{ URL::asset('images/backgroud/IPEXTH.jpg') }}"
                             class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
                     </div>
@@ -192,7 +192,7 @@
             <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                 <div>
                     <h2 class="text-4xl font-black text-slate-900 mb-4 tracking-tight">คอร์สเรียนยอดนิยม</h2>
-                    <p class="text-slate-500">เลือกเรียนจากคอร์สที่ได้รับการรีวิวดีที่สุดจากนักเรียนของเรา</p>
+                    <p class="text-slate-500">เรียนจากคอร์สที่ได้รับการรีวิวดีที่สุดจากนักเรียนของเรา</p>
                 </div>
                 <div class="flex bg-white p-2 rounded-[1.5rem] shadow-sm border border-slate-100">
                     <button
@@ -358,7 +358,6 @@
         animation: breathe 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
-    /* 2. Soft Glow: วงรัศมีเรืองแสงแบบค่อยเป็นค่อยไป */
     @keyframes soft-glow {
         0% {
             transform: scale(0.9);
@@ -375,7 +374,6 @@
         animation: soft-glow 3s ease-out infinite;
     }
 
-    /* 3. Float: ขยับขึ้นลงแบบนุ่มนวล */
     @keyframes float {
 
         0%,
@@ -421,7 +419,6 @@
         $.get(url, function (res) {
 
             res.forEach((item, index) => {
-                // สร้าง Template String
                 const card = `
         <a href="${item.url}" target="_blank" 
            class="group flex flex-col p-6 bg-white/5 hover:bg-white/10 backdrop-blur-xl rounded-[2.2rem]
@@ -447,8 +444,6 @@
 
                 const $card = $(card);
                 $('#system-1').append($card);
-
-                // ใช้ setTimeout เพื่อกระตุ้น Animation หลังจาก Append เข้าไปใน DOM แล้ว
                 setTimeout(() => {
                     $card.removeClass('opacity-0 translate-y-4').addClass(
                         'opacity-100 translate-y-0');

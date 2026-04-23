@@ -61,10 +61,9 @@
             // คำนวณ Progress ของคอร์สนี้
             $allLessons = $item->course->lessons;
             $totalLessons = $allLessons->count();
-            $doneLessons = $allLessons->whereIn('id', $completedLessonIds ?? [])->count();
+            $doneLessons = $allLessons->whereIn('id', $completedLessonIds ?? [])->where('status', 2)->count();
             $progressPercent = $totalLessons > 0 ? round(($doneLessons / $totalLessons) * 100) : 0;
             @endphp
-
             <div
                 class="group bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500">
                 <div class="flex flex-col sm:flex-row gap-6">
@@ -81,7 +80,8 @@
                                     class="text-lg font-black text-slate-800 leading-tight group-hover:text-blue-600 transition-colors">
                                     {{ $item->course->title }}
                                 </h3>
-                                @if($progressPercent == 100)
+                                {{--  @if($progressPercent == 100)  --}}
+                                @if($item->progress_percent == 100 && $item->status == '2')
                                 <span
                                     class="text-[10px] font-black text-green-600 bg-green-50 px-2 py-1 rounded-md tracking-tighter">COMPLETED</span>
                                 @elseif($item->status == 'pending_payment')
@@ -98,11 +98,11 @@
                                 <span
                                     class="text-[10px] font-black text-slate-500 uppercase tracking-widest">ความคืบหน้า
                                     ({{ $doneLessons }}/{{ $totalLessons }} บท)</span>
-                                <span class="text-sm font-black text-blue-600">{{ $progressPercent }}%</span>
+                                <span class="text-sm font-black text-blue-600">@if($item->status==1) @else{{ $item->progress_percent }} @endif%</span>
                             </div>
                             <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-[2px] shadow-inner">
                                 <div class="h-full bg-gradient-to-r from-blue-600 to-indigo-400 rounded-full transition-all duration-1000 ease-out"
-                                    style="width: {{ $progressPercent }}%"></div>
+                                    style="width: {{ $item->progress_percent }}%"></div>
                             </div>
                         </div>
 

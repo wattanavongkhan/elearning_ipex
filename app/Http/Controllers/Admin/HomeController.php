@@ -9,10 +9,6 @@ use App\Models\Activity;
 use App\Models\Quiz;
 use App\Models\Enrollment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
-use DB;
-use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Auth;
 

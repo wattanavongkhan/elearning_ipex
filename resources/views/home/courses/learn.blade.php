@@ -39,6 +39,8 @@
         background: #475569;
     }
 
+    
+
 </style>
 
 <div class="bg-slate-900 min-h-screen font-kanit">
@@ -85,7 +87,7 @@
             </div>
             @else
             <div class="relative aspect-video bg-black rounded-[2rem] overflow-hidden shadow-2xl">
-                <video id="video-player" controls preload="none" autoplay muted
+                <video id="video-player" controls preload="none" autoplay muted controlsList="nodownload"
                     class="absolute inset-0 w-full h-full object-contain"
                     poster="{{ $course->thumbnail ? asset('storage/'.$course->thumbnail) : asset('images/default-poster.jpg') }}">
                     @if($currentLesson->video_url!=null && $currentLesson->video_url!="")
@@ -178,7 +180,7 @@
                     class="flex items-center gap-4 p-5 hover:bg-slate-700/50 transition-all {{ $currentLesson->id == $lesson->id ? 'bg-blue-600/10 border-l-4 border-blue-500' : '' }}">
                     <div
                         class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black
-            {{ $currentLesson->id == $lesson->id ? 'bg-blue-600 text-white' : ($isCompleted ? 'bg-green-500/20 text-green-500' : 'bg-slate-900 text-slate-500') }}">
+                            {{ $currentLesson->id == $lesson->id ? 'bg-blue-600 text-white' : ($isCompleted ? 'bg-green-500/20 text-green-500' : 'bg-slate-900 text-slate-500') }}">
                         @if($isCompleted)
                         <i class="fas fa-chevron-circle-right text-[10px]"></i>
                         @else
@@ -222,6 +224,7 @@
     </div>
 </div>
 <script>
+
    document.addEventListener('DOMContentLoaded', function () {
     const video = document.getElementById('video-player');
     const percentText = document.getElementById('current-lesson-percent');
@@ -232,16 +235,16 @@
     let isSaving = false;
 
     if (video) {
-        // --- ฟังก์ชันสำหรับสั่งเล่น (Autoplay Logic) ---
         const attemptPlay = () => {
-            // แก้ไขจาก "" เป็น null และไม่ต้องรอ setTimeout นานเกินไป
             video.play().then(() => {
                 console.log("Autoplay success!");
             }).catch(error => {
                 console.log("Autoplay prevented. Waiting for user interaction.");
                 const playAfterClick = () => {
                     video.play();
+                    
                     video.muted = false;
+                    
                     document.removeEventListener('click', playAfterClick);
                 };
                 document.addEventListener('click', playAfterClick);
@@ -261,6 +264,8 @@
             if (!video.seeking && video.currentTime > watchedTime) {
                 watchedTime = video.currentTime;
             }
+
+         
             if (video.duration > 0) {
                 const percentage = Math.floor((video.currentTime / video.duration) * 100);
                 if (percentText) { percentText.innerText = percentage + "%"; }
@@ -270,14 +275,15 @@
             }
         });
 
+/*
         video.addEventListener('seeking', function () {
             if (video.currentTime > watchedTime) {
                 video.currentTime = watchedTime;
             }
         });
-
+        
+*/
         video.onended = function () {
-            // แก้ไขจุดที่ Error: เขียนให้จบในบรรทัดเดียวและไม่มีปีกกา JS ครอบซ้ำ
             const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
             const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
 
@@ -294,23 +300,61 @@
         };
     }
 
-   function saveProgressAndNext() {
+    // ฟังก์ชันกลางสำหรับส่งเปอร์เซ็นต์
+    function updateEnrollmentPercentage() {
+        if (video.duration > 0) {
+            const percentage = Math.floor((video.currentTime / video.duration) * 100);
+            
+            // ใช้ navigator.sendBeacon สำหรับกรณีปิดหน้าจอ (จะส่งข้อมูลได้ชัวร์กว่า fetch ธรรมดา)
+            const url = "{{ route('course.enrollment.update_percent') }}";
+            const data = JSON.stringify({
+                _token: "{{ csrf_token() }}",
+                course_id: "{{ $course->id }}",
+                progress_percent: percentage
+            });
+
+            if (navigator.sendBeacon) {
+                const blob = new Blob([data], { type: 'application/json' });
+                navigator.sendBeacon(url, blob);
+            } else {
+                // fallback สำหรับ browser เก่า
+                fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+                    body: data
+                });
+            }
+        }
+    }
+
+    // 1. ดักจับตอนสลับ Tab หรือย่อหน้าต่าง (Visibility Change)
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+            updateEnrollmentPercentage();
+        }
+    });
+
+    // 2. ดักจับตอนปิด Tab หรือ Refresh (Before Unload)
+    window.addEventListener('beforeunload', function() {
+        updateEnrollmentPercentage();
+    });
+
+   function saveProgressAndNext() 
+   {
     if (isSaving) return;
     isSaving = true;
 
     // 1. ดักเช็คก่อนว่าบทเรียนนี้มี Post-Quiz และผู้ใช้ทำหรือยัง (เช็คจาก Blade Variable)
     const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
     const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
-console.log("Has Post-Quiz:", hasPostQuiz, "Already Passed:", alreadyPassed);
-    if (hasPostQuiz && !alreadyPassed) {
-        // ถ้ามีควิซและยังไม่ทำ ให้โชว์กล่องควิซแล้วหยุดการทำงานของฟังก์ชันนี้
+    if (hasPostQuiz && alreadyPassed) {
         const quizBox = document.getElementById('post-quiz-trigger');
         if (quizBox) {
             quizBox.classList.remove('hidden');
             quizBox.scrollIntoView({ behavior: 'smooth' });
         }
-        isSaving = false; // ปลดล็อคเพื่อให้ส่งใหม่ได้ในภายหลัง
-        return; // <--- หยุดตรงนี้ ไม่ให้รัน Fetch ด้านล่าง
+        isSaving = false;
+        return;
     }
 
     // 2. ถ้าไม่มีควิซ หรือทำผ่านแล้ว ถึงจะรันส่วนการบันทึก Progress
@@ -338,9 +382,6 @@ console.log("Has Post-Quiz:", hasPostQuiz, "Already Passed:", alreadyPassed);
         isSaving = false;
     });
 }
-
-
-
 });
 
 $(document).ready(function () {
@@ -353,7 +394,6 @@ $(document).ready(function () {
 function generateQRCode() {
     const qrcodeContainer = document.getElementById('qrcode');
     if (qrcodeContainer) {
-        // แก้ไข: นำเครื่องหมายคำพูดครอบตัวแปร PHP ออก
         const quizUrl = "{{ route('quiz.show', $currentLesson->pre_quiz->id ?? 0) }}";
         new QRCode(qrcodeContainer, {
             text: quizUrl,
@@ -364,5 +404,6 @@ function generateQRCode() {
         });
     }
 }
+
 </script>
 @endsection

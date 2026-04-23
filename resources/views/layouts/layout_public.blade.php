@@ -85,8 +85,8 @@
                         <i class="fas fa-graduation-cap text-xs text-slate-400"></i> คอร์สทั้งหมด
                     </a>
                     <a 
-                    {{--  href="#navigation"   --}}
-                    href="{{ route('courses.all') }}"
+                    href="#navigation" 
+                    {{--  href="{{ route('courses.all') }}"  --}}
                     class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-solid fa-bell text-xs text-slate-400"></i> Web Portal
                     </a>
@@ -124,9 +124,9 @@
                             <div
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                 <div class="p-4 border-b border-slate-100">
-                                    <p class="text-sm font-bold text-slate-800">{{ Auth::user()->full_name_eng }}</p>
+                                    <p class="text-xs font-bold text-slate-800">{{ Auth::user()->full_name_eng }}</p>
                                     <p class="text-xs text-slate-400 mt-1">
-                                        {{ Auth::user()->user_login ?? 'user@example.com' }}</p>
+                                      Employee ID: {{ Auth::user()->em_code ?? 'user@example.com' }}</p>
                                 </div>
                                 <div class="p-2">
                                     <a href="{{ route('profile.index') }}"
@@ -185,12 +185,14 @@
                 <div>
                     <h5 class="font-bold text-slate-800 mb-8 uppercase tracking-widest text-xs">คอร์สยอดนิยม</h5>
                     <ul class="text-sm text-slate-500 space-y-4">
-                        <li><a href="#" class="hover:text-blue-600 flex items-center gap-2"><i
-                                    class="fas fa-chevron-right text-[10px] opacity-30"></i> Web Development</a></li>
-                        <li><a href="#" class="hover:text-blue-600 flex items-center gap-2"><i
-                                    class="fas fa-chevron-right text-[10px] opacity-30"></i> Data Analytics</a></li>
-                        <li><a href="#" class="hover:text-blue-600 flex items-center gap-2"><i
-                                    class="fas fa-chevron-right text-[10px] opacity-30"></i> UX/UI Design</a></li>
+                        @foreach (App\Models\Course::orderBy('created_at', 'desc')->take(5)->get() as $course)
+                        <li>
+                            <a href="{{ route('courses.show', $course->id) }}"
+                                class="hover:text-blue-600 transition flex items-center gap-2">
+                                <i class="fas fa-graduation-cap text-xs text-slate-400"></i> {{ $course->title }}
+                            </a>
+                        </li>
+                        @endforeach
                     </ul>
                 </div>
 
@@ -209,7 +211,7 @@
                 <p>© 2026 I-PEX Platform. ยกระดับการเรียนรู้โดยคนไทย</p>
                 <div class="flex gap-8">
                     <a href="#" class="hover:text-slate-800 transition">Terms of Service</a>
-                    <a href="#" class="hover:text-slate-800 transition">Cookies Settings</a>
+                    {{--  <a href="#" class="hover:text-slate-800 transition">Cookies Settings</a>  --}}
                 </div>
             </div>
         </div>

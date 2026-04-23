@@ -3,14 +3,14 @@
 <div class=" mx-auto mb-5 flex flex-col md:flex-row md:items-center justify-between gap-2">
     <div>
         <h1 class="text-xl font-black text-slate-800 tracking-tighter uppercase">
-            I-PEX <span class="text-green-500 underline decoration-green-200 underline-offset-4">Command Center</span>
+            I-PEX <span class="text-violet-500 underline decoration-violet-200 underline-offset-4">Command Center</span>
         </h1>
         <p class="text-[11px] text-slate-400 font-bold tracking-[0.1em] uppercase mt-1">Digital Transformation &
             Learning Analytics</p>
     </div>
     <div class="flex items-center gap-3">
         <span class="px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-100 text-xs font-bold text-slate-500">
-            <i class="fas fa-calendar-alt mr-2 text-green-500"></i> {{ date('d M Y') }}
+            <i class="fas fa-calendar-alt mr-2 text-violet-500"></i> {{ date('d M Y') }}
         </span>
     </div>
 </div>
@@ -113,7 +113,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-bold text-slate-700 group-hover:text-green-600 transition-colors">
-                            {{ $learner->name }}</p>
+                            {{ $learner->full_name_th }}</p>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
                             {{ $learner->course_count }} คอร์สที่ลงเรียน</p>
                     </div>
@@ -133,7 +133,7 @@
             สัดส่วนความสำเร็จ</h3>
         <div class="h-[250px]">
             <canvas id="doughnutChart"></canvas>
-        </div>s
+        </div>
     </div>
 
     <div
@@ -159,28 +159,25 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @section('scripts')
 <script>
-    // ข้อมูลจาก Controller
     const chartLabels = @json($labels);
     const chartData = @json($data);
 
-    // 1. Line Chart
+    // 1. Line Chart (สถิติการสมัครเรียน/เข้าเรียน)
     const ctxLine = document.getElementById('lineChart').getContext('2d');
     new Chart(ctxLine, {
         type: 'line',
         data: {
             labels: chartLabels,
             datasets: [{
+                label: 'พนักงานใหม่',
                 data: chartData,
                 borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 borderWidth: 4,
                 tension: 0.4,
                 fill: true,
-                pointRadius: 0,
-                pointHoverRadius: 6,
-                pointHoverBackgroundColor: '#10b981',
-                pointHoverBorderColor: '#fff',
-                pointHoverBorderWidth: 3,
+                pointBackgroundColor: '#10b981',
+                pointRadius: 4
             }]
         },
         options: {
@@ -188,31 +185,55 @@
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Kanit', size: 11 } } },
-                x: { grid: { display: false }, ticks: { font: { family: 'Kanit', size: 11 } } }
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
             }
         }
     });
 
+    // 2. Doughnut Chart (สัดส่วนความสำเร็จ)
     const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
     new Chart(ctxDoughnut, {
         type: 'doughnut',
         data: {
-            labels: ['กำลังเรียน', 'เรียนจบแล้ว'],
+            labels: ['กำลังเรียน', 'เรียนจบสมบูรณ์'],
             datasets: [{
+                // ดึงค่ามาจาก Controller
                 data: [{{ $learning_count }}, {{ $completed_count }}],
-                backgroundColor: ['#f59e0b', '#10b981'],
-                borderWidth: 0,
-                hoverOffset: 15
+                backgroundColor: [
+                    '#f59e0b', // สีส้ม (Active)
+                    '#10b981'  // สีเขียว (Completed)
+                ],
+                hoverOffset: 20,
+                borderWidth: 0
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '70%', // ทำเป็นวงแหวนบางๆ สไตล์ Modern
             plugins: {
-                legend: { position: 'bottom', labels: { padding: 20, font: { family: 'Kanit', weight: 'bold' } } }
-            },
-            cutout: '75%'
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: { family: 'Kanit', size: 12, weight: 'bold' }
+                    }
+                },
+                // เพิ่มส่วนกลางวงกลม (Custom Tooltip)
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            let value = context.raw || 0;
+                            let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            let percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} คน (${percentage}%)`;
+                        }
+                    }
+                }
+            }
         }
     });
 </script>

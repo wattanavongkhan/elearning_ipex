@@ -143,7 +143,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('reports/student', [ReportController::class, 'index'])->name('reports.student');
     Route::get('reports/course', [ReportController::class, 'course_report'])->name('reports.course');
     Route::get('dashboard/index', [ReportController::class, 'dashboard'])->name('dashboard.index');
-
+    Route::get('reports/quiz/{id}', [ReportController::class, 'quiz_report'])->name('reports.quiz');
+   
 });
 
 Route::get('/quiz/{quiz_id}', [QuizController::class, 'show'])->name('quiz.show');
@@ -187,5 +188,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     Route::post('/login.store', [AuthenticatedSessionController::class, 'login_store'])->name('login.store');
 
+Route::post('/course/enrollment/update-percent', [CourseController::class, 'updateProgressPercent'])
+     ->name('course.enrollment.update_percent');
 
 require __DIR__.'/auth.php';
