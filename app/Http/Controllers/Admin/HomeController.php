@@ -19,7 +19,7 @@ class HomeController extends Controller {
         if(Auth::check()) 
         {
             // if(auth()->user()->status == 0) 
-            if(session()->get('role_name') == 'Admin')
+            if(session()->get('role_name') == 'Admin' || session()->get('role_name') == 'Super Admin')
             {
                 return redirect()->route('admin.dashboard.index');
             }   

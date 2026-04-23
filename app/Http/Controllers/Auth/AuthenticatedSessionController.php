@@ -42,7 +42,7 @@ class AuthenticatedSessionController extends Controller
        ->leftjoin('tblroles as tr', 'tr.role_id', '=', 'tp.role_id')
         ->where('te.user_login', $req->user_login)
         ->where('ts.sys_code', 'ELE')
-        ->select('tp.*','tr.role_name')
+        ->select('tp.*','tr.role_name','te.full_name_th','te.full_name_eng')
         ->first();
 
         if ($role) {

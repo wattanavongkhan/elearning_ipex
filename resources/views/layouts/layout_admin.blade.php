@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I-PEX Elearning</title>
+    <link rel="icon" href="{{ URL::asset('images/icont/logo.jpg') }}" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700&display=swap"
@@ -178,7 +179,8 @@
                 @if(Route::currentRouteName() == 'admin.reports.student') bg-blue-600 @endif">
                     <i class="fas fa-solid fa-chart-area w-5 text-center text-slate-400"></i> รายงานผู้เรียน
                 </a>
-                <a href="{{ route('admin.reports.course') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
+                <a href="{{ route('admin.reports.course') }}"
+                    class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
                 @if(Route::currentRouteName() == 'admin.reports.course' || Route::currentRouteName() == 'admin.reports.quiz') bg-blue-600 @endif">
                     <i class="fas fa-solid fa-chart-line w-5 text-center text-slate-400"></i> รายงานคอร์สเรียน
                 </a>
@@ -198,8 +200,8 @@
                 <div class="flex items-center gap-3 p-2 bg-slate-800 rounded-lg text-sm">
                     <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">A</div>
                     <div>
-                        <p class="font-medium">ผู้ดูแลระบบ</p>
-                        <p class="text-xs text-slate-400">Super Admin</p>
+                        <p class="font-medium">{{ Auth::user()->full_name_eng }}</p>
+                        <p class="text-xs text-slate-400">{{ session('role_name') }}</p>
                     </div>
                 </div>
             </div>

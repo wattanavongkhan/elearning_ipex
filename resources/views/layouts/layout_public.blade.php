@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I-PEX Elearning</title>
+    <link rel="icon" href="{{ URL::asset('images/icont/logo.jpg') }}" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -84,15 +85,14 @@
                     <a href="{{ route('courses.all') }}" class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-graduation-cap text-xs text-slate-400"></i> คอร์สทั้งหมด
                     </a>
-                    <a 
-                    href="#navigation" 
-                    {{--  href="{{ route('courses.all') }}"  --}}
-                    class="hover:text-blue-600 transition flex items-center gap-2">
+                    <a href="#navigation" {{--  href="{{ route('courses.all') }}" --}}
+                        class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-solid fa-bell text-xs text-slate-400"></i> Web Portal
                     </a>
-                     {{--  <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex items-center gap-2">
-                        <i class="fa fa-pie-chart" aria-hidden="true"></i> แดชบอร์ด
-                    </a>  --}}
+                    {{--  <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex
+                    items-center gap-2">
+                    <i class="fa fa-pie-chart" aria-hidden="true"></i> แดชบอร์ด
+                    </a> --}}
                 </div>
                 <div class="flex items-center gap-3">
                     @guest
@@ -111,7 +111,8 @@
                             <button
                                 class="flex items-center gap-3 pl-4 border-l border-slate-100 hover:text-blue-600 transition">
                                 <div class="text-right hidden sm:block">
-                                    <p class="text-xs font-bold text-slate-800 leading-none">{{ Auth::user()->full_name_eng }}
+                                    <p class="text-xs font-bold text-slate-800 leading-none">
+                                        {{ Auth::user()->full_name_eng }}
                                     </p>
 
                                     <p class="text-[10px] text-slate-400 mt-1">ผู้ใช้งาน</p>
@@ -126,7 +127,7 @@
                                 <div class="p-4 border-b border-slate-100">
                                     <p class="text-xs font-bold text-slate-800">{{ Auth::user()->full_name_eng }}</p>
                                     <p class="text-xs text-slate-400 mt-1">
-                                      Employee ID: {{ Auth::user()->em_code ?? 'user@example.com' }}</p>
+                                        Employee ID: {{ Auth::user()->em_code ?? 'user@example.com' }}</p>
                                 </div>
                                 <div class="p-2">
                                     <a href="{{ route('profile.index') }}"

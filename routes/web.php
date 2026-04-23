@@ -165,6 +165,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // 3. หน้าจัดการรายบุคคล (Dynamic ID)
     Route::get('/students/{id}', [StudentController::class, 'show'])->name('students.show');
+
     Route::get('/students/{id}/edit', [StudentController::class, 'edit'])->name('students.edit');
     Route::put('/students/{id}', [StudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
@@ -179,6 +180,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboardall.show/{id}', [PowerbiController::class, 'show'])->name('dashboardall.show');
 
     Route::get('/dashboard.mng/{id}', [PowerbiController::class, 'dashboard_mng'])->name('dashboard.mng');
+
+    // สำหรับดึงข้อมูล JSON ไปแสดงใน Modal
+    Route::get('/get-student/{id}', [StudentController::class, 'getStudent']);
+    
+    // สำหรับรับค่าจากฟอร์มมาบันทึกสิทธิ์
+    Route::post('/update-user-role', [StudentController::class, 'updateRole'])->name('admin.users.update-role');
+    
 
 });
 

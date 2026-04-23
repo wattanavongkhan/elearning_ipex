@@ -5,20 +5,30 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\User;
 use App\Models\Category;
-use App\Models\Enrollment;
+use App\Models\Employee;
 use App\Models\Quiz;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use DB;
 
 class StudentController extends Controller {
 
     // app/Http/Controllers/Admin/StudentController.php
     public function index() {
-        // ดึง User ที่เป็นนักเรียน พร้อมนับจำนวนคอร์สที่ลงเรียน
-        $students = User::get();
+        $students = Employee::
+            leftJoin('central_staff_db.tbluser_permissions as tp', function($join) {
+                $join->on('tblemployee.id', '=', 'tp.emp_id')         // เงื่อนไขที่ 2: ต้องมีสถานะ Active
+                    ->where('tp.sys_id', '=', 2); // เงื่อนไขที่ 3: ระบุ ID ของระบบ E-learning
+            })
+            ->leftjoin('central_staff_db.tblroles as trole', 'tp.role_id', '=', 'trole.role_id')
+
+            ->leftjoin('central_staff_db.tblposition as tpos', 'tblemployee.position_id', '=', 'tpos.id')
+            ->select('tblemployee.*', 'tpos.position', 'trole.role_name')
+            ->orderby('tp.role_id', 'desc')
+            ->get();
 
         return view('admin.students.index', compact('students'));
     }
@@ -137,5 +147,41 @@ class StudentController extends Controller {
         $districts = \App\Models\District::where('AMPHUR_ID', $amphurCode)->get();
         return response()->json($districts);
     }
+
+    public function getStudent($id)
+    {
+        // ดึงข้อมูลพนักงานพร้อมสิทธิ์ (ถ้ามี)
+        $student = DB::table('central_staff_db.tblemployee as emp')
+            // ->leftJoin('central_staff_db.tbluser_permissions as tp', 'emp.id', '=', 'tp.emp_id')
+            ->leftJoin('central_staff_db.tbluser_permissions as tp', function($join) {
+                $join->on('emp.id', '=', 'tp.emp_id')         // เงื่อนไขที่ 2: ต้องมีสถานะ Active
+                    ->where('tp.sys_id', '=', 2); // เงื่อนไขที่ 3: ระบุ ID ของระบบ E-learning
+            })
+            ->leftjoin('central_staff_db.tblroles as trole', 'tp.role_id', '=', 'trole.role_id')
+            ->select('emp.id', 'emp.em_code', 'emp.full_name_eng', 'trole.role_id', 'trole.role_name')
+            ->where('emp.id', $id)
+            ->first();
+
+        return response()->json($student);
+    }
+
+    public function updateRole(Request $request)
+    {
+        $request->validate([
+            'emp_id' => 'required',
+            'role_name' => 'required'
+        ]);
+
+        DB::table('central_staff_db.tbluser_permissions')->updateOrInsert(
+            ['emp_id' => $request->emp_id, 'sys_id' => 2],
+            [
+                'role_id' => $request->role_name,
+                'sys_id'  => 2
+            ]
+        );
+
+        return redirect()->back()->with('success', 'ปรับปรุงสิทธิ์การใช้งานเรียบร้อยแล้ว');
+    }
+
     
 }
