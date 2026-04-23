@@ -275,14 +275,14 @@
             }
         });
 
-/*
+
         video.addEventListener('seeking', function () {
             if (video.currentTime > watchedTime) {
                 video.currentTime = watchedTime;
             }
         });
         
-*/
+
         video.onended = function () {
             const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
             const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
