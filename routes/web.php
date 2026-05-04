@@ -176,6 +176,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/privatefiles', [PrivatefileController::class, 'store'])->name('privatefiles.store');
     Route::delete('/privatefiles/{id}', [PrivatefileController::class, 'destroy'])->name('privatefiles.destroy');
 
+    
     Route::get('/dashboardall', [PowerbiController::class, 'index'])->name('dashboardall.index');
     Route::get('/dashboardall.show/{id}', [PowerbiController::class, 'show'])->name('dashboardall.show');
 
@@ -187,6 +188,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // สำหรับรับค่าจากฟอร์มมาบันทึกสิทธิ์
     Route::post('/update-user-role', [StudentController::class, 'updateRole'])->name('admin.users.update-role');
     
+
+     Route::post('/dashboard.upload', [PowerbiController::class, 'dashboard_upload'])->name('dashboard.upload');
 
 });
 

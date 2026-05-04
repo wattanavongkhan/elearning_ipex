@@ -176,7 +176,7 @@ class StudentController extends Controller {
             ['emp_id' => $request->emp_id, 'sys_id' => 2],
             [
                 'role_id' => $request->role_name,
-                'sys_id'  => 2
+                'sys_id'  => 1
             ]
         );
 

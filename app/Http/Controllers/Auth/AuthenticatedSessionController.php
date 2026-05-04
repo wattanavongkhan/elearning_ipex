@@ -41,8 +41,8 @@ class AuthenticatedSessionController extends Controller
        ->leftjoin('tblemployee as te', 'te.id', '=', 'tp.emp_id')
        ->leftjoin('tblroles as tr', 'tr.role_id', '=', 'tp.role_id')
         ->where('te.user_login', $req->user_login)
-        ->where('ts.sys_code', 'ELE')
-        ->select('tp.*','tr.role_name','te.full_name_th','te.full_name_eng')
+        // ->where('ts.sys_code', 'ELE')
+        ->select('tp.*','tr.role_name','te.full_name_th','te.full_name_eng','tp.sys_id as tss','ts.*')
         ->first();
 
         if ($role) {

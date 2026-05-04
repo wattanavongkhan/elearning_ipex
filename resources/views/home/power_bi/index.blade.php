@@ -28,14 +28,6 @@
 
 </style>
 <div class="min-h-screen bg-[#f8fafc] p-6 font-kanit">
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-        <iframe title="IT Support Request" width="1500" height="800"
-            src="https://app.powerbi.com/reportEmbed?reportId=ce9e7eda-25d3-4560-b382-26dbad577286&autoAuth=true&ctid=f381c23b-842e-4f83-87c1-6949b79e4e26"
-            frameborder="0" allowFullScreen="true"></iframe>
-    </div>
-</div>
-
-<div class="min-h-screen bg-[#f8fafc] p-6 font-kanit">
     <button
         class="px-6 py-3 mb-5 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
         <i class="fas fa-sync-alt"></i> Refresh Data
@@ -89,13 +81,13 @@
                     class="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-100">
                     <i class="fas fa-table text-blue-500"></i> View Data
                 </button>
-                @if($section->section_no == Auth::user()->section_id)
+                {{--  @if($section->section_no == Auth::user()->section_id)  --}}
 
-                <a href="{{route('dashboard.mng',$section->section_no)}}"
+                <a href="{{route('dashboard.mng',$section->id)}}"
                     class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
                     <i class="fas fa-cog"></i> Manage
                 </a>
-                @endif
+                {{--  @endif  --}}
             </div>
             <div
                 class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
