@@ -29,7 +29,6 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 |
 */
 
-
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -39,14 +38,12 @@ Route::get('/activities-all', [HomeController::class, 'activities_all'])->name('
 
 Route::get('/admin/courses', [CourseController::class, 'index'])->name('courses.index');
 
-
 // หรือถ้าใช้ Resource Route (แนะนำ)
 Route::resource('admin/courses', CourseController::class);
 
 Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard.index');
 })->middleware(['auth'])->name('dashboard');
-
 
 Route::get('courses/{course}/lessons', [LessonController::class, 'index'])->name('lessons.index');
 Route::get('courses/{course}/lessons/create', [LessonController::class, 'create'])->name('lessons.create');
@@ -63,14 +60,12 @@ Route::put('lessons/{lesson}', [LessonController::class, 'update'])->name('lesso
 Route::delete('lessons/{lesson}', [LessonController::class, 'destroy'])->name('lessons.destroy');
 
 
-
 Route::get('categories', [CategoriesController::class, 'index'])->name('categories.index');
 Route::delete('categories/{category}', [CategoriesController::class, 'destroy'])->name('categories.destroy');
 Route::get('categories/create', [CategoriesController::class, 'create'])->name('categories.create');
 Route::post('categories', [CategoriesController::class, 'store'])->name('categories.store');
 Route::get('categories/{category}/edit', [CategoriesController::class, 'edit'])->name('categories.edit');
 Route::put('categories/{category}', [CategoriesController::class, 'update'])->name('categories.update');
-
 
 
 Route::get('lecturer', [InstructorController::class, 'index'])->name('lecturer.index');

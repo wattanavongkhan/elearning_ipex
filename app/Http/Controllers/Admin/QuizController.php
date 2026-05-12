@@ -97,7 +97,6 @@ class QuizController extends Controller {
         $score = 0;
         $total = $questions->count();
 
-       
         foreach ($questions as $question) {
             $userAnswer = $request->input('question_' . $question->id); // จะได้ค่า A, B, C หรือ D
             
@@ -132,10 +131,24 @@ class QuizController extends Controller {
             }
         }
 
+        $isLastLesson = $this->isLastLesson($lesson);
+
+        $less_st="0";
+        if($isLastLesson==false)
+        {
+            $less_st="1";
+        }
+
+        $nextlesson=Lesson::where('course_id', $lesson->course_id)
+        ->where('position',$lesson->position+1)->first()->id;
+        
         return response()->json([
             'passed' => $passed,
             'score' => $score,
             'total' => $total
+            ,
+            'less_st' => $less_st,
+            'nextlesson' => $nextlesson,
         ]);
     }
 
@@ -157,9 +170,36 @@ class QuizController extends Controller {
             abort(404, 'Lesson not found for this quiz');
         }
 
-        $course = \App\Models\Course::find($lesson->course_id);
 
-        return view('home.quiz.show', compact('quiz', 'questions', 'lesson', 'course'));
+        $course = \App\Models\Course::find($lesson->course_id);
+        $lastLesson = Lesson::where('course_id', $lesson->course_id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $isLastLesson = $this->isLastLesson($lesson);
+
+        $less_st="0";
+        if($isLastLesson==false)
+        {
+            $less_st="1";
+        }
+
+        $nextlesson=Lesson::where('course_id', $lesson->course_id)
+        ->where('position',$lesson->position+1)->first()->id;
+
+        return view('home.quiz.show', compact('quiz', 'questions', 'lesson',
+        'course'
+        , 'less_st','nextlesson'
+        ));
+    }
+
+    public function isLastLesson(Lesson $lesson): bool
+    {
+        $lastLesson = Lesson::where('course_id', $lesson->course_id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        return $lastLesson && $lastLesson->id === $lesson->id;
     }
 
 }

@@ -23,9 +23,9 @@ class ReportController extends Controller
             'emp.em_code', 
             'qa.score'
         )
-        ->join('central_staff_db.tblemployee as emp', 'enrollments.user_id', '=', 'emp.id')
+        ->join('center_staff_db.tblemployee as emp', 'enrollments.user_id', '=', 'emp.id')
         // สมมติว่า Join section ผ่านตาราง employee
-        ->join('central_staff_db.tblsection as sec', 'emp.section_id', '=', 'sec.id') 
+        ->join('center_staff_db.tblsection as sec', 'emp.section_id', '=', 'sec.id') 
         ->leftjoin('quizzes as q', function ($join) {
             $join->on('enrollments.course_id', '=', 'q.course_id')
                  ->where('q.type', 'post-test')
@@ -89,7 +89,7 @@ class ReportController extends Controller
 
         // Top Learners: แสดงรายชื่อพนักงานที่เรียนจบมากที่สุด
         $top_learners = DB::table('elearning_db.enrollments as en') // ระบุชื่อ DB ที่นี่
-        ->join('central_staff_db.tblemployee as emp', 'en.user_id', '=', 'emp.id') // ระบุชื่อ DB พนักงาน
+        ->join('center_staff_db.tblemployee as emp', 'en.user_id', '=', 'emp.id') // ระบุชื่อ DB พนักงาน
         ->where('en.status', 2)
         ->select('emp.full_name_th', DB::raw('count(en.id) as course_count'))
         ->groupBy('emp.id', 'emp.full_name_th')
@@ -130,7 +130,7 @@ class ReportController extends Controller
     {
         $quizzes = DB::table('quizzes as q')
         ->join('quiz_attempts as qa', 'q.id', '=', 'qa.quiz_id')
-        ->join('central_staff_db.tblemployee as emp', 'emp.id', '=', 'qa.user_id')
+        ->join('center_staff_db.tblemployee as emp', 'emp.id', '=', 'qa.user_id')
         ->select('q.title', 'qa.score', 'qa.created_at','emp.full_name_th','q.type')
         ->where('q.course_id', $id)
         ->get();

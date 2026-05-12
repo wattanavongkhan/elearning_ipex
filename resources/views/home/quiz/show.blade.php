@@ -14,7 +14,6 @@
         <form id="quiz-form">
             @csrf
             <input type="hidden" name="quiz_id" value="{{ $quiz->id }}">
-
             @foreach($questions as $index => $question)
             <div
                 class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 mb-6 transition-all hover:shadow-md">
@@ -78,6 +77,7 @@
         </form>
     </div>
 </div>
+{{$less_st}}
 
 {{-- Result Modal (คงเดิม) --}}
 <div id="result-modal"
@@ -119,7 +119,8 @@
                 modal.classList.remove('hidden');
                 score.innerText = `${data.score}/${data.total}`;
 
-                if (data.passed) {
+                console.log(data.passed && '{{$less_st}}'==1);
+                if (data.passed && '{{$less_st}}'=="1") {
                     icon.className =
                         "w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6";
                     icon.innerHTML = '<i class="fas fa-check-circle text-4xl"></i>';
@@ -128,8 +129,21 @@
                     btnAction.innerText = "เข้าเรียนต่อ";
 
                     // ใช้ตัวแปรที่ส่งมาจาก Controller เพื่อระบุ Route ให้ชัดเจน
-                    btnAction.onclick = () => window.location.href ="{{route('profile.index')}}";
-                } else {
+                      btnAction.onclick = () => window.location.href ="{{route('profile.index')}}";
+                }if('{{$less_st}}'=="0")
+                {
+                        icon.className =
+                        "w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6";
+                    icon.innerHTML = '<i class="fas fa-check-circle text-4xl"></i>';
+                    title.innerText = "ยินดีด้วย คุณสอบผ่าน!";
+                    text.innerText = "คุณทำคะแนนได้ยอดเยี่ยม ตอนนี้คุณสามารถเข้าเรียนต่อได้แล้ว";
+                    btnAction.innerText = "เข้าเรียนต่อ";
+
+                    // ใช้ตัวแปรที่ส่งมาจาก Controller เพื่อระบุ Route ให้ชัดเจน
+                    //btnAction.onclick = () => window.location.href ="{{route('courses.index')}}";
+
+                }
+                else {
                     icon.className =
                         "w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6";
                     icon.innerHTML = '<i class="fas fa-times-circle text-4xl"></i>';
@@ -138,6 +152,7 @@
                     btnAction.innerText = "ทำใหม่";
                     btnAction.onclick = () => location.reload();
                 }
+                
             })
             .catch(err => {
                 alert('เกิดข้อผิดพลาดในการส่งข้อมูล');

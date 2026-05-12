@@ -33,7 +33,7 @@
                         </label>
                         <select name="lesson_id" id="lesson_id"
                             class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                            @foreach (App\Models\Lesson::where('course_id', $quiz->course_id)->get() as $item)
+                            @foreach (App\Models\Lesson::where('course_id', $quiz->course_id)->where('status',0)->get() as $item)
                             <option value="{{ $item->id }}"
                                 {{ old('lesson_id', $quiz->lesson_id) == $item->id ? 'selected' : '' }}>
                                 {{ $item->title }}
@@ -42,7 +42,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-4">ประเภทของข้อสอบ <span
                             class="text-red-500">*</span></label>

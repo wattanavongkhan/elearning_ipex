@@ -78,6 +78,7 @@ class LessonController extends Controller
         $data = $request->all();
         $data['slug'] = Str::slug($request->title) . '-' . $lesson->id;
         $data['is_free'] = $request->has('is_free');
+        $data['status'] = $request->has('status')==true?0:1;
 
         if ($request->hasFile('video_file')) {
             // ลบวิดีโอเก่า

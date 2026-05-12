@@ -76,6 +76,7 @@
                 </div>
 
                 <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                  <div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" name="is_free" value="1" class="sr-only peer"
                             {{ old('is_free', $lesson->is_free) ? 'checked' : '' }}>
@@ -84,7 +85,20 @@
                         </div>
                         <span class="ml-3 text-sm font-semibold text-gray-700">เปิดให้ทดลองเรียนฟรี (Preview)</span>
                     </label>
+                  </div>
+                   <div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="status" value="1" class="sr-only peer"
+                            {{ $lesson->status==0 ? 'checked' : '' }}>
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                        </div>
+                        <span class="ml-3 text-sm font-semibold text-gray-700"> เปิดใช้งาน</span>
+                    </label>
+                  </div>
+
                 </div>
+
             </div>
 
             <div class="mt-10 pt-6 border-t border-gray-100 flex items-center justify-end gap-4">

@@ -236,15 +236,14 @@
 
     if (video) {
         const attemptPlay = () => {
+            video.muted = false;
+            
             video.play().then(() => {
                 console.log("Autoplay success!");
             }).catch(error => {
                 console.log("Autoplay prevented. Waiting for user interaction.");
                 const playAfterClick = () => {
                     video.play();
-                    
-                    video.muted = false;
-                    
                     document.removeEventListener('click', playAfterClick);
                 };
                 document.addEventListener('click', playAfterClick);
@@ -275,18 +274,19 @@
             }
         });
 
-
+/*
         video.addEventListener('seeking', function () {
             if (video.currentTime > watchedTime) {
                 video.currentTime = watchedTime;
             }
         });
-        
+        */
 
         video.onended = function () {
             const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
             const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
 
+            console.log(hasPostQuiz,alreadyPassed);
             if (hasPostQuiz && !alreadyPassed) {
                 const quizBox = document.getElementById('post-quiz-trigger');
                 if (quizBox) {
@@ -385,7 +385,6 @@
 });
 
 $(document).ready(function () {
-    // เช็คค่าว่างด้วย PHP ตั้งแต่แรกจะชัวร์กว่า
     @if($currentLesson->pre_quiz && !$userDonePreQuiz)
         generateQRCode();
     @endif

@@ -158,7 +158,7 @@ class CourseController extends Controller
 
         // 1. ดึงข้อมูลคอร์ส และบทเรียน (โหลดความสัมพันธ์ของ Quiz มาด้วยเพื่อลด Query)
         $course = Course::with(['lessons' => function($query) {
-            $query->orderBy('position', 'asc'); // เรียงตามลำดับบทเรียน
+            $query->where('lessons.status','0')->orderBy('position', 'asc'); // เรียงตามลำดับบทเรียน
         }, 'lessons.pre_quiz', 'lessons.post_quiz'])->findOrFail($id);
 
         // 2. หาบทเรียนปัจจุบัน
@@ -179,6 +179,7 @@ class CourseController extends Controller
         } else {
             $currentLesson = $course->lessons->where('id', $lesson_id)->first();
         }
+
 
         // 3. ดึงรายการบทเรียนที่เรียนจบแล้ว
         $completedLessons = Lesson_user::where('user_id', $user->id)
@@ -213,9 +214,14 @@ class CourseController extends Controller
         }
 
         // 5. หาบทเรียนถัดไป
-        $nextLesson = $course->lessons->where('position', '>', $currentLesson->position)->first();
-        $nextLessonUrl = $nextLesson ? route('courses.learn', [$course->id, $nextLesson->id]) : null;
-
+        if($currentLesson!=null){
+            $nextLesson = $course->lessons->where('position', '>', $currentLesson->position)->first();
+            $nextLessonUrl = $nextLesson ? route('courses.learn', [$course->id, $nextLesson->id]) : null;
+        }else{
+            $nextLesson = "";
+            $nextLessonUrl = "";
+        }
+       
         $file = CoursesFile::select('tf.file_name','tf.file_path')
         ->leftjoin('private_files as tf','tf.id','courses_files.file_id')
         ->where('course_id',$course->id)->get();

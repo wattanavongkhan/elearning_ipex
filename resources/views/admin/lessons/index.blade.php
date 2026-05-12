@@ -25,6 +25,7 @@
                     <th class="px-6 py-4 text-sm font-semibold text-gray-600">ชื่อบทเรียน</th>
                     <th class="px-6 py-4 text-sm font-semibold text-gray-600 w-32">ประเภทวิดีโอ</th>
                     <th class="px-6 py-4 text-sm font-semibold text-gray-600 w-24 text-center">ดูฟรี</th>
+                    <th class="px-6 py-4 text-sm font-semibold text-gray-600 w-24 text-center">สถานะ</th>
                     <th class="px-6 py-4 text-sm font-semibold text-gray-600 w-24 text-right">จัดการ</th>
                 </tr>
             </thead>
@@ -53,6 +54,15 @@
                         ? '<i class="fas fa-check-circle text-green-500"></i>'
                         : '<i class="fas fa-lock text-gray-300"></i>'
                         !!}
+                    </td>
+                      <td class="px-6 py-4 text-center">
+                         @if($lesson->status==0)
+                        <span
+                            class="px-2 py-1 text-[10px] bg-green-50 text-green-600 rounded-lg border border-green-100">Active</span>
+                        @else
+                        <span
+                            class="px-2 py-1 text-[10px] bg-gray-50 text-gray-400 rounded-lg border border-gray-100">In active</span>
+                        @endif
                     </td>
                     <td class="px-6 py-4 text-right">
                         <div class="flex justify-end gap-3">
