@@ -37,14 +37,13 @@
 </el-dialog>
 
 <div class="bg-white">
-    <section class="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden bg-slate-50 p-5">
+    <section class="relative pt-12 pb-5 lg:pt-24 lg:pb-32 overflow-hidden bg-slate-50 p-4">
         <div
             class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-gradient-to-br from-blue-100 to-indigo-50 rounded-full blur-3xl opacity-70">
         </div>
         <div
             class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[400px] h-[400px] bg-purple-50 rounded-full blur-3xl opacity-50">
         </div>
-
         <div class="container mx-auto px-6 relative z-10">
             <div class="flex flex-col lg:flex-row items-center gap-16">
 
@@ -57,7 +56,8 @@
                             <span
                                 class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600 animate-breathe"></span>
                         </span>
-                        <span class="tracking-wide uppercase">NEW: คอร์ส {{ App\Models\Course::latest()->first()->title }} เปิดตัวแล้ว!</span>
+                        <span class="tracking-wide uppercase">NEW: คอร์ส
+                            {{ App\Models\Course::latest()->first()->title }} เปิดตัวแล้ว!</span>
                     </div>
                     <h3 class="text-3xl lg:text-7xl font-black text-slate-900 leading-[1.1] mb-10"
                         style="font-size: 35px">
@@ -99,8 +99,7 @@
                 <div class="lg:w-1/2 relative">
                     <div
                         class="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border-[16px] border-white">
-                        <img src="{{ URL::asset('images/backgroud/IPEXTH.jpg') }}"
-                            class="w-full h-full object-cover">
+                        <img src="{{ URL::asset('images/backgroud/IPEXTH.jpg') }}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
                     </div>
                     <div
@@ -120,9 +119,9 @@
             </div>
         </div>
     </section>
-
     <section class="py-20 bg-white font-kanit">
         <div class="container mx-auto px-6">
+
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                 <div class="flex items-center gap-4">
                     <span class="w-12 h-1.5 bg-blue-600 rounded-full"></span>
@@ -139,7 +138,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
                 @forelse($activities as $activity)
                 <a href="{{ route('activities.show', $activity->slug) }}" class="group block cursor-pointer">
                     <div
@@ -172,7 +171,7 @@
                         </h4>
 
                         <p class="text-slate-500 text-sm font-medium leading-relaxed line-clamp-2">
-                            {{ $activity->short_description ?? Str::limit(strip_tags($activity->content), 120) }}
+                            {{ $activity->content ?? Str::limit(strip_tags($activity->content), 100) }}
                         </p>
                     </div>
                 </a>
@@ -184,6 +183,8 @@
                 </div>
                 @endforelse
             </div>
+            <hr>
+            @include('home.calendar')
         </div>
     </section>
 
@@ -224,13 +225,14 @@
                             class="font-bold text-slate-800 text-lg leading-snug h-14 line-clamp-2 mb-6 group-hover:text-blue-600 transition-colors">
                             <a href="{{ route('courses.show', $course->id) }}">{{ $course->title }}</a>
                             <br>
-                            <small class="text-sm text-gray-500">{{ $course->description ? Str::limit(strip_tags($course->description), 50) : 'รายละเอียดคอร์ส' }}</small>
+                            <small
+                                class="text-sm text-gray-500">{{ $course->description ? Str::limit(strip_tags($course->description), 50) : 'รายละเอียดคอร์ส' }}</small>
                         </h3>
                         <div class="flex items-center justify-between pt-6 border-t border-slate-50">
                             <div>
                                 <p class="text-xl font-black text-blue-500 tracking-tight">
-                                    {{--  ฿{{ number_format($course->price ?? 990) }}  --}}
-                                    </p>
+                                    {{--  ฿{{ number_format($course->price ?? 990) }} --}}
+                                </p>
                             </div>
                             <a href="{{ route('courses.show', $course->id) }}"
                                 class="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-blue-600 transition-all shadow-xl shadow-slate-200">
@@ -331,9 +333,6 @@
         </div>
     </section>
 </div>
-
-
-
 
 <style>
     .font-kanit {

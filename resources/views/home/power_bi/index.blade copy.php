@@ -28,19 +28,11 @@
 
 </style>
 <div class="min-h-screen bg-[#f8fafc] p-6 font-kanit">
-    <div class="grid grid-cols-1 lg:grid-cols-9 sm:grid-cols-2 gap-3">
-        <div>
-            <button onclick="" type="button"
-                class="px-6 py-3 mb-5 bg-yellow-500 text-white rounded-2xl font-bold text-sm hover:bg-yellow-500 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
-                <i class="fas fa-database"></i> Manage data
-            </button>
-        </div>
-        <div>
-            <button onclick="location.reload()" type="button"
-                class="px-6 py-3 mb-5 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
-                <i class="fas fa-sync-alt"></i> Refresh Data
-            </button></div>
-    </div>
+    <button
+        class="px-6 py-3 mb-5 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
+        <i class="fas fa-sync-alt"></i> Refresh Data
+    </button>
+
 
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-8">
         @foreach($sections as $section)
@@ -56,18 +48,17 @@
                         <div>
                             <h3 class="text-lg font-black text-slate-800 uppercase italic leading-none">
                                 {{ $section->section }}</h3>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                Performance by Section</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monthly
+                                Performance</span>
                         </div>
                     </div>
                     <div class="text-right">
                         <p class="text-[9px] font-bold text-green-500 uppercase">Efficiency</p>
                     </div>
                 </div>
-                <div class="mt-4" style="margin: 0 auto; max-width: 600px;">
-                    <div id="chart-{{ $section->id }}"></div>
-                </div>
+                <div id="chart-{{ $section->id }}"></div>
             </div>
+
             {{--  <div class="mt-6 flex gap-3 relative z-20">
                 <button onclick="openModal('{{ $section->id }}')" type="button"
             class="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-black uppercase
@@ -79,6 +70,7 @@
                 <i class="fas fa-cog"></i> Manage
             </a>
         </div> --}}
+
         <div
             class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
         </div>
@@ -170,29 +162,46 @@
         //HR
         const rawData = @json($data_hr);
         var options = {
-            series: rawData.map(item => parseFloat(item.total_employees)),
-            chart: {
-                width: 455,
-                type: 'pie',
-            },
-            labels: rawData.map(item => item.section),
-            responsive: [{
-                breakpoint: 400,
-                options: {
-                    chart: {
-                        width: 400
-                    },
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
+            series: [{
+                name: 'Total Employees',
+                data: rawData.map(item => item.total_employees)
             }],
-            title: {
-                text: 'Employees Working 6 Days/Week by Section',
-                align: 'left',
-                margin: 10,
-                style: {
-                    fontSize: '16px',
+            chart: {
+                type: 'bar',
+                height: 350
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    borderRadius: 5,
+                    borderRadiusApplication: 'end'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+            },
+            yaxis: {
+                title: {
+                    text: '$ (thousands)'
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return "$ " + val + " thousands"
+                    }
                 }
             }
         };
@@ -257,6 +266,7 @@
                 align: 'left',
                 style: {
                     fontSize: '16px',
+                    color: '#444'
                 }
             }
         };
@@ -336,9 +346,7 @@
                 text: 'Carbon footprint',
                 align: 'left',
                 style: {
-                    fontSize: '16px',
                     color: '#444'
-
                 }
             }
         };
@@ -348,22 +356,29 @@
 
 
         //LO
-
         const data_lo = @json($data_lo);
-        var options_lo = {
+        const options_lo = {
             series: data_lo.map(item => parseFloat(item.total_value)),
+            chart: {
+                width: '106%',
+                type: 'pie',
+            },
+            labels: data_lo.map(item => item.part_name),
+            colors: ['#008FFB', '#112398', '#EB7134', '#660066',
+                '#E94E9C'
+            ],
             title: {
                 text: 'Sum of Stock RM & Component by Part name Top 5',
                 align: 'left',
                 style: {
                     fontSize: '16px',
+                    fontWeight: 'bold'
                 }
             },
-            chart: {
-                width: '112%',
-                type: 'pie',
+            legend: {
+                position: 'right',
+                offsetY: 50,
             },
-            labels: data_lo.map(item => item.part_name),
             dataLabels: {
                 enabled: true,
                 formatter: function (val, opts) {
@@ -371,17 +386,27 @@
                     let formattedValue = (value / 1000000).toFixed(2) + "M";
                     return formattedValue + " (" + val.toFixed(2) + "%)";
                 },
+                dropShadow: {
+                    enabled: false
+                },
+                style: {
+                    colors: ['#333'],
+                }
             },
-            responsive: [{
-                options: {
-                    chart: {
-                        width: '100%'
-                    },
-                    legend: {
-                        position: 'bottom'
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toLocaleString() + " THB";
                     }
                 }
-            }]
+            },
+            plotOptions: {
+                pie: {
+                    dataLabels: {
+                        offset: 10
+                    }
+                }
+            }
         };
 
         const chart_lo = new ApexCharts(document.querySelector("#chart-6"), options_lo);
@@ -443,7 +468,8 @@
                 text: 'Average of Column %OEE by M/C',
                 align: 'left',
                 style: {
-                    fontSize: '16px',
+                    fontSize: '20px',
+                    color: '#333'
                 }
             }
         };
@@ -481,7 +507,8 @@
                 },
                 offsetY: -20,
                 style: {
-                    fontSize: '16px',
+                    fontSize: '12px',
+                    colors: ["#333"]
                 }
             },
             yaxis: {
@@ -506,6 +533,7 @@
                     text: 'Monthly Plan (THB)'
                 }
             },
+            // สำคัญ: เพิ่ม margin เพื่อไม่ให้ตัวเลข bn โดนตัดขอบกราฟด้านบน
             grid: {
                 padding: {
                     top: 30
@@ -515,7 +543,7 @@
                 categories: data_pc.map(item => item.part_name),
                 labels: {
                     style: {
-                        fontSize: '10PX'
+                        fontSize: '10px'
                     },
                     hideOverlappingLabels: false
                 },
@@ -539,7 +567,8 @@
                 text: 'Sales Value : TOP 5 Item',
                 align: 'left',
                 style: {
-                    fontSize: '16px'
+                    fontSize: '18px',
+                    fontWeight: 'bold'
                 }
             },
             grid: {
@@ -556,7 +585,9 @@
     });
 
     //PR
+
     const data_pr = @json($data_pr);
+
     const options_pr = {
         series: [{
             name: 'Sum of New Total',
@@ -586,6 +617,7 @@
         yaxis: {
             labels: {
                 formatter: function (val) {
+                    // แปลงเป็นหน่วยล้าน (M)
                     return (val / 1000000).toFixed(0) + "M";
                 }
             },
@@ -598,8 +630,13 @@
             text: 'Suppliers TOP 5',
             align: 'left',
             style: {
-                fontSize: '16px',
+                fontSize: '18px',
+                color: '#333'
             }
+        },
+        subtitle: {
+            text: 'Sum of New Total by Suppliers Name',
+            align: 'left'
         },
         grid: {
             strokeDashArray: 4,
@@ -618,18 +655,26 @@
     const data_qa = @json($data_qa);
     // กำหนดสีตามปีให้เหมือนต้นฉบับ
     const yearColors = {
-        '2025': '#1E90FF', // ฟ้า
-        '2023': '#00008B', // น้ำเงินเข้ม
-        '2024': '#E66E33' // ส้ม
+        '2023': '#A2C9EB', // สีฟ้าอ่อน
+        '2024': '#E89264', // สีส้ม
+        '2025': '#9E353B' // สีแดงเข้ม
     };
 
-    var options_qa = {
+    const options_qa = {
         series: data_qa.map(item => item.value),
-        chart: {
-            width: '100%',
-            type: 'pie',
-        },
         labels: data_qa.map(item => item.label),
+        chart: {
+            type: 'pie',
+            width: 520
+        },
+        colors: data_qa.map(item => yearColors[item.year] || '#e4e4e4'),
+        legend: {
+            position: 'right',
+            formatter: function (seriesName, opts) {
+                // ปรับแต่ง Legend ให้แสดงชื่อปีด้านขวาเหมือนในรูป
+                return seriesName;
+            }
+        },
         dataLabels: {
             enabled: true,
             formatter: function (val, opts) {
@@ -640,8 +685,8 @@
                 enabled: false
             },
             style: {
-                fontSize: '10px',
-                colors: ['#5f5f5f']
+                fontSize: '11px',
+                colors: ['#333']
             }
         },
         title: {
@@ -649,19 +694,10 @@
             align: 'left',
             style: {
                 fontSize: '16px',
+                fontWeight: 'bold',
+                color: '#333'
             }
-        },
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }]
+        }
     };
 
     const chart_qa = new ApexCharts(document.querySelector("#chart-10"), options_qa);
@@ -735,7 +771,7 @@
             align: 'left',
             style: {
                 color: '#1b1b1b',
-                fontSize: '16px'
+                fontSize: '18px'
             }
         }
     };
@@ -744,6 +780,7 @@
 
     //SO
     const data_so = @json($data_so);
+
     const options_so = {
         series: data_so.map(item => parseFloat(item.total_qty)),
         labels: data_so.map(item => item.defect),
@@ -770,7 +807,7 @@
             },
             style: {
                 fontSize: '12px',
-                colors: ['#f8f8f8']
+                colors: ['#333']
             },
             connectorColors: ['#333'],
             // ตั้งค่าให้ Label เด้งออกไปด้านนอกพร้อมเส้นชี้
@@ -782,12 +819,13 @@
             offsetY: 50
         },
         // กำหนดโทนสีน้ำเงิน-ฟ้า ตามรูป image_4770e0.png
-        colors: ['#003366', '#0066cc', '#0099ff', '#66ccff', '#13a05a'],
+        colors: ['#003366', '#0066cc', '#0099ff', '#66ccff', '#99ffcc'],
         title: {
-            text: 'Top 5 Defect by Year',
-            align: 'left',
+            text: 'Top 5 Defect',
+            align: 'center',
             style: {
-                fontSize: '16px',
+                fontSize: '20px',
+                fontWeight: 'bold'
             }
         },
         responsive: [{
@@ -854,7 +892,8 @@
             text: 'Cost insert and Cost repair by Year',
             align: 'left',
             style: {
-                fontSize: '16px',
+                fontSize: '18px',
+                color: '#444'
             }
         }
     };
@@ -922,7 +961,8 @@
             text: 'Summary PCR by Customer',
             align: 'left',
             style: {
-                fontSize: '16px',
+                fontSize: '18px',
+                color: '#333'
             }
         },
         grid: {

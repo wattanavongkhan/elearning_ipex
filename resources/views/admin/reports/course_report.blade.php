@@ -3,7 +3,7 @@
 
 <div class="flex flex-wrap justify-end gap-6 mb-3 font-kanit">
     <div
-        class="bg-white p-6 rounded-[1rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-green-100 transition-all duration-500 hover:-translate-y-1">
+        class="bg-white p-6 rounded-[1rem] shadow-sm border border-slate-50 flex gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-green-100 transition-all duration-500 hover:-translate-y-1">
         <div
             class="absolute -right-8 -bottom-8 size-32 bg-gradient-to-br from-green-100 to-teal-100 rounded-full blur-3xl group-hover:from-green-200 group-hover:to-teal-200 transition-colors opacity-70">
         </div>
@@ -11,9 +11,8 @@
             class="size-16 bg-gradient-to-br from-green-400 to-teal-700 text-white rounded-[1.5rem] flex items-center justify-center text-3xl shadow-lg shadow-green-200/50 border-4 border-white group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700 relative z-10">
             <i class="fas fa-user-graduate"></i>
         </div>
-
         <div class="relative z-10">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+            <p class="text-[10px] font-black text-slate-400 uppercase mb-2 gap-2">
                 ผู้เรียนสะสม
                 <span class="size-1.5 bg-gradient-to-r from-green-400 to-teal-500 rounded-full animate-pulse"></span>
             </p>
@@ -40,7 +39,7 @@
             <i class="fas fa-book"></i>
         </div>
         <div class="relative z-8">
-            <p class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+            <p class="text-[8px] font-black text-slate-400 uppercase mb-2 flex items-center gap-2">
                 คอร์สทั้งหมด
                 <span class="size-1.5 bg-gradient-to-r from-blue-400 to-violet-400 rounded-full animate-pulse"></span>
             </p>
@@ -121,7 +120,10 @@
                     <div class="font-black text-slate-700 group-hover:text-blue-600 transition-colors">
                         {{ $course->title }}
                     </div>
-                    <div class="text-[10px] text-slate-400">ผู้สอน: {{ $course->user->name }}</div>
+                    <div class="text-[10px] text-slate-400">ผู้สอน: 
+                    Admin
+                    {{--  {{ $course->user->name }}  --}}
+                    </div>
                 </td>
                 <td class="px-8 py-5">
                     <span

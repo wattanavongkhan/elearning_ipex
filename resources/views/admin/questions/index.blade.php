@@ -4,7 +4,7 @@
 <div class="max-w-12xl mx-auto">
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h3 class="text-2xl font-bold text-gray-800">คำถามใน: {{ $quiz->title }}</h3>
+            <h3 class="text-2xl font-bold text-gray-800"></h3>
             <p class="text-sm text-gray-500">ทั้งหมด {{ $questions->count() }} ข้อ</p>
         </div>
         <a href="{{ route('admin.questions.create', $quiz->id) }}"
@@ -48,11 +48,6 @@
                         
                             @endif 
                         </div>
-                         {{--  @if(isset($question->option_images[$key]))
-                         <img src="{{ asset($question->option_images[$key]) }}"
-                                    class="object-cover rounded-lg shadow" style="max-width: 100%; max-height: 150px;">
-                        
-                            @endif  --}}
                         @endforeach
                     </div>
                 </div>

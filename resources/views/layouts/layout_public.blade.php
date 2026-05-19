@@ -14,6 +14,7 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -173,10 +174,10 @@
                         class="hover:text-blue-600 transition flex items-center gap-2">
                         <i class="fas fa-solid fa-bell text-xs text-slate-400"></i> Web Portal
                     </a>
-                    {{--  <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex
+                    <a href="{{ route('dashboardall.index') }}" class="hover:text-blue-600 transition flex
                     items-center gap-2">
                     <i class="fa fa-pie-chart" aria-hidden="true"></i> แดชบอร์ด
-                    </a> --}}
+                    </a>
                 </div>
                 <div class="flex items-center gap-3">
                     @guest
@@ -219,6 +220,15 @@
                                         <i class="fas fa-user text-xs"></i> โปรไฟล์ของฉัน
                                     </a>
                                 </div>
+
+                                @if(session()->get('role_name') == 'Admin' || session()->get('role_name') == 'Super Admin')
+                                <div class="p-2">
+                                    <a href="{{ route('admin.dashboard.index') }}"
+                                        class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition flex items-center gap-2">
+                                        <i class="fas fa-user-shield text-xs"></i> Administrator
+                                    </a>
+                                </div>
+                                @endif
                                 <div class="p-2 border-t border-slate-100">
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf

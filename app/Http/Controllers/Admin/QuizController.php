@@ -2,6 +2,7 @@
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Models\Lesson_user;
 use Illuminate\Http\Request;
 use App\Models\Quiz;
 use App\Models\Question;
@@ -107,6 +108,8 @@ class QuizController extends Controller {
 
         $passed = ($score / $total) >= 0.8; // ผ่าน 80%
 
+      
+
         // บันทึกผลลง QuizAttempt
         \App\Models\QuizAttempt::updateOrCreate(
             ['user_id' => auth()->id(), 'quiz_id' => $quiz_id],
@@ -117,38 +120,88 @@ class QuizController extends Controller {
             ]
         );
 
-        if($passed) {
-            // ถ้าเป็น post-test และผ่าน ให้บันทึกว่าเรียนบทเรียนนี้แล้ว
-            $quiz = Quiz::find($quiz_id);
-            if ($quiz->type == 'post-test') {
-                $lesson = Lesson::where('post_quiz_id', $quiz_id)->first();
-                if ($lesson) {
-                    \App\Models\Enrollment::updateOrCreate(
-                        ['user_id' => auth()->id(), 'course_id' => $lesson->course_id],
-                        ['progress_percent' => 100, 'status' => '2'] // status 2 = completed
-                    );
-                }
-            }
+       // 1. หาข้อมูลบทเรียนและคอร์ส
+       $userId = auth()->id();
+       $lesson = Lesson::where('post_quiz_id', $quiz_id)->where('status', 0)->first();
+       $progress = Lesson_user::updateOrCreate(
+                ['user_id' => $userId, 'lesson_id' => $lesson->id, 'course_id' => $lesson->course_id],
+                ['is_completed' => 1, 'completed_at' => now()]
+        );
+
+        if (!$lesson) return; // ป้องกัน error
+
+        $courseId = $lesson->course_id;
+        // 2. นับจำนวนบทเรียนทั้งหมดในคอร์สนี้
+        $totalLessons = Lesson::where('course_id', $courseId)->where('status', 0)->count();
+
+        // 3. นับจำนวนบทเรียนที่ผู้ใช้เรียนจบแล้ว (สอบผ่าน Post-test แล้ว)
+    //    $completedLessonsCount = \App\Models\QuizAttempt::where('user_id', $userId)
+    //     ->where('status', 'passed')
+    //     ->whereIn('quiz_id', function($query) use ($courseId) {
+    //         $query->select('post_quiz_id')
+    //             ->from('lessons')
+    //             ->where('course_id', $courseId)
+    //             ->whereNotNull('post_quiz_id');
+    //     })
+    //     ->distinct('quiz_id')
+    //     ->count();
+      $completedLessons = Lesson_user::where('user_id', $userId)
+                                ->where('course_id', $courseId)
+                                ->where('is_completed', 1)
+                                ->count();
+
+        // 4. คำนวณเป็นเปอร์เซ็นต์
+        $progressPercent = ($totalLessons > 0) ? ($completedLessons / $totalLessons) * 100 : 0;
+        $progressPercent = round(min($progressPercent, 100), 2); // ปัดเศษ 2 ตำแหน่งและไม่เกิน 100
+
+        // 5. อัปเดตลงใน Enrollment
+        if ($passed) {
+            $status = ($progressPercent >= 100) ? '2' : '1'; // ถ้าครบ 100% ให้ status เป็น 2 (Completed)
+            \App\Models\Enrollment::updateOrCreate(
+                ['user_id' => $userId, 'course_id' => $courseId],
+                [
+                    'progress_percent' => $progressPercent,
+                    'status' => $status
+                ]
+            );
+        } else {
+            // กรณีสอบไม่ผ่าน หรือกำลังเรียน
+            \App\Models\Enrollment::updateOrCreate(
+                ['user_id' => $userId, 'course_id' => $courseId],
+                [
+                    'progress_percent' => $progressPercent, // ใช้ค่าที่คำนวณล่าสุด
+                    'status' => '1'
+                ]
+            );
         }
 
         $isLastLesson = $this->isLastLesson($lesson);
-
         $less_st="0";
         if($isLastLesson==false)
         {
             $less_st="1";
         }
 
-        $nextlesson=Lesson::where('course_id', $lesson->course_id)
-        ->where('position',$lesson->position+1)->first()->id;
-        
+        if(Lesson::where('course_id', $lesson->course_id)->where('status', 0)
+            ->max('position')>$lesson->position+1)
+        {
+            $nextlesson=Lesson::where('course_id', $lesson->course_id)
+            ->where('position',$lesson->position+1)->where('status',0)->first()->id;
+        }else{
+            $nextlesson=$lesson->position;
+        }
+
+        sleep(3);
+        $progress_percent = \App\Models\Enrollment::where('user_id', $userId)->where('course_id', $courseId)->value('progress_percent');
+    
         return response()->json([
             'passed' => $passed,
             'score' => $score,
-            'total' => $total
-            ,
+            'total' => $total,
             'less_st' => $less_st,
             'nextlesson' => $nextlesson,
+            'course_id' => $lesson->course_id,
+            'progress_percent' => $progress_percent,
         ]);
     }
 
@@ -173,6 +226,7 @@ class QuizController extends Controller {
 
         $course = \App\Models\Course::find($lesson->course_id);
         $lastLesson = Lesson::where('course_id', $lesson->course_id)
+        ->where('status', 0)
             ->orderBy('id', 'desc')
             ->first();
 
@@ -185,17 +239,29 @@ class QuizController extends Controller {
         }
 
         $nextlesson=Lesson::where('course_id', $lesson->course_id)
-        ->where('position',$lesson->position+1)->first()->id;
+        ->where('position',$lesson->position+1)->where('status', 0)->first();
+
+        if($nextlesson!=null)
+        {
+            $nextlesson=$nextlesson->id;
+        }else{
+            $nextlesson=$lesson->id;
+        }
+
+        $course_id=$lesson->course_id;
+        $progress_percent=\App\Models\Enrollment::where('user_id', auth()->id())
+        ->where('course_id', $course_id)->value('progress_percent');
 
         return view('home.quiz.show', compact('quiz', 'questions', 'lesson',
         'course'
-        , 'less_st','nextlesson'
+        , 'less_st','nextlesson','course_id', 'progress_percent'
         ));
     }
 
     public function isLastLesson(Lesson $lesson): bool
     {
         $lastLesson = Lesson::where('course_id', $lesson->course_id)
+        ->where('status', 0)
             ->orderBy('id', 'desc')
             ->first();
 

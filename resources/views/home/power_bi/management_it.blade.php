@@ -23,7 +23,7 @@
                 <input type="file" name="file_bi" id="file_bi" required>
             </div>
             <div class="hidden space-y-3">
-                <input type="text" name="id" id="id" value="{{$id}}">
+                {{--  <input type="text" name="id" id="id" value="{{$id}}"> --}}
                 <input type="text" name="table" id="table" value="{{$table}}">
             </div>
             <div class="pt-4 flex gap-3 mt-5">
@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-                    <form action="{{ route('dashboard.mng', ['id' => $id]) }}" method="GET" class="w-full sm:w-auto">
+                    <form action="{{ route('dashboard.mng') }}" method="GET" class="w-full sm:w-auto">
                         <div class="relative w-full sm:w-64 group">
                             <select name="category_id" id="category_id" onchange="this.form.submit()"
                                 class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all appearance-none">
@@ -69,7 +69,7 @@
                             </div>
                         </div>
                     </form>
-                    <button onclick="bi_upload({{$id}},'{{$table}}')"
+                    <button onclick="bi_upload('{{$table}}')"
                         class="w-full sm:w-auto px-6 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:-translate-y-0.5 active:scale-95 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-3">
                         <i class="fas fa-cloud-upload-alt text-sm"></i>
                         <span>Upload data</span>

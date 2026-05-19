@@ -1,33 +1,7 @@
 @extends('layouts.layout_admin')
 @section('content')
 <div class="flex flex-wrap justify-end gap-6 mb-6 font-kanit">
-    <div
-        class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-orange-100 transition-all duration-500 hover:-translate-y-1">
-        <div
-            class="absolute -right-8 -bottom-8 size-32 bg-gradient-to-br from-orange-100 to-amber-50 rounded-full blur-3xl group-hover:from-orange-200 transition-colors opacity-70">
-        </div>
-        <div
-            class="size-16 bg-gradient-to-br from-orange-400 to-amber-600 text-white rounded-[1.25rem] flex items-center justify-center text-3xl shadow-lg shadow-orange-200/50 border-4 border-white group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700 relative z-10">
-            <i class="fas fa-running"></i>
-        </div>
-        <div class="relative z-10">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
-                กำลังเรียน
-                <span class="size-1.5 bg-gradient-to-r from-orange-400 to-amber-500 rounded-full animate-pulse"></span>
-            </p>
-            <div class="flex items-baseline gap-1.5">
-                <h3 class="text-4xl font-black text-slate-900 leading-none tracking-tighter">
-                    {{ number_format($student->where('status', 1)->count()) }}
-                </h3>
-                <span class="text-[11px] font-bold text-slate-400 uppercase">คน</span>
-            </div>
-        </div>
-        <div
-            class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 via-amber-500 to-orange-400 rounded-full group-hover:h-2 transition-all duration-300">
-        </div>
-    </div>
-
-    <div
+    {{--  <div
         class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-emerald-100 transition-all duration-500 hover:-translate-y-1">
         <div
             class="absolute -right-8 -bottom-8 size-32 bg-gradient-to-br from-emerald-100 to-teal-50 rounded-full blur-3xl group-hover:from-emerald-200 transition-colors opacity-70">
@@ -38,20 +12,20 @@
         </div>
         <div class="relative z-10">
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
-                เรียนจบแล้ว
+                ลงทะเบียนแล้ว
                 <span class="size-1.5 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></span>
             </p>
             <div class="flex items-baseline gap-1.5">
                 <h3 class="text-4xl font-black text-slate-900 leading-none tracking-tighter">
-                    {{ number_format($student->where('status', '!=', 1)->count()) }}
+                    {{ number_format($students->count()) }}
                 </h3>
-                <span class="text-[11px] font-bold text-slate-400 uppercase">คอร์ส</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase">คน</span>
             </div>
         </div>
         <div
             class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-400 rounded-full group-hover:h-2 transition-all duration-300">
         </div>
-    </div>
+    </div>  --}}
 
     <div
         class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-50 flex items-center gap-6 min-w-[280px] relative overflow-hidden group hover:shadow-xl hover:border-blue-100 transition-all duration-500 hover:-translate-y-1">
@@ -63,22 +37,21 @@
             <i class="fas fa-users"></i>
         </div>
         <div class="relative z-10">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
-                ผู้เรียนทั้งหมด
+            <p class="text-[10px] font-black text-slate-400 uppercase mb-2 flex gap-2">
+                จำนวนทั้งหมด
                 <span class="size-1.5 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full animate-pulse"></span>
             </p>
             <div class="flex items-baseline gap-1.5">
                 <h3 class="text-4xl font-black text-slate-900 leading-none tracking-tighter">
                     {{ number_format(count($student)) }}
                 </h3>
-                <span class="text-[11px] font-bold text-slate-400 uppercase">คอร์ส</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase">รายการ</span>
             </div>
         </div>
         <div
             class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-indigo-500 to-blue-400 rounded-full group-hover:h-2 transition-all duration-300">
         </div>
     </div>
-
 </div>
 
 <div class="max-w-12xl mx-auto">
@@ -107,8 +80,8 @@
                     <select name="student_id" id="student_id"
                         class="w-full border-none rounded-2xl focus:ring-2 focus:ring-blue-500 select2">
                         <option value="">- Select item -</option>
-                        @foreach (App\Models\User::where('status','1')->get() as $item)
-                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @foreach ($user as $item)
+                        <option value="{{ $item->id }}">{{ $item->full_name_th }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -138,7 +111,6 @@
                 <th class="px-8 py-6">ผู้เรียน</th>
                 <th class="px-8 py-6">หลักสูตร</th>
                 <th class="px-8 py-6">วันที่ลงทะเบียน</th>
-                {{--  <th>แบบทดสอบ</th>  --}}
                 <th class="px-8 py-6 ">สถานะ</th>
             </tr>
         </thead>
@@ -157,9 +129,6 @@
                 <td class="px-8 py-5 text-sm font-mono text-slate-400 tracking-tighter">
                     {{ $reg->created_at->format('d/m/Y H:i') }}
                 </td>
-                {{--  <td class="px-8 py-5 text-sm font-mono text-slate-400 tracking-tighter">
-                     | {{ $reg->score != null ? $reg->score : 'ยังไม่ทำแบบทดสอบ' }}
-                </td>  --}}
                 <td class="px-8">
                     @if($reg->status == 1)
                     <span

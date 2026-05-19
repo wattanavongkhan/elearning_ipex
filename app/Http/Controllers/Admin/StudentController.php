@@ -19,13 +19,13 @@ class StudentController extends Controller {
     // app/Http/Controllers/Admin/StudentController.php
     public function index() {
         $students = Employee::
-            leftJoin('central_staff_db.tbluser_permissions as tp', function($join) {
+            leftJoin('center_staff_db.tbluser_permissions as tp', function($join) {
                 $join->on('tblemployee.id', '=', 'tp.emp_id')         // เงื่อนไขที่ 2: ต้องมีสถานะ Active
                     ->where('tp.sys_id', '=', 2); // เงื่อนไขที่ 3: ระบุ ID ของระบบ E-learning
             })
-            ->leftjoin('central_staff_db.tblroles as trole', 'tp.role_id', '=', 'trole.role_id')
+            ->leftjoin('center_staff_db.tblroles as trole', 'tp.role_id', '=', 'trole.role_id')
 
-            ->leftjoin('central_staff_db.tblposition as tpos', 'tblemployee.position_id', '=', 'tpos.id')
+            ->leftjoin('center_staff_db.tblposition as tpos', 'tblemployee.position_id', '=', 'tpos.id')
             ->select('tblemployee.*', 'tpos.position', 'trole.role_name')
             ->orderby('tp.role_id', 'desc')
             ->get();
@@ -151,13 +151,13 @@ class StudentController extends Controller {
     public function getStudent($id)
     {
         // ดึงข้อมูลพนักงานพร้อมสิทธิ์ (ถ้ามี)
-        $student = DB::table('central_staff_db.tblemployee as emp')
-            // ->leftJoin('central_staff_db.tbluser_permissions as tp', 'emp.id', '=', 'tp.emp_id')
-            ->leftJoin('central_staff_db.tbluser_permissions as tp', function($join) {
+        $student = DB::table('center_staff_db.tblemployee as emp')
+            // ->leftJoin('center_staff_db.tbluser_permissions as tp', 'emp.id', '=', 'tp.emp_id')
+            ->leftJoin('center_staff_db.tbluser_permissions as tp', function($join) {
                 $join->on('emp.id', '=', 'tp.emp_id')         // เงื่อนไขที่ 2: ต้องมีสถานะ Active
                     ->where('tp.sys_id', '=', 2); // เงื่อนไขที่ 3: ระบุ ID ของระบบ E-learning
             })
-            ->leftjoin('central_staff_db.tblroles as trole', 'tp.role_id', '=', 'trole.role_id')
+            ->leftjoin('center_staff_db.tblroles as trole', 'tp.role_id', '=', 'trole.role_id')
             ->select('emp.id', 'emp.em_code', 'emp.full_name_eng', 'trole.role_id', 'trole.role_name')
             ->where('emp.id', $id)
             ->first();
@@ -172,7 +172,7 @@ class StudentController extends Controller {
             'role_name' => 'required'
         ]);
 
-        DB::table('central_staff_db.tbluser_permissions')->updateOrInsert(
+        DB::table('center_staff_db.tbluser_permissions')->updateOrInsert(
             ['emp_id' => $request->emp_id, 'sys_id' => 2],
             [
                 'role_id' => $request->role_name,

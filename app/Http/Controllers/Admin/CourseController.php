@@ -180,7 +180,6 @@ class CourseController extends Controller
             $currentLesson = $course->lessons->where('id', $lesson_id)->first();
         }
 
-
         // 3. ดึงรายการบทเรียนที่เรียนจบแล้ว
         $completedLessons = Lesson_user::where('user_id', $user->id)
             ->where('course_id', $id)
@@ -225,7 +224,7 @@ class CourseController extends Controller
         $file = CoursesFile::select('tf.file_name','tf.file_path')
         ->leftjoin('private_files as tf','tf.id','courses_files.file_id')
         ->where('course_id',$course->id)->get();
-
+ 
         return view('home.courses.learn', compact(
             'course',
             'currentLesson',
@@ -246,26 +245,26 @@ class CourseController extends Controller
 
         return DB::transaction(function () use ($userId, $courseId, $lessonId) {
             // 1. บันทึกว่าเรียน Lesson นี้จบแล้ว (ตาราง Progress รายบท)
+
             $progress = Lesson_user::updateOrCreate(
                 ['user_id' => $userId, 'lesson_id' => $lessonId, 'course_id' => $courseId],
                 ['is_completed' => 1, 'completed_at' => now()]
             );
 
             // 2. เช็คว่านี่คือ Lesson สุดท้ายของ Course นี้หรือไม่
-            $totalLessons = Lesson::where('course_id', $courseId)->count();
+            $totalLessons = Lesson::where('course_id', $courseId)->where('status', 0)->count();
             $completedLessons = Lesson_user::where('user_id', $userId)
                                 ->where('course_id', $courseId)
                                 ->where('is_completed', 1)
                                 ->count();
 
-            // 3. ถ้าจำนวนที่เรียนจบ = จำนวนทั้งหมด ให้ Update ตาราง Enrollment
             // 1. เช็คข้อมูล Enrollment เดิม
             $enrollment = Enrollment::where('user_id', $userId)
                             ->where('course_id', $courseId)
                             ->first();
 
             // 2. เช็คว่าบทเรียนปัจจุบันมี Post-Quiz หรือไม่ และทำผ่านหรือยัง
-            $currentLesson = Lesson::find($lessonId); // รับค่า lesson_id มาจาก Request
+            $currentLesson = Lesson::where('status', 0)->find($lessonId); // รับค่า lesson_id มาจาก Request
             $hasPostQuiz = !empty($currentLesson->post_quiz_id);
 
             // ตรวจสอบผลการสอบของบทเรียนนี้
@@ -273,14 +272,25 @@ class CourseController extends Controller
             if ($hasPostQuiz) {
                 $isQuizPassed = UserQuizResult::where('user_id', $userId)
                                 ->where('quiz_id', $currentLesson->post_quiz_id)
-                                // ->where('score', '>=', 50) // ถ้าคุณมีเกณฑ์คะแนนขั้นต่ำ
                                 ->exists();
             }
 
+            $progressPercent = ($totalLessons > 0) ? ($completedLessons / $totalLessons) * 100 : 0;
+            // $progressPercent = round(min($progressPercent, 100), 2);
+            $status = ($progressPercent >= 100) ? '2' : '1'; // ถ้าครบ 100% ให้ status เป็น 2 (Completed)
+
+            \App\Models\Enrollment::updateOrCreate(
+                ['user_id' => $userId, 'course_id' => $courseId],
+                [
+                    'progress_percent' => $progressPercent,
+                    'status' => $status
+                ]
+            );
+
+
             // 3. เช็คเงื่อนไขการจบหลักสูตร
-            // เงื่อนไข: (เรียนครบทุกบท) และ (ถ้าบทนี้มีควิซ ต้องทำควิซผ่านแล้ว)
-            if ($completedLessons >= $totalLessons) {
-                
+            if ($completedLessons >= $totalLessons) 
+            {
                 if ($hasPostQuiz && !$isQuizPassed) {
                     // กรณีเรียนครบจำนวนบทแล้ว แต่ "ติด" ควิซบทสุดท้ายยังไม่ได้ทำ/ไม่ผ่าน
                     return response()->json([
@@ -299,7 +309,6 @@ class CourseController extends Controller
                     ]);
                 }
 
-                // ถ้าผ่านทุกเงื่อนไข -> อัปเดต Enrollment เป็นจบหลักสูตร (2)
                 $enrollment->update(['status' => 2]);
 
                 return response()->json([

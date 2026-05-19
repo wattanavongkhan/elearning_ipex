@@ -98,7 +98,6 @@
                     @endif
                 </video>
             </div>
-
             {{-- 3. เช็คหลังเรียนจบ (Post-test) --}}
             @if($currentLesson->post_quiz)
             <div id="post-quiz-trigger"
@@ -171,85 +170,55 @@
                 </h3>
             </div>
 
-                <div class="divide-y divide-slate-700/50">
+            <div class="divide-y divide-slate-700/50">
+                @foreach($course->lessons as $i => $lesson)
                 @php
-    // เริ่มต้นให้บทแรกสุด (หรือบทที่เคยเรียนจบไปแล้ว) สามารถกดได้
-    // ตัวแปรนี้จะบอกว่า "บทเรียนนี้สามารถเข้าถึงได้หรือไม่"
-    $canAccessNext = true; 
-@endphp
+                $isCompleted = in_array($lesson->id, $completedLessons ?? []);
+                @endphp
 
-@foreach($course->lessons as $i => $lesson)
-    @php
-        $isCompleted = in_array($lesson->id, $completedLessons ?? []);
-        
-        // เงื่อนไขการปลดล็อค: 
-        // 1. เป็นบทที่ $canAccessNext เป็นจริง (มาจากบทก่อนหน้าเรียนจบแล้ว หรือเป็นบทแรก)
-        // 2. หรือเป็นบทที่กำลังเรียนค้างอยู่ ($currentLesson)
-        $isUnlocked = $canAccessNext || ($currentLesson && $currentLesson->id == $lesson->id);
-    @endphp
-
-    @if($currentLesson != null)
-        {{-- ตรวจสอบว่าถ้าไม่ Unlocked ให้เปลี่ยน Tag เป็น <div> หรือใส่ CSS ล็อคไว้ --}}
-        @if($isUnlocked)
-            <a href="{{ route('courses.learn', [$course->id, $lesson->id]) }}"
-                class="flex items-center gap-4 p-5 hover:bg-slate-700/50 transition-all {{ $currentLesson->id == $lesson->id ? 'bg-blue-600/10 border-l-4 border-blue-500' : '' }}">
-        @else
-            <div class="flex items-center gap-4 p-5 opacity-50 cursor-not-allowed bg-slate-900/50">
-        @endif
-
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black
-                {{ !$isUnlocked ? 'bg-slate-800 text-slate-600' : ($currentLesson->id == $lesson->id ? 'bg-blue-600 text-white' : ($isCompleted ? 'bg-green-500/20 text-green-500' : 'bg-slate-900 text-slate-500')) }}">
-                
-                @if(!$isUnlocked)
-                    <i class="fas fa-lock text-[10px]"></i>
-                @elseif($isCompleted)
-                    <i class="fas fa-chevron-circle-right text-[10px]"></i>
-                @else
-                    {{ $i + 1 }}
-                @endif
-            </div>
-
-            <div class="flex-1">
-                <p class="text-sm font-bold {{ !$isUnlocked ? 'text-slate-600' : ($currentLesson->id == $lesson->id ? 'text-white' : ($isCompleted ? 'text-slate-500' : 'text-slate-400')) }}">
-                    {{ $lesson->title }}
-                </p>
-
-                <div class="flex items-center gap-2 mt-1">
-                    <span class="text-[10px] {{ $isCompleted ? 'text-green-500/60' : 'text-slate-500' }} uppercase tracking-tighter">
-                        @if(!$isUnlocked)
-                            Locked
+                @if($currentLesson!=null)
+                <a href="{{ route('courses.learn', [$course->id, $lesson->id]) }}"
+                    class="flex items-center gap-4 p-5 hover:bg-slate-700/50 transition-all {{ $currentLesson->id == $lesson->id ? 'bg-blue-600/10 border-l-4 border-blue-500' : '' }}">
+                    <div
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black
+                            {{ $currentLesson->id == $lesson->id ? 'bg-blue-600 text-white' : ($isCompleted ? 'bg-green-500/20 text-green-500' : 'bg-slate-900 text-slate-500') }}">
+                        @if($isCompleted)
+                        <i class="fas fa-chevron-circle-right text-[10px]"></i>
                         @else
-                            {{ $isCompleted ? 'Completed' : 'Lesson ' . ($i + 1) }}
+                        {{ $i + 1 }}
                         @endif
-                    </span>
+                    </div>
 
-                    @if($isUnlocked && $currentLesson->id == $lesson->id)
-                        <span id="current-lesson-percent" class="text-[10px] text-blue-400 font-bold">0%</span>
+                    <div class="flex-1">
+                        <p
+                            class="text-sm font-bold {{ $currentLesson->id == $lesson->id ? 'text-white' : ($isCompleted ? 'text-slate-500' : 'text-slate-400') }}">
+                            {{ $lesson->title }}
+                        </p>
+
+                        <div class="flex items-center gap-2 mt-1">
+                            <span
+                                class="text-[10px] {{ $isCompleted ? 'text-green-500/60' : 'text-slate-500' }} uppercase tracking-tighter">
+                                {{ $isCompleted ? 'Completed' : 'Lesson ' . ($i + 1) }}
+                            </span>
+
+                            @if($currentLesson->id == $lesson->id)
+                            <span id="current-lesson-percent" class="text-[10px] text-blue-400 font-bold">0%</span>
+                            @elseif($isCompleted)
+                            <span class="text-[10px] text-green-500 font-bold">100%</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    @if($currentLesson->id == $lesson->id)
+                    <i class="fas fa-play-circle text-blue-500 animate-pulse"></i>
                     @elseif($isCompleted)
-                        <span class="text-[10px] text-green-500 font-bold">100%</span>
+                    <i class="fas fa-check-circle text-green-500"></i>
+                    @else
+                    <i class="far fa-circle text-slate-700"></i>
                     @endif
-                </div>
-            </div>
-
-            @if(!$isUnlocked)
-                <i class="fas fa-lock text-slate-700"></i>
-            @elseif($currentLesson->id == $lesson->id)
-                <i class="fas fa-play-circle text-blue-500 animate-pulse"></i>
-            @elseif($isCompleted)
-                <i class="fas fa-check-circle text-green-500"></i>
-            @else
-                <i class="far fa-circle text-slate-700"></i>
-            @endif
-
-        @if($isUnlocked)
-            </a>
-        @else
-            </div>
-        @endif
-
-    @else
-        {{-- ส่วนของ Modal ยินดีด้วย (คงเดิม) --}}
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                </a>
+                @else
+                    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div class="bg-slate-800 border-2 border-green-500 rounded-lg p-8 max-w-md text-center shadow-2xl">
                 <i class="fas fa-trophy text-5xl text-yellow-400 mb-4 block animate-bounce"></i>
                 <h2 class="text-2xl font-bold text-white mb-3">ยินดีด้วย!</h2>
@@ -260,21 +229,29 @@
                 </button>
             </div>
         </div>
-    @endif
-
-    @php
-        // สำคัญมาก: ส่งต่อสถานะไปยัง Loop รอบถัดไป
-        // ถ้าบทนี้เรียนจบแล้ว บทถัดไปจะกลายเป็น Unlocked
-        $canAccessNext = $isCompleted; 
-    @endphp
-@endforeach
+                @endif
+                @endforeach
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    Swal.fire({
+        title: 'ดำเนินการสำเร็จ!',
+        text: "{{ session('success') }}",
+        icon: 'success',
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#2563eb', // สีน้ำเงิน Blue-600 ให้เข้ากับธีม
+        background: '#ffffff',
+        customClass: {
+            popup: 'rounded-[2rem]',
+            confirmButton: 'rounded-xl px-10 py-3 font-kanit'
+        }
+    });
+</script>
 
+<script>
    document.addEventListener('DOMContentLoaded', function () {
     const video = document.getElementById('video-player');
     const percentText = document.getElementById('current-lesson-percent');
@@ -330,10 +307,13 @@
                 video.currentTime = watchedTime;
             }
         });
-*/
+        */
+
         video.onended = function () {
             const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
             const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
+
+            console.log(hasPostQuiz,alreadyPassed);
             if (hasPostQuiz && !alreadyPassed) {
                 const quizBox = document.getElementById('post-quiz-trigger');
                 if (quizBox) {
@@ -388,7 +368,6 @@
 
    function saveProgressAndNext() 
    {
-
     if (isSaving) return;
     isSaving = true;
 
@@ -422,21 +401,7 @@
             if (nextUrl) {
                 window.location.href = nextUrl;
             } else {
-                Swal.fire({
-                title: data.status === 'success' ? 'ยินดีด้วย!' : 'บันทึกความคืบหน้าแล้ว',
-                text: data.message,
-                icon: 'success',
-                confirmButtonText: 'ตกลง',
-                confirmButtonColor: '#2563eb', // สีน้ำเงิน Blue-600 ให้เข้ากับธีม
-                background: '#ffffff',
-                customClass: {
-                    popup: 'rounded-[2rem]',
-                    confirmButton: 'rounded-xl px-10 py-3 font-kanit'
-                }});
-
-                setTimeout(() => {
-                   window.location.href = "{{ route('profile.index', $course->id) }}";
-                }, 1000);
+                showCompletionAlert();
             }
         })
         .catch(error => {
@@ -445,7 +410,28 @@
         });
     }
     });
+/*
+$(document).ready(function () {
+    @if($currentLesson->pre_quiz && !$userDonePreQuiz)
+        generateQRCode();
+    @endif
+});
 
+function generateQRCode() {
+    const qrcodeContainer = document.getElementById('qrcode');
+    if (qrcodeContainer) {
+        const quizUrl = "{{ route('quiz.show', $currentLesson->pre_quiz->id ?? 0) }}";
+        new QRCode(qrcodeContainer, {
+            text: quizUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+        });
+    }
+}
+
+*/
 
 </script>
 @endsection

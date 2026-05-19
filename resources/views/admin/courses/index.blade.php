@@ -13,7 +13,7 @@
         </button>
     </div>
     @endif
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-5">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-4">
         <div class="overflow-x-auto">
             <div class="flex justify-between items-center mb-5">
                 <div>
@@ -111,11 +111,9 @@
 @section('scripts')
 <script>
     $(document).ready(function () {
-        $('.select2').select2();
         if ('{{$courses}}'.trim() !== '[]') {
             $('#courses_tb').DataTable();
         }
     });
-
 </script>
 @endsection

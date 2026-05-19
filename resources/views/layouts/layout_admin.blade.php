@@ -19,6 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         body {
             font-family: "Kanit", sans-serif;
@@ -174,6 +175,52 @@
                     <i class="fas fa-regular fa-newspaper w-5 text-center text-slate-400"></i>
                     ข่าวสารและประกาศ
                 </a>
+
+                {{--  <a href="{{ route('admin.activities.index') }}"
+                class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
+                @if(Route::currentRouteName() == 'admin.activities.index' || Route::currentRouteName() ==
+                'admin.activities.create') bg-blue-600 @endif">
+                <i class="fas fa-calendar-alt w-5 text-center text-slate-400"></i>
+                ตารางกิจกรรม
+                </a> --}}
+                <div x-data="{ open: {{ (request()->routeIs('schedule.*') || request()->routeIs('guest.*') || request()->routeIs('business_trip.*')) ? 'true' : 'false' }} }">
+                    <!-- เมนูหลัก -->
+                    <button @click="open = !open" 
+                    class="w-full flex items-center justify-between p-3 hover:bg-slate-800 rounded-lg transition group
+        {{ request()->routeIs('schedule.*') || request()->routeIs('guest.*') || request()->routeIs('business_trip.*')  ? 'bg-slate-800/50' : '' }}">
+                        <div class="flex items-center gap-3">
+                            <i
+                                class="fas fa-calendar-alt w-5 text-center {{ request()->routeIs('schedule.*') ? 'text-blue-500' : 'text-slate-400' }}"></i>
+                            <span class="text-slate-200">จัดการปฏิทิน</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-300"
+                            :class="open ? 'rotate-180' : ''"></i>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 -translate-y-2"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        class="mt-1 ml-4 border-l border-slate-700 space-y-1">
+                        <a href="{{ route('schedule.index') }}"
+                            class="block p-2 pl-6 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-r-lg transition
+                            @if(Route::currentRouteName() == 'schedule.index' || Route::currentRouteName() == 'schedule.create' ||
+                            Route::currentRouteName() == 'schedule.edit') bg-blue-600 @endif">
+                             Schedule
+                        </a>
+                        <a href="{{ route('guest.index') }}"
+                            class="block p-2 pl-6 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-r-lg transition
+                            @if(Route::currentRouteName() == 'guest.index' || Route::currentRouteName() == 'guest.create' ||
+                            Route::currentRouteName() == 'guest.edit') bg-blue-600 @endif">
+                             Guest
+                        </a>
+                        <a href="{{ route('business_trip.index') }}"
+                            class="block p-2 pl-6 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-r-lg transition
+                            @if(Route::currentRouteName() == 'business_trip.index' || Route::currentRouteName() == 'business_trip.create' ||
+                            Route::currentRouteName() == 'business_trip.edit') bg-blue-600 @endif">
+                            Business trip
+                        </a>
+                    </div>
+                </div>
+
                 <p class="text-xs font-semibold text-slate-500 uppercase px-3 mt-6 mb-2">รายงาน/สรุปผล</p>
                 <a href="{{ route('admin.reports.student') }}" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition
                 @if(Route::currentRouteName() == 'admin.reports.student') bg-blue-600 @endif">
@@ -193,7 +240,6 @@
                 {{--  <a href="" class="flex items-center gap-3 p-3 hover:bg-slate-800 rounded-lg transition">
                     <i class="fas fa-cog w-5 text-center text-slate-400"></i> ตั้งค่า
                 </a>  --}}
-
             </nav>
 
             <div class="p-4 border-t border-slate-800">
@@ -219,11 +265,11 @@
                         placeholder="ค้นหาสถิติหรือคอร์ส...">
                 </div>
                 <div class="flex items-center gap-4">
-                    <button class="relative p-2 text-gray-500 hover:text-blue-600 transition">
-                        <i class="fas fa-bell"></i>
+                    <a href="{{ route('home') }}" class="relative p-2 text-gray-500 hover:text-blue-600 transition">
+                        <i class="fas fa-random"></i> ผู้เรียน
                         <span
                             class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
+                    </a>
 
                     <form action="{{ route('logout') }}" method="post" id="logoutForm">
                         @csrf

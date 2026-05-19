@@ -60,8 +60,8 @@
             @php
             // คำนวณ Progress ของคอร์สนี้
             $allLessons = $item->course->lessons;
-            $totalLessons = $allLessons->count();
-            $doneLessons = $allLessons->whereIn('id', $completedLessonIds ?? [])->where('status', 2)->count();
+            $totalLessons = $allLessons->where('status', 0)->count();
+            $doneLessons = $allLessons->whereIn('id', $completedLessonIds ?? [])->count();
             $progressPercent = $totalLessons > 0 ? round(($doneLessons / $totalLessons) * 100) : 0;
             @endphp
             <div
@@ -97,8 +97,9 @@
                             <div class="flex justify-between items-end mb-2">
                                 <span
                                     class="text-[10px] font-black text-slate-500 uppercase tracking-widest">ความคืบหน้า
-                                    ({{ $doneLessons }}/{{ $totalLessons }} บท)</span>
-                                <span class="text-sm font-black text-blue-600">@if($item->status==1) @else{{ $item->progress_percent }} @endif%</span>
+                                    {{--({{ $doneLessons }} --}}
+                                     {{App\Models\Lesson_user::where('course_id', $item->course->id)->where('user_id', auth()->id())->count() }} /{{ $totalLessons }} บท)</span>
+                                <span class="text-sm font-black text-blue-600">{{ $item->progress_percent }} %</span>
                             </div>
                             <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-[2px] shadow-inner">
                                 <div class="h-full bg-gradient-to-r from-blue-600 to-indigo-400 rounded-full transition-all duration-1000 ease-out"

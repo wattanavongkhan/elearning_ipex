@@ -29,13 +29,14 @@
                     </div>
                     <div>
                         <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
-                            ชื่อบทเรียน <span class="text-red-500">*</span>
+                            ชื่อบทเรียน<span class="text-red-500">*</span>
                         </label>
                         <select name="lesson_id" id="lesson_id"
                             class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                            @foreach (App\Models\Lesson::where('course_id', $quiz->course_id)->where('status',0)->get() as $item)
+                            @foreach (App\Models\Lesson::where('course_id', $quiz->course_id)->where('status',0)->get()
+                            as $item)
                             <option value="{{ $item->id }}"
-                                {{ old('lesson_id', $quiz->lesson_id) == $item->id ? 'selected' : '' }}>
+                                {{ old('lesson_id', $quiz->id) == $item->post_quiz_id ? 'selected' : '' }}>
                                 {{ $item->title }}
                             </option>
                             @endforeach

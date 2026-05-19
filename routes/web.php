@@ -15,8 +15,8 @@ use App\Http\Controllers\Admin\PrivatefileController;
 use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\PowerbiController;
+use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -172,10 +172,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::delete('/privatefiles/{id}', [PrivatefileController::class, 'destroy'])->name('privatefiles.destroy');
 
     
+
     Route::get('/dashboardall', [PowerbiController::class, 'index'])->name('dashboardall.index');
     Route::get('/dashboardall.show/{id}', [PowerbiController::class, 'show'])->name('dashboardall.show');
 
-    Route::get('/dashboard.mng/{id}', [PowerbiController::class, 'dashboard_mng'])->name('dashboard.mng');
+    Route::get('/dashboard.mng', [PowerbiController::class, 'dashboard_mng'])->name('dashboard.mng');
 
     // สำหรับดึงข้อมูล JSON ไปแสดงใน Modal
     Route::get('/get-student/{id}', [StudentController::class, 'getStudent']);
@@ -183,8 +184,27 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // สำหรับรับค่าจากฟอร์มมาบันทึกสิทธิ์
     Route::post('/update-user-role', [StudentController::class, 'updateRole'])->name('admin.users.update-role');
     
+    Route::post('/dashboard.upload', [PowerbiController::class, 'dashboard_upload'])->name('dashboard.upload');
 
-     Route::post('/dashboard.upload', [PowerbiController::class, 'dashboard_upload'])->name('dashboard.upload');
+
+
+    Route::get('/schedule.index', [CalendarController::class, 'schedule_index'])->name('schedule.index');
+    Route::get('/schedule/create', [CalendarController::class, 'schedule_create'])->name('schedule.create');
+    Route::post('/schedule', [CalendarController::class, 'schedule_store'])->name('schedule.store');
+    Route::get('/schedule/{id}/edit', [CalendarController::class, 'schedule_edit'])->name('schedule.edit');
+    Route::delete('schedule/{id}', [CalendarController::class, 'schedule_destroy'])->name('schedule.destroy');
+
+    Route::get('/guest.index', [CalendarController::class, 'guest_index'])->name('guest.index');
+    Route::get('/guest/create', [CalendarController::class, 'guest_create'])->name('guest.create');
+    Route::post('/guest', [CalendarController::class, 'guest_store'])->name('guest.store');
+    Route::get('/guest/{id}/edit', [CalendarController::class, 'guest_edit'])->name('guest.edit');
+    Route::delete('guest/{id}', [CalendarController::class, 'guest_destroy'])->name('guest.destroy');
+
+    Route::get('/business_trip.index', [CalendarController::class, 'business_trip_index'])->name('business_trip.index');
+    Route::get('/business_trip/create', [CalendarController::class, 'business_trip_create'])->name('business_trip.create');
+    Route::post('/business_trip', [CalendarController::class, 'business_trip_store'])->name('business_trip.store');
+    Route::get('/business_trip/{id}/edit', [CalendarController::class, 'business_trip_edit'])->name('business_trip.edit');
+    Route::delete('business_trip/{id}', [CalendarController::class, 'business_trip_destroy'])->name('business_trip.destroy');
 
 });
 

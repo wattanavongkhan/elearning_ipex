@@ -251,7 +251,6 @@
             confirmButton: 'rounded-xl px-10 py-3 font-kanit'
         }
     });
-
 </script>
 @endif
 @endsection

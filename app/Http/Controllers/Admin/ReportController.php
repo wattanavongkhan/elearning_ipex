@@ -20,21 +20,10 @@ class ReportController extends Controller
             'emp.full_name_th', 
             'c.title as course_title',
             'sec.section', 
-            'emp.em_code', 
-            'qa.score'
+            'emp.em_code'
         )
         ->join('center_staff_db.tblemployee as emp', 'enrollments.user_id', '=', 'emp.id')
-        // สมมติว่า Join section ผ่านตาราง employee
         ->join('center_staff_db.tblsection as sec', 'emp.section_id', '=', 'sec.id') 
-        ->leftjoin('quizzes as q', function ($join) {
-            $join->on('enrollments.course_id', '=', 'q.course_id')
-                 ->where('q.type', 'post-test')
-                //  ->orwhere('q.type', 'pre-test')
-                 ;
-        })
-        ->leftjoin('quiz_attempts as qa', function ($join) {
-            $join->on('q.id', '=', 'qa.quiz_id');
-        })
         ->join('courses as c', 'enrollments.course_id', '=', 'c.id');
         if ($req->course_id !=null) 
         {
@@ -52,7 +41,12 @@ class ReportController extends Controller
         }
         $student=$student->get();
 
-        return view('admin.reports.student', compact('student'));
+        $user = DB::table('center_staff_db.tblemployee')
+        ->select('id', 'full_name_th')
+        ->get();
+
+
+        return view('admin.reports.student', compact('student','user'));
     }
 
     public function course_report()
@@ -75,22 +69,26 @@ class ReportController extends Controller
     public function dashboard()
     {
         // --- 1. ข้อมูลภาพรวม (Overview Stats) ---
-        $total_students = User::count();
-        
+        $total_students = DB::table('center_staff_db.tblemployee as emp')
+        ->select(DB::raw('COUNT(DISTINCT emp.id) as total'))
+        ->first()
+        ->total;
+
         // นับจำนวนคนที่กำลังเรียน (In Progress: status 1)
         $learning_count = Enrollment::where('status', 1)->count();
         
         // นับจำนวนคนที่เรียนจบแล้ว (Completed: status 2)
-        $completed_count = Enrollment::where('status', 2)->count();
-        
-        $total_courses = Course::count();
+        $completed_count = Enrollment::where('progress_percent', 100)
+        ->select(DB::raw('COUNT(DISTINCT CONCAT(user_id, "-", course_id)) as total'))
+        ->first()
+        ->total;
 
-        // --- 2. การวิเคราะห์ข้อมูล (Analytical Data) ---
+        $total_courses = Course::where('status', 0)->count();
 
         // Top Learners: แสดงรายชื่อพนักงานที่เรียนจบมากที่สุด
         $top_learners = DB::table('elearning_db.enrollments as en') // ระบุชื่อ DB ที่นี่
         ->join('center_staff_db.tblemployee as emp', 'en.user_id', '=', 'emp.id') // ระบุชื่อ DB พนักงาน
-        ->where('en.status', 2)
+        ->where('en.progress_percent', 100)
         ->select('emp.full_name_th', DB::raw('count(en.id) as course_count'))
         ->groupBy('emp.id', 'emp.full_name_th')
         ->orderBy('course_count', 'desc')
@@ -99,6 +97,8 @@ class ReportController extends Controller
 
         // Average Progress: ดูว่าพนักงานในระบบมีค่าเฉลี่ยความคืบหน้ากี่ % (ใช้ progress_percent ที่เราเพิ่งทำ)
         $avg_progress = Enrollment::avg('progress_percent') ?? 0;
+
+
 
         // Monthly Trends: กราฟแสดงจำนวนพนักงานที่ Register เข้ามาใหม่ใน 6 เดือน
         $monthly_data = User::select(
@@ -110,8 +110,36 @@ class ReportController extends Controller
             ->orderBy(DB::raw('MIN(created_at)'), 'ASC')
             ->get();
 
-        $labels = $monthly_data->pluck('month');
-        $data = $monthly_data->pluck('count');
+
+        $course_trends = Enrollment::select(
+            'course_id',
+            DB::raw('COUNT(DISTINCT user_id) as total_students'), // นับจำนวนพนักงานแบบไม่ซ้ำคน
+            DB::raw("DATE_FORMAT(created_at, '%b') as month") // ดึงชื่อเดือนย่อ (Mar, Apr, May)
+        )
+        ->where('created_at', '>=', Carbon::now()->subMonths(3)) // ย้อนหลัง 3 เดือน
+        ->groupBy('course_id', 'month')
+        ->orderBy(DB::raw('MIN(created_at)'), 'ASC')
+        ->with('course:id,title') // ดึงชื่อคอร์สมาด้วย (Eager Loading)
+        ->get();
+
+
+        // ดึงชื่อเดือนที่ไม่ซ้ำกันสำหรับทำแกน X ของกราฟ (เช่น ['Mar', 'Apr', 'May'])
+        $labels = $course_trends->pluck('month')->unique()->values()->all();
+        // จัดกรุ๊ปตามชื่อคอร์ส เพื่อสร้าง Dataset ของกราฟแต่ละเส้น/แต่ละแท่ง
+        $datasets = $course_trends->groupBy('course_id')->map(function ($items) use ($labels) {
+        $courseTitle = $items->first()->course->title ?? 'คอร์สทั่วไป';
+            $data = collect($labels)->map(function ($month) use ($items) {
+                $found = $items->where('month', $month)->first();
+                return $found ? $found->total_students : 0;
+            })->all();
+
+            return [
+                'label' => $courseTitle,
+                'data' => $data,
+                'borderWidth' => 2
+            ];
+        })->values()->all();
+
 
         // --- 3. ข้อมูล Quiz Results (Optional แต่อยากให้มี) ---
         // คะแนนเฉลี่ยของการทำแบบทดสอบทั้งหมดในระบบ
@@ -119,7 +147,7 @@ class ReportController extends Controller
 
         return view('admin.dashboard.index', compact(
             'total_students', 'learning_count', 'completed_count', 'total_courses',
-            'top_learners', 'labels', 'data', 'avg_progress', 'avg_quiz_score'
+            'top_learners', 'labels', 'datasets', 'avg_progress', 'avg_quiz_score'
         ) + [
             'reportId'    => env('PBI_REPORT_ID'),
             'workspaceId' => env('PBI_WORKSPACE_ID')
