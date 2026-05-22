@@ -12,22 +12,18 @@
                     name</label>
                 <select name="table_name" id="table_name"
                     class="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700">
-                    @foreach ($tabale_name as $item)
+                    @foreach ($dash_link as $item)
                     <option value="{{$item->table_name}}">{{$item->table_des}}</option>
                     @endforeach
                 </select>
             </div>
             <div>
                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Excel file
-                    (.xlsx)</label>
+                    (.CSV)</label>
                 <input type="file" name="file_bi" id="file_bi" required>
             </div>
-            <div class="hidden space-y-3">
-                {{--  <input type="text" name="id" id="id" value="{{$id}}"> --}}
-                <input type="text" name="table" id="table" value="{{$table}}">
-            </div>
             <div class="pt-4 flex gap-3 mt-5">
-                <button type="button"
+                <button type="button" onclick="closeBiUploadModal()"
                     class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-2xl font-bold hover:bg-slate-200 transition-all">Cancel</button>
                 <button type="submit"
                     class="flex-[1] py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all">Send</button>
@@ -36,20 +32,19 @@
     </div>
 </dialog>
 
-<div class="bg-slate-50 min-h-screen py-2 p-5" style="font-size: 13px;">
-    <div class="container mx-auto px-2">
-        <div class="bg-white rounded-[1.5rem] p-3 shadow-sm border border-slate-100">
+<div class="bg-slate-50 min-h-screen py-2 p-2" style="font-size: 12px;">
+    <div class="container mx-auto">
+        <div class="bg-white rounded-[1.5rem] p-5 mt-5 mb-5 shadow-sm border border-slate-100">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 ">
-
                 <div class="flex items-center gap-4">
                     <div
                         class="size-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
                         <i class="fas fa-database text-lg"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-black text-slate-800 tracking-tighter uppercase">Data Management
+                        <h2 class="text-xl font-black text-slate-800 tracking-tighter uppercase">Management / {{$title}}
                         </h2>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-0.5">
+                        <p class="text-[15px] text-slate-400 font-bold mt-0.5">
                             จัดการข้อมูลแผนก <span class="text-blue-600"></span>
                         </p>
                     </div>
@@ -60,8 +55,8 @@
                             <select name="category_id" id="category_id" onchange="this.form.submit()"
                                 class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all appearance-none">
                                 <option value="">-- เลือกรายการ --</option>
-                                @foreach($dash_link_all as $type)
-                                <option value="{{$type->id}}">{{$type->title}}</option>
+                                @foreach($dash_link as $item)
+                                <option value="{{$item->id}}">{{$item->table_des}}</option>
                                 @endforeach
                             </select>
                             <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none">
@@ -69,18 +64,17 @@
                             </div>
                         </div>
                     </form>
-                    <button onclick="bi_upload('{{$table}}')"
+                    <button onclick="bi_upload()"
                         class="w-full sm:w-auto px-6 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:-translate-y-0.5 active:scale-95 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-3">
                         <i class="fas fa-cloud-upload-alt text-sm"></i>
                         <span>Upload data</span>
                     </button>
                 </div>
             </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-separate border-spacing-y-2" id="data_bi">
+            <div class="table-container" style="width: 100%; overflow-x: auto;">
+                <table id="data_bi" class="display nowrap" style="width:100%; min-width: 800px;">
                     <thead>
-                        <tr class="text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                        <tr class="text-slate-400 text-[8px] font-black uppercase tracking-widest">
                             @foreach($columns as $key => $value)
                             <th class="py-1 px-4">{{ ucwords(str_replace('_', ' ', $value->Field)) }}</th>
                             @endforeach
@@ -88,9 +82,9 @@
                     </thead>
                     <tbody>
                         @foreach($rows as $row)
-                        <tr>
+                        <tr class="text-[10px]">
                             @foreach($columns as $column)
-                            <td class="py-1 px-4">{{ $row->{$column->Field} }}</td>
+                            <td class="py-1 px34">{{ $row->{$column->Field} }}</td>
                             @endforeach
                         </tr>
                         @endforeach
@@ -110,12 +104,53 @@
             "ordering": true,
             "info": true,
             "autoWidth": false,
-            "responsive": true,
+            "responsive": false,
+            "scrollX": true,
+            "pageLength": 10, // กำหนดให้แสดงหน้าละกี่แถวคงที่ไปเลย (เช่น 10 แถว)
+            "dom": 'Bfrtip', // เอา 'l' ออก เหลือแค่นี้ ปุ่ม Show Limit จะหายไปทันที
+            "buttons": [
+                {
+                    extend: 'csvHtml5',
+                    text: 'ส่งออก CSV',
+                    title: '{{$title}}', // หัวข้อเรื่องด้านในไฟล์ (ถ้ามี)
+                    filename: '{{$title}}',
+                    charset: 'UTF-8',
+                    bom: true,
+                    exportOptions: {
+                        columns: ':visible',
+                        
+                        format: {
+                            body: function (data, row, column, node) {
+                                return node.textContent || node.innerText || data;
+                            }
+                        }
+                    }
+                },
+                /*{
+                    extend: 'excelHtml5',
+                    text: 'ส่งออก Excel',
+                    title: '{{$title}}', // หัวข้อเรื่องด้านในไฟล์ (ถ้ามี)
+                    filename: '{{$title}}',
+                    exportOptions: {
+                        columns: ':visible',
+                        format: {
+                            body: function (data, row, column, node) {
+                                return node.textContent || node.innerText || data;
+                            }
+                        }
+                    }
+                }
+                */
+            ]
         });
     });
 
     function bi_upload() {
         document.getElementById('biupload-modal').showModal();
+    }
+
+    function closeBiUploadModal() {
+        document.getElementById('biupload-modal').close();
     }
 
 </script>

@@ -28,12 +28,12 @@
 
 </style>
 <div class="min-h-screen bg-[#f8fafc] p-6 font-kanit">
-    <div class="grid grid-cols-1 lg:grid-cols-9 sm:grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 lg:grid-cols-9 sm:grid-cols-4 gap-3">
         <div>
-            <button onclick="" type="button"
-                class="px-6 py-3 mb-5 bg-yellow-500 text-white rounded-2xl font-bold text-sm hover:bg-yellow-500 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
-                <i class="fas fa-database"></i> Manage data
-            </button>
+            <a  href="{{route('dashboard.mng')}}" 
+                class="px-6 py-3 mb-5 bg-yellow-500 text-white rounded-2xl font-bold text-sm hover:bg-yellow-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
+                <i class="fas fa-external-link"></i> Manage data
+            </a>
         </div>
         <div>
             <button onclick="location.reload()" type="button"
@@ -66,19 +66,9 @@
                 </div>
                 <div class="mt-4" style="margin: 0 auto; max-width: 600px;">
                     <div id="chart-{{ $section->id }}"></div>
+                    {{ $section->id }}
                 </div>
             </div>
-            {{--  <div class="mt-6 flex gap-3 relative z-20">
-                <button onclick="openModal('{{ $section->id }}')" type="button"
-            class="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-black uppercase
-            tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-100">
-            <i class="fas fa-table text-blue-500"></i> View Data
-            </button>
-            <a href="{{route('dashboard.mng',$section->id)}}"
-                class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
-                <i class="fas fa-cog"></i> Manage
-            </a>
-        </div> --}}
         <div
             class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
         </div>
@@ -95,7 +85,6 @@
         </el-dialog-backdrop>
 
         <div tabindex="0" class="flex min-h-full items-center justify-center p-4 text-center focus:outline-none sm:p-6">
-
             <el-dialog-panel class="relative transform overflow-hidden rounded-[2.5rem] bg-slate-900/90 border border-white/10 text-left shadow-2xl transition-all 
                 data-closed:translate-y-8 data-closed:opacity-0 data-enter:duration-500 data-enter:ease-out data-leave:duration-300 data-leave:ease-in 
                 w-full max-w-4xl">
@@ -168,34 +157,70 @@
     document.addEventListener("DOMContentLoaded", function () {
 
         //HR
+
         const rawData = @json($data_hr);
         var options = {
-            series: rawData.map(item => parseFloat(item.total_employees)),
+            // 1. ดึงตัวเลขมาใส่ในชุดข้อมูลของกราฟแท่ง
+            series: [{
+                name: "Total Employees",
+                data: rawData.map(item => parseFloat(item.total_employees))
+            }],
             chart: {
-                width: 455,
-                type: 'pie',
+                width: '100%',
+                height: 350, // เพิ่มความสูงให้กราฟแท่งมีพื้นที่แสดงผลพอดี
+                type: 'bar', // 2. เปลี่ยนประเภทจาก 'pie' เป็น 'bar'
             },
-            labels: rawData.map(item => item.section),
-            responsive: [{
-                breakpoint: 400,
-                options: {
-                    chart: {
-                        width: 400
-                    },
-                    legend: {
-                        position: 'bottom'
+            // 3. ปรับแต่งลูกเล่นของแท่งกราฟ (เช่น แสดงตัวเลขบนหัวเสา และเปิดใช้มุมมนเล็กน้อย)
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    columnWidth: '55%',
+                    dataLabels: {
+                        position: 'top', // แสดงตัวเลขที่ยอดของแท่ง
                     }
                 }
-            }],
+            },
+            // 4. เปิดแสดงตัวเลขบนหัวเสา
+            dataLabels: {
+                enabled: true,
+                offsetY: -20,
+                style: {
+                    fontSize: '12px',
+                    colors: ["#304758"]
+                }
+            },
+            // 5. เอาชื่อแผนก (Section) มาเป็นแกน X ด้านล่างแทน Labels ของ Pie
+            xaxis: {
+                categories: rawData.map(item => item.section),
+                position: 'bottom',
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                labels: {
+                    style: {
+                        fontSize: '12px'
+                    }
+                }
+            },
+            // 6. กำหนดขอบเขตแกน Y เผื่อพื้นที่ด้านบนไว้ให้ตัวเลขหัวเสาไม่โดนตัด
+            yaxis: {
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                labels: { show: true }
+            },
+            // เลือกโทนสีน้ำเงินเท่ๆ สไตล์ Dashboard โรงงาน (สามารถเปลี่ยนสีเดี่ยวได้ตามใจชอบ)
+            colors: ['#1E90FF'], 
             title: {
                 text: 'Employees Working 6 Days/Week by Section',
                 align: 'left',
-                margin: 10,
+                margin: 25, // เพิ่ม margin เพื่อให้ตัวกราฟขยับลงมา ไม่เบียดกับชื่อเรื่องตามที่ต้องการก่อนหน้านี้
                 style: {
                     fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#444'
                 }
             }
         };
+
         const chart = new ApexCharts(document.querySelector("#chart-3"), options);
         chart.render();
 
@@ -615,53 +640,89 @@
     chart_pr.render();
 
     // QA
-    const data_qa = @json($data_qa);
+   const data_qa = @json($data_qa);
+
     // กำหนดสีตามปีให้เหมือนต้นฉบับ
     const yearColors = {
         '2025': '#1E90FF', // ฟ้า
         '2023': '#00008B', // น้ำเงินเข้ม
-        '2024': '#E66E33' // ส้ม
+        '2024': '#E66E33'  // ส้ม
     };
 
     var options_qa = {
-        series: data_qa.map(item => item.value),
+        // 1. ดึงตัวเลขมาใส่ในชุดข้อมูลของกราฟแท่ง
+        series: [{
+            name: "Claim Count",
+            data: data_qa.map(item => parseFloat(item.value))
+        }],
         chart: {
             width: '100%',
-            type: 'pie',
+            height: 380, // เพิ่มความสูงให้เหมาะสมกับกราฟแท่ง
+            type: 'bar', // 2. เปลี่ยนประเภทจาก 'pie' เป็น 'bar'
+            toolbar: { show: false }
         },
-        labels: data_qa.map(item => item.label),
+        // 3. ตั้งค่าการแสดงผลของแท่งกราฟและการสลับสีตามปี
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                columnWidth: '50%',
+                distributed: true, // เปิดใช้เพื่อให้แต่ละแท่งสามารถแยกสีกันได้ตามปี
+                dataLabels: {
+                    position: 'top', // แสดงตัวเลขบนหัวเสา
+                }
+            }
+        },
+        // 4. จับคูู่สีให้ตรงกับปีของแต่ละไอเทมแบบอัตโนมัติ
+        colors: data_qa.map(item => yearColors[item.year] || '#666'),
+        
+        // 5. เปิดแสดงตัวเลขจำนวนเต็มบนหัวเสา (ลบ % ออกเพื่อให้ตรงกับธรรมชาติของกราฟแท่ง)
         dataLabels: {
             enabled: true,
-            formatter: function (val, opts) {
-                // แสดงเปอร์เซ็นต์บนแผ่น Pie
-                return opts.w.globals.labels[opts.seriesIndex] + ": " + val.toFixed(2) + "%";
-            },
-            dropShadow: {
-                enabled: false
-            },
+            offsetY: -22,
             style: {
-                fontSize: '10px',
-                colors: ['#5f5f5f']
+                fontSize: '11px',
+                colors: ['#333'],
+                fontWeight: 'bold'
+            },
+            formatter: function (val) {
+                return val.toLocaleString(); // แสดงเป็นตัวเลขจำนวนเคลมจริง เช่น 5, 12, 45
+            }
+        },
+        // 6. นำ Label มาเป็นแกน X ด้านล่าง
+        xaxis: {
+            categories: data_qa.map(item => item.label),
+            labels: {
+                style: {
+                    fontSize: '11px'
+                }
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Number of Claims'
+            },
+            labels: {
+                formatter: function (val) {
+                    return val.toFixed(0);
+                }
             }
         },
         title: {
             text: 'Customer Claim (A), (B), (C) by Year',
             align: 'left',
+            margin: 25, // เว้นระยะด้านล่างไม่ให้บังหัวกราฟ
             style: {
                 fontSize: '16px',
+                fontWeight: 'bold'
             }
         },
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }]
+        // 7. ซ่อน Legend (คำอธิบายสี) ด้านข้างเพราะชื่อบนแกน X อธิบายชัดเจนอยู่แล้ว
+        legend: {
+            show: false 
+        },
+        grid: {
+            strokeDashArray: 4,
+        }
     };
 
     const chart_qa = new ApexCharts(document.querySelector("#chart-10"), options_qa);
@@ -669,7 +730,6 @@
 
     //QA
     const data_qc = @json($data_qc);
-
     const options_qc = {
         series: [{
             name: "NG Q'ty (pcs)",
@@ -809,53 +869,85 @@
     //TL
     const data_tl = @json($data_tl);
 
-    // กำหนดสีตามปีให้ใกล้เคียง image_476231.png
-    // 2025: ฟ้า, 2023: น้ำเงินเข้ม, 2024: ส้ม
+    // กำหนดสีหลักของแต่ละปี (จับคู่ 2 สีต่อปี สำหรับ Insert และ Repair)
     const colorPalette = {
-        '2025': ['#1E90FF', '#33CCFF'],
-        '2023': ['#101D8B', '#1E3A8A'],
-        '2024': ['#E66E33', '#F28C5A']
+        '2025': ['#1E90FF', '#33CCFF'], // ฟ้าเข้ม / ฟ้าอ่อน
+        '2023': ['#101D8B', '#1E3A8A'], // น้ำเงินมืด / น้ำเงินปกติ
+        '2024': ['#E66E33', '#F28C5A']  // ส้มเข้ม / ส้มอ่อน
     };
 
     const options_tl = {
-        series: data_tl.map(item => item.value),
-        labels: data_tl.map(item => item.label),
+        // 1. นำข้อมูลตัวเลขใส่เข้าไปในชุดข้อมูลของกราฟแท่ง
+        series: [{
+            name: 'Cost Amount',
+            data: data_tl.map(item => parseFloat(item.value))
+        }],
         chart: {
-            type: 'pie',
-            height: 380
+            width: '100%',
+            height: 380,
+            type: 'bar', // 2. เปลี่ยนเป็นกราฟแท่ง
+            toolbar: { show: false }
         },
-        // เลือกสีโดยอ้างอิงจากปีของแต่ละชิ้น
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                columnWidth: '50%',
+                distributed: true, // 3. เปิดใช้เพื่อให้สลับสีแต่ละแท่งแยกกันได้อย่างอิสระ
+                dataLabels: {
+                    position: 'top', // แสดงตัวเลขบนหัวเสา
+                }
+            }
+        },
+        // 4. วนลูปสลับสีตามปีและตำแหน่ง Index (คุมโทนให้เหมือน Pie Chart เดิม)
         colors: data_tl.map((item, index) => {
             const colors = colorPalette[item.year] || ['#666'];
             return index % 2 === 0 ? colors[0] : colors[1];
         }),
         dataLabels: {
             enabled: true,
-            formatter: function (val, opts) {
-                const value = opts.w.globals.series[opts.seriesIndex];
-                const kValue = (value / 1000).toFixed(0) + "K";
-                return kValue + " (" + val.toFixed(2) + "%)";
-            },
+            offsetY: -22, // ขยับตัวเลขขึ้นไปเหนือกราฟเล็กน้อย
             style: {
-                fontSize: '11px'
+                fontSize: '11px',
+                colors: ['#333'],
+                fontWeight: 'bold'
             },
-            dropShadow: {
-                enabled: false
+            // 5. แปลงค่าเป็นหน่วย K บนหัวเสา (เช่น 350K) ลบเปอร์เซ็นต์ออกเพื่อให้เหมาะกับกราฟแท่ง
+            formatter: function (val) {
+                return (val / 1000).toFixed(0) + "K";
             }
         },
-        legend: {
-            position: 'right',
-            offsetY: 80,
-            markers: {
-                radius: 12
+        // 6. นำ Label เช่น "Cost Insert (2024)" มาแสดงที่แกน X ด้านล่าง
+        xaxis: {
+            categories: data_tl.map(item => item.label),
+            labels: {
+                style: {
+                    fontSize: '11px'
+                }
+            }
+        },
+        yaxis: {
+            title: { text: 'Cost (THB)' },
+            labels: {
+                formatter: function (val) {
+                    return (val / 1000).toFixed(0) + "K";
+                }
             }
         },
         title: {
             text: 'Cost insert and Cost repair by Year',
             align: 'left',
+            margin: 25, // เว้นระยะห่างด้านล่างไม่ให้บังหัวเสากราฟ
             style: {
                 fontSize: '16px',
+                fontWeight: 'bold'
             }
+        },
+        // 7. ซ่อน Legend เพราะข้อความที่แกน X ระบุประเภทและปีชัดเจนอยู่แล้วครับ
+        legend: {
+            show: false 
+        },
+        grid: {
+            strokeDashArray: 4,
         }
     };
 

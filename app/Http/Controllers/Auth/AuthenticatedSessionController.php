@@ -30,18 +30,11 @@ class AuthenticatedSessionController extends Controller
 
     public function login_store(Request $req) 
     {
-        $credentials = [
-            'user_login' => $req->user_login, 
-            'password'   => $req->password,
-            'status'     => '0' // ล็อกอินได้เฉพาะพนักงานที่ยังทำงานอยู่ (Active)
-        ];
-        
        $role= DB::connection('central_staff_db')->table('tbluser_permissions as tp')
        ->leftjoin('tblsystems as ts', 'ts.sys_id', '=', 'tp.sys_id')
        ->leftjoin('tblemployee as te', 'te.id', '=', 'tp.emp_id')
        ->leftjoin('tblroles as tr', 'tr.role_id', '=', 'tp.role_id')
         ->where('te.user_login', $req->user_login)
-        // ->where('ts.sys_code', 'ELE')
         ->select('tp.*','tr.role_name','te.full_name_th','te.full_name_eng','tp.sys_id as tss','ts.*')
         ->first();
 
@@ -50,6 +43,12 @@ class AuthenticatedSessionController extends Controller
         }else {
             $req->session()->put('role_name', 'User');
         }
+
+        $credentials = [
+            'user_login' => $req->user_login, 
+            'password'   => $req->password,
+            'status'     => '0',
+        ];
 
         if (Auth::attempt($credentials, $credentials)) {
             $req->session()->regenerate();
@@ -66,7 +65,6 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
         return redirect(RouteServiceProvider::HOME);
-
         // return redirect()->intended(route('dashboard'));
     }
 

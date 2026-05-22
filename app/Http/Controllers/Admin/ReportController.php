@@ -141,13 +141,27 @@ class ReportController extends Controller
         })->values()->all();
 
 
-        // --- 3. ข้อมูล Quiz Results (Optional แต่อยากให้มี) ---
+
         // คะแนนเฉลี่ยของการทำแบบทดสอบทั้งหมดในระบบ
         $avg_quiz_score = DB::table('quiz_attempts')->avg('score') ?? 0;
+        $monthlyData = DB::table('enrollments')
+            ->select(DB::raw('MONTH(created_at) as month'), DB::raw('COUNT(id) as total'))
+            ->whereYear('created_at', Carbon::now()->year)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy('month', 'asc')
+            ->get();
+
+        // เตรียมข้อมูลให้ครบ 12 เดือน (หากเดือนไหนไม่มีคนเรียนให้เป็น 0)
+        $months_labels = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        $students_count = array_fill(0, 12, 0);
+
+        foreach ($monthlyData as $data) {
+            $students_count[$data->month - 1] = $data->total;
+        }
 
         return view('admin.dashboard.index', compact(
             'total_students', 'learning_count', 'completed_count', 'total_courses',
-            'top_learners', 'labels', 'datasets', 'avg_progress', 'avg_quiz_score'
+            'top_learners', 'labels', 'datasets', 'avg_progress', 'avg_quiz_score', 'months_labels', 'students_count'
         ) + [
             'reportId'    => env('PBI_REPORT_ID'),
             'workspaceId' => env('PBI_WORKSPACE_ID')

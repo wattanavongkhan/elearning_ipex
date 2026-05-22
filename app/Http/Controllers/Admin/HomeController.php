@@ -13,6 +13,9 @@ use App\Models\Enrollment;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+
+
 class HomeController extends Controller {
 
     public function index(Request $request)
@@ -95,7 +98,6 @@ class HomeController extends Controller {
     }
 
 
-
     public function courses_show($id) {
         $course=Course::findOrFail($id);
         $lessons=Lesson::where('course_id', $id)->get();
@@ -103,8 +105,6 @@ class HomeController extends Controller {
         $alreadyEnrolled = Enrollment::where('user_id', Auth::id())
                                      ->where('course_id', $id)
                                      ->exists();
-        
-
         return view('home.courses.show', compact('course', 'lessons', 'quizzes', 'alreadyEnrolled'));
     }
 

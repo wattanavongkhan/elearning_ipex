@@ -18,6 +18,10 @@ use App\Http\Controllers\Admin\PowerbiController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,6 +36,10 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+// Route::get('/shelly/report', [HomeController::class, 'post_temp']);
+
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/activities-all', [HomeController::class, 'activities_all'])->name('activities.all');

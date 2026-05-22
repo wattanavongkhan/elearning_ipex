@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel; 
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class PowerbiController extends Controller 
@@ -17,7 +18,7 @@ class PowerbiController extends Controller
         ->where('sec.status', '0')
         ->groupBy('sec.id', 'sec.section')
         ->get();
-
+        
         $data_hr = DB::connection('dashboard_bi_db')
             ->table('tblworking_hr')
             ->select('section', DB::raw('SUM(6_day_ith + 6_day_subcon) as total_employees'))
@@ -182,97 +183,91 @@ class PowerbiController extends Controller
 
     public function dashboard_mng(Request $req)
     {
-        $dash_link = DB::connection('dashboard_bi_db')->table('tbldashboard_link as sec');
+        $dash_link = DB::connection('dashboard_bi_db')->table('tbltable_name')
+        ->where('section_id',DB::connection('dashboard_bi_db')
+        ->table('tblsection_dashboard')
+        ->where('section_no',Auth::user()->section_id)->first()->id
+        )
+        ->get();
 
-        $section = DB::connection('dashboard_bi_db')
-            ->table('tblsection_dashboard as sec')
-            ->where('sec.section_no', 3)
-            ->pluck('sec.id')
-            ->toArray();
-
-        $sec_id = [];
+ 
         $table="";
-        $category=$req->category_id;
-
-        $dash_link=$dash_link->whereIn('section_id',$section);
-        $dash_link_all=$dash_link->whereIn('section_id',$section)->get();
+        $title="";
+        if (empty($req->category_id)) {
+            $default = $dash_link->first();
+            if ($default) {
+                $req->merge(['category_id' => $default->id]);
+            }
+        }
 
         if($req->category_id!=null)
         {
-            $table = $dash_link->where('id',$req->category_id)->first()->table;
-        }else{
-            $table = $dash_link->first()->table;
+            $table = $dash_link->where('id',$req->category_id)->first()->table_name;
+            $title = $dash_link->where('id',$req->category_id)->first()->table_des;
+        } else {
+            $table = $dash_link->first()->table_name;
+            $title = $dash_link->first()->table_des;
         }
 
-        $columns = DB::connection('dashboard_bi_db')->select('SHOW FIELDS FROM '.$table);
-
+        $columns = DB::connection('dashboard_bi_db')->select("SHOW FIELDS FROM {$table} WHERE Field NOT IN ('created_at', 'updated_at','id')");
         $rows = DB::connection('dashboard_bi_db')->select("SELECT * FROM ".$table." ORDER BY created_at DESC");
 
-        $dash_link=$dash_link->get();
-
-
-        $tabale_name=DB::connection('dashboard_bi_db')->table('tbltable_name')
-        ->where('section_id',3)
-        ->get();
-
-        return view('home.power_bi.management_it', compact('columns', 'rows', 'dash_link',
-        'table','dash_link_all',
-        'tabale_name'));
+        return view('home.power_bi.management_it', compact('columns', 'rows', 'dash_link','table','title'));
     }
-
-
     public function dashboard_upload(Request $req)
     {
-        // 1. Validate ไฟล์ที่ส่งมา
-        $req->validate([
-            'file_bi' => 'required|mimes:xlsx,xls,csv|max:10240', // จำกัดขนาด 10MB
-        ]);
+       $fields = DB::connection('dashboard_bi_db')->select("SHOW FIELDS FROM {$req->table_name} WHERE Field NOT IN ('created_at', 'updated_at', 'id')");
+        $columns = collect($fields)->pluck('Field')->toArray();
+        $table = $req->table_name;
 
-        // try {
-        
-
-
-        // 1. เปิดไฟล์ที่ Upload ขึ้นมา (Read Mode)
-        $file = fopen($req->file('file_bi')->getRealPath(), "r");
-
-        // 2. ข้ามบรรทัดแรก (Header)
-        $header = fgetcsv($file); 
-
-        // 3. วนลูปอ่านข้อมูลทีละบรรทัด
-        $data_i=[];
-        $i=0;
-        while (($row = fgetcsv($file, 1000, ",")) !== FALSE) {
-            // $row จะเป็น Array ตามลำดับคอลัมน์ในไฟล์
-            // index 0 = คอลัมน์แรก, 1 = คอลัมน์สอง...
-            
-            // DB::table('tblparts_stock')->insert([
-            //     'record_month'   => $row[0],
-            //     'customer_name'  => $row[1],
-            //     'part_name'      => $row[2],
-            //     'part_no'        => $row[3],
-            //     'current_status' => $row[4],
-            //     'price'          => $row[5],
-            //     'unit'           => $row[6],
-            //     'stock_quantity' => $row[7],
-            //     'amount_thb'     => $row[8],
-            //     'part_type'      => $row[9],
-            //     'supplier_name'  => $row[10],
-            //     'created_at'     => now(),
-            //     'updated_at'     => now(),
-            // ]);
-            $data_i.add($row[0]);
-            $i++;
+        // ตรวจสอบเบื้องต้นว่ามีไฟล์ส่งมาจริงก่อนเปิดใช้งาน
+        if (!$req->hasFile('file_bi')) {
+            return back()->with('error', 'กรุณาเลือกไฟล์สำหรับอัปโหลด');
         }
-        dd($data_i);
-        fclose($file);
-        //     // 3. ส่งกลับพร้อมข้อความสำเร็จ
-        //     return back()->with('success', 'นำเข้าข้อมูลจาก Excel เข้าสู่ MySQL เรียบร้อยแล้ว!');
 
-        // } catch (\Exception $e) {
-        //     // กรณีเกิด Error (เช่น หัว Column ไม่ตรง หรือไฟล์พัง)
-        //     Log::error('Excel Import Error: ' . $e->getMessage());
-        //     return back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
-        // }
+        $file_path = $req->file('file_bi')->getRealPath();
+        $file = fopen($file_path, "r");
+        $header = fgetcsv($file); // ข้ามบรรทัด Header ของไฟล์ CSV
+
+        $insert_batch = []; // สร้างตัวแปรพักข้อมูลเพื่อทำ Bulk Insert
+
+        try {
+            DB::connection('dashboard_bi_db')->beginTransaction();
+
+            DB::connection('dashboard_bi_db')->table($table)->delete();
+
+            while (($row = fgetcsv($file, 1000, ",")) !== FALSE) {
+                if (count($columns) === count($row)) {
+                    $insert_batch[] = array_combine($columns, $row);
+                }
+
+                if (count($insert_batch) >= 200) {
+                    DB::connection('dashboard_bi_db')->table($table)->insert($insert_batch);
+                    $insert_batch = []; // ล้างคิวรอรับรอบถัดไป
+                }
+            }
+
+            if (!empty($insert_batch)) {
+                DB::connection('dashboard_bi_db')->table($table)->insert($insert_batch);
+            }
+
+            DB::connection('dashboard_bi_db')->commit();
+
+        } catch (\Exception $e) {
+            DB::connection('dashboard_bi_db')->rollBack();
+            
+            if ($file) { fclose($file); }
+            
+            return back()->with('error', 'เกิดข้อผิดพลาดบนเซิร์ฟเวอร์: ' . $e->getMessage());
+        }
+
+        if ($file) { fclose($file); }
+
+        $category = DB::connection('dashboard_bi_db')->table('tbltable_name')->where('table_name', $table)->first();
+
+        $req->merge([
+            'category_id' => $category ? $category->id : null,
+        ]);
     }
 
 

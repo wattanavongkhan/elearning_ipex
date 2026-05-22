@@ -11,6 +11,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
@@ -29,7 +30,6 @@
                 }
             }
         }
-
     </script>
 
     <style>
@@ -199,7 +199,6 @@
                                     <p class="text-xs font-bold text-slate-800 leading-none">
                                         {{ Auth::user()->full_name_eng }}
                                     </p>
-
                                     <p class="text-[10px] text-slate-400 mt-1">ผู้ใช้งาน</p>
                                 </div>
                                 <div
@@ -217,10 +216,9 @@
                                 <div class="p-2">
                                     <a href="{{ route('profile.index') }}"
                                         class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition flex items-center gap-2">
-                                        <i class="fas fa-user text-xs"></i> โปรไฟล์ของฉัน
+                                        <i class="fas fa-user text-xs"></i> โปรไฟล์ของฉัน {{Auth::user()->role_name}}
                                     </a>
                                 </div>
-
                                 @if(session()->get('role_name') == 'Admin' || session()->get('role_name') == 'Super Admin')
                                 <div class="p-2">
                                     <a href="{{ route('admin.dashboard.index') }}"
@@ -311,6 +309,13 @@
             </div>
         </div>
     </footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
 
 </body>
 

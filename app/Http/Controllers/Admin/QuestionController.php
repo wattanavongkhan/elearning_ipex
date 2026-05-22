@@ -107,5 +107,4 @@ class QuestionController extends Controller {
     //     return view('admin.quizzes.questions', compact('quiz', 'questions'));
     // }
 
-
 }

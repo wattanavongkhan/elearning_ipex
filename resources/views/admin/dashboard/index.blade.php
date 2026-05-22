@@ -15,12 +15,14 @@
     </div>
 </div>
 <div class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <div class="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
+    <div
+        class="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
         <div class="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
             <i class="fas fa-running text-7xl rotate-12"></i>
         </div>
         <div class="relative z-10">
-            <div class="size-12 bg-orange-500 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-500">
+            <div
+                class="size-12 bg-orange-500 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-500">
                 <i class="fas fa-running text-xl"></i>
             </div>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Active Learning</p>
@@ -29,32 +31,40 @@
                 <span class="text-sm font-bold text-slate-400">คน</span>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-    </div>
-
-    <div class="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
-    <div class="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
-        <i class="fas fa-check-circle text-7xl rotate-12"></i>
-    </div>
-    <div class="relative z-10">
-        <div class="size-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-500">
-            <i class="fas fa-check-circle text-xl"></i>
-        </div>
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Learning Completed</p>
-        <div class="flex items-baseline gap-2">
-            <h3 class="text-4xl font-black text-slate-800 tracking-tight">{{ number_format($completed_count) }}</h3>
-            <span class="text-sm font-bold text-slate-400">รายการ</span>
+        <div
+            class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity">
         </div>
     </div>
-    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-</div>
 
-    <div class="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-violet-500/10 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
+    <div
+        class="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
+        <div class="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+            <i class="fas fa-check-circle text-7xl rotate-12"></i>
+        </div>
+        <div class="relative z-10">
+            <div
+                class="size-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-500">
+                <i class="fas fa-check-circle text-xl"></i>
+            </div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Learning Completed</p>
+            <div class="flex items-baseline gap-2">
+                <h3 class="text-4xl font-black text-slate-800 tracking-tight">{{ number_format($completed_count) }}</h3>
+                <span class="text-sm font-bold text-slate-400">รายการ</span>
+            </div>
+        </div>
+        <div
+            class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
+    </div>
+
+    <div
+        class="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-violet-500/10 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
         <div class="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
             <i class="fas fa-book-open text-7xl rotate-12"></i>
         </div>
         <div class="relative z-10">
-            <div class="size-12 bg-violet-600 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform duration-500">
+            <div
+                class="size-12 bg-violet-600 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform duration-500">
                 <i class="fas fa-book-open text-xl"></i>
             </div>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Courses</p>
@@ -63,15 +73,19 @@
                 <span class="text-sm font-bold text-slate-400">คอร์ส</span>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+            class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
     </div>
 
-    <div class="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
+    <div
+        class="group relative bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
         <div class="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
             <i class="fas fa-users text-7xl rotate-12"></i>
         </div>
         <div class="relative z-10">
-            <div class="size-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-500">
+            <div
+                class="size-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-500">
                 <i class="fas fa-users text-xl"></i>
             </div>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Employees</p>
@@ -80,9 +94,10 @@
                 <span class="text-sm font-bold text-slate-400">คน</span>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+            class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
     </div>
-
 </div>
 
 <div class="mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
@@ -126,45 +141,33 @@
     </div>
 </div>
 
-<div class="mx-auto grid grid-cols-1 lg:grid-cols-3 gap-3">
-    <div class="bg-white p-8 rounded-[1rem] shadow-sm border border-slate-50">
-        <h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter mb-8 text-center">
-            สัดส่วนความสำเร็จ</h3>
-        <div class="h-[250px]">
-            <canvas id="doughnutChart"></canvas>
-        </div>
-    </div>
-
-    <div
-        class="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 p-10 rounded-[1rem] shadow-xl relative overflow-hidden">
-        <div class="relative z-10">
-            <h2 class="text-white text-3xl font-black mb-4">Ready for DX 4.0?</h2>
-            <p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-md">ยินดีด้วย! ระบบ E-learning
-                ของคุณกำลังขับเคลื่อนด้วยข้อมูลจริง ข้อมูลพนักงานและสถิติเหล่านี้จะช่วยให้ Khun JJ
-                และทีมบริหารตัดสินใจได้อย่างแม่นยำ</p>
-            <div class="flex gap-4">
-                <button
-                    class="px-6 py-3 bg-green-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-500/20">Manage
-                    Courses</button>
-                <button
-                    class="px-6 py-3 bg-white/10 text-white border border-white/10 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/20 transition-all">Support
-                    IT</button>
+<div class="mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="bg-white rounded-[1rem] shadow-sm border border-slate-100 lg:col-span-1 p-5 flex flex-col justify-between">
+        <div>
+            <h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter mb-8 text-center">สัดส่วนความสำเร็จ</h3>
+            <div class="h-[250px] relative">
+                <canvas id="doughnutChart"></canvas>
             </div>
         </div>
-        <i class="fas fa-rocket absolute -right-10 -bottom-10 text-[15rem] text-white/5 -rotate-12"></i>
+    </div>
+    <div class="bg-white rounded-[1rem] shadow-sm border border-slate-100 lg:col-span-2 p-5 flex flex-col justify-between">
+        <div>
+            <h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter mb-8 text-center">สถิติและแนวโน้มผู้เข้าเรียน</h3>
+            <div class="h-[250px] relative">
+                <canvas id="splineAreaChart"></canvas>
+            </div>
+        </div>
     </div>
 </div>
-@endsection
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@endsection
 @section('scripts')
 <script>
     const chartLabels = @json($labels); // เช่น ['Mar', 'Apr', 'May']
     const chartDataSets = @json($datasets); 
 
-    // 1. Bar Chart (สถิติพนักงานที่เรียนแต่ละคอร์ส 3 เดือนล่าสุด)
     const ctxBar = document.getElementById('lineChart').getContext('2d'); // ใช้ IDเดิมจาก HTML ได้เลยครับ
-
-    // ชุดสีแบบโมเดิร์นสำหรับกราฟแท่ง
     const modernColors = [
         { bg: '#10b981', hover: '#059669' }, // เขียว
         { bg: '#3b82f6', hover: '#2563eb' }, // ฟ้า
@@ -186,7 +189,7 @@
     });
 
     new Chart(ctxBar, {
-        type: 'bar', // 🔥 เปลี่ยนตรงนี้เป็น 'bar'
+        type: 'bar', 
         data: {
             labels: chartLabels,
             datasets: formattedDatasets
@@ -233,7 +236,6 @@
         }
     });
 
-    // 2. Doughnut Chart (สัดส่วนความสำเร็จ)
     const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
     new Chart(ctxDoughnut, {
         type: 'doughnut',
@@ -278,5 +280,83 @@
             }
         }
     });
+
+
+    document.addEventListener('DOMContentLoaded', function() 
+    {
+    // ดึงข้อมูล Array ที่ส่งมาจาก Controller
+    const labelsData = @json($months_labels);
+    const studentsData = @json($students_count);
+
+    const ctx = document.getElementById('splineAreaChart').getContext('2d');
+    
+    // สร้าง Gradient Color สำหรับพื้นหลังไล่เฉดสีให้ดูหรูหราขึ้น
+    const emeraldGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    emeraldGradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');  // สีเขียวมรกตจางด้านบน
+    emeraldGradient.addColorStop(1, 'rgba(16, 185, 129, 0.00)');  // ไล่ลงไปจนโปร่งใสสนิทล่างสุด
+
+    new Chart(ctx, {
+        type: 'line', // ใน Chart.js กราฟพื้นที่ใช้อิงจากประเภท line
+        data: {
+            labels: labelsData,
+            datasets: [{
+                label: 'จำนวนผู้เข้าเรียน (คน)',
+                data: studentsData,
+                
+                // 🔥 คีย์เวิร์ดสำคัญทำกราฟโค้งนุ่ม (Spline Area)
+                tension: 0.4,           // ปรับความโค้ง (0 = เส้นตรง, 1 = โค้งงอมาก) ค่า 0.4 กำลังสวยที่สุดครับ
+                fill: true,             // เปิดใช้งานพื้นที่ระบายสีใต้เส้นกราฟ
+                backgroundColor: emeraldGradient, // ใช้สีไล่เฉดที่ทำไว้ด้านบน
+                
+                // ตั้งค่าเส้นขอบกราฟ
+                borderColor: '#10b981', // สีเขียวมรกตเข้ม
+                borderWidth: 3,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#10b981',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointHoverBorderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false // ปิดป้ายหัวข้อเนื่องจากเรามีชื่อการ์ดอยู่แล้ว
+                },
+                tooltip: {
+                    backgroundColor: '#1e293b', // พื้นหลัง Tooltip สีเข้มสไตล์โมเดิร์น
+                    titleFont: { family: 'Kanit', size: 13, weight: 'bold' },
+                    bodyFont: { family: 'Kanit', size: 13 },
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            return ` ผู้เข้าเรียน: ${context.raw} คน`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false }, // ซ่อนเส้นตารางแนวตั้งเพื่อให้กราฟคลีน
+                    ticks: { font: { family: 'Kanit', size: 12 }, color: '#64748b' }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9' }, // ให้เส้นตารางแนวนอนเป็นสีเทาจางมาก ๆ
+                    ticks: { 
+                        font: { family: 'Kanit', size: 12 }, 
+                        color: '#64748b',
+                        callback: function(value) { return value + ' คน'; } // ใส่หน่วยต่อท้ายตัวเลขแกน Y
+                    }
+                }
+            }
+        }
+    });
+});
 </script>
 @endsection
