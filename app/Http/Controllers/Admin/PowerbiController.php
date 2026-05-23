@@ -183,36 +183,42 @@ class PowerbiController extends Controller
 
     public function dashboard_mng(Request $req)
     {
-        $dash_link = DB::connection('dashboard_bi_db')->table('tbltable_name')
-        ->where('section_id',DB::connection('dashboard_bi_db')
-        ->table('tblsection_dashboard')
-        ->where('section_no',Auth::user()->section_id)->first()->id
-        )
-        ->get();
+        if(DB::connection('dashboard_bi_db')->table('tblsection_dashboard')->where('section_no',Auth::user()->section_id)->count()==0)
+		{
+			return $this->index();
+		}else
+		{
+            $dash_link = DB::connection('dashboard_bi_db')->table('tbltable_name')
+            ->where('section_id',DB::connection('dashboard_bi_db')
+            ->table('tblsection_dashboard')
+            ->where('section_no',Auth::user()->section_id)->first()->id
+            )
+            ->get();
 
- 
-        $table="";
-        $title="";
-        if (empty($req->category_id)) {
-            $default = $dash_link->first();
-            if ($default) {
-                $req->merge(['category_id' => $default->id]);
+    
+            $table="";
+            $title="";
+            if (empty($req->category_id)) {
+                $default = $dash_link->first();
+                if ($default) {
+                    $req->merge(['category_id' => $default->id]);
+                }
             }
+
+            if($req->category_id!=null)
+            {
+                $table = $dash_link->where('id',$req->category_id)->first()->table_name;
+                $title = $dash_link->where('id',$req->category_id)->first()->table_des;
+            } else {
+                $table = $dash_link->first()->table_name;
+                $title = $dash_link->first()->table_des;
+            }
+
+            $columns = DB::connection('dashboard_bi_db')->select("SHOW FIELDS FROM {$table} WHERE Field NOT IN ('created_at', 'updated_at','id')");
+            $rows = DB::connection('dashboard_bi_db')->select("SELECT * FROM ".$table." ORDER BY created_at DESC");
+
+            return view('home.power_bi.management_it', compact('columns', 'rows', 'dash_link','table','title'));
         }
-
-        if($req->category_id!=null)
-        {
-            $table = $dash_link->where('id',$req->category_id)->first()->table_name;
-            $title = $dash_link->where('id',$req->category_id)->first()->table_des;
-        } else {
-            $table = $dash_link->first()->table_name;
-            $title = $dash_link->first()->table_des;
-        }
-
-        $columns = DB::connection('dashboard_bi_db')->select("SHOW FIELDS FROM {$table} WHERE Field NOT IN ('created_at', 'updated_at','id')");
-        $rows = DB::connection('dashboard_bi_db')->select("SELECT * FROM ".$table." ORDER BY created_at DESC");
-
-        return view('home.power_bi.management_it', compact('columns', 'rows', 'dash_link','table','title'));
     }
     public function dashboard_upload(Request $req)
     {
@@ -240,7 +246,6 @@ class PowerbiController extends Controller
                 if (count($columns) === count($row)) {
                     $insert_batch[] = array_combine($columns, $row);
                 }
-
                 if (count($insert_batch) >= 200) {
                     DB::connection('dashboard_bi_db')->table($table)->insert($insert_batch);
                     $insert_batch = []; // ล้างคิวรอรับรอบถัดไป

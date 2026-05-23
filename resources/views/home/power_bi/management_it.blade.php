@@ -108,8 +108,7 @@
             "scrollX": true,
             "pageLength": 10, // กำหนดให้แสดงหน้าละกี่แถวคงที่ไปเลย (เช่น 10 แถว)
             "dom": 'Bfrtip', // เอา 'l' ออก เหลือแค่นี้ ปุ่ม Show Limit จะหายไปทันที
-            "buttons": [
-                {
+            "buttons": [{
                     extend: 'csvHtml5',
                     text: 'ส่งออก CSV',
                     title: '{{$title}}', // หัวข้อเรื่องด้านในไฟล์ (ถ้ามี)
@@ -118,7 +117,7 @@
                     bom: true,
                     exportOptions: {
                         columns: ':visible',
-                        
+
                         format: {
                             body: function (data, row, column, node) {
                                 return node.textContent || node.innerText || data;

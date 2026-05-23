@@ -1,5 +1,4 @@
 @extends('layouts.layout_public')
-
 @section('content')
 
 <style>
@@ -20,13 +19,12 @@
         background: linear-gradient(90deg, #2563eb, #4f46e5);
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
     }
-
     .data-grid-bg {
         background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
         background-size: 20px 20px;
     }
-
 </style>
+
 <div class="min-h-screen bg-[#f8fafc] p-6 font-kanit">
     <div class="grid grid-cols-1 lg:grid-cols-9 sm:grid-cols-4 gap-3">
         <div>
@@ -66,7 +64,6 @@
                 </div>
                 <div class="mt-4" style="margin: 0 auto; max-width: 600px;">
                     <div id="chart-{{ $section->id }}"></div>
-                    {{ $section->id }}
                 </div>
             </div>
         <div
