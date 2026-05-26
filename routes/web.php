@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\PowerbiController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
+use App\Http\Controllers\Api\ShellyController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -224,5 +225,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
 Route::post('/course/enrollment/update-percent', [CourseController::class, 'updateProgressPercent'])
      ->name('course.enrollment.update_percent');
+
+
+
+
+// Temap Online
+// Route::get('/webhook', [ShellyController::class, 'handleWebhook'])->name('webhook');
 
 require __DIR__.'/auth.php';
