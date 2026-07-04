@@ -321,7 +321,7 @@
                 {{-- Footer --}}
                 <div
                     class="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p class="text-[10px] text-blue-200/30 font-bold uppercase tracking-[0.4em]">Managed by ICT
+                    <p class="text-[10px] text-blue-200/30 font-bold uppercase tracking-[0.4em]">Managed by IT
                         Department</p>
                     <div class="flex gap-2">
                         <div class="h-1 w-8 rounded-full bg-white/10"></div>

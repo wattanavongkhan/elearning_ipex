@@ -19,29 +19,235 @@
         background: linear-gradient(90deg, #2563eb, #4f46e5);
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
     }
+
     .data-grid-bg {
         background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
         background-size: 20px 20px;
     }
+
 </style>
 
 <div class="min-h-screen bg-[#f8fafc] p-6 font-kanit">
-    <div class="grid grid-cols-1 lg:grid-cols-9 sm:grid-cols-4 gap-3">
-        <div>
-            <a  href="{{route('dashboard.mng')}}" 
-                class="px-6 py-3 mb-5 bg-yellow-500 text-white rounded-2xl font-bold text-sm hover:bg-yellow-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
-                <i class="fas fa-external-link"></i> Manage data
-            </a>
+    <div class="flex flex-col sm:flex-row flex-wrap items-center gap-3 mb-5">
+    <div class="w-full sm:w-auto">
+        <a href="{{route('dashboard.mng')}}"
+            class="w-full justify-center px-5 py-3 bg-yellow-500 text-white rounded-2xl font-bold text-sm hover:bg-yellow-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
+            <i class="fas fa-external-link"></i> Manage data
+        </a>
+    </div>
+    <div class="w-full sm:w-auto">
+        <button onclick="location.reload()" type="button"
+            class="w-full justify-center px-5 py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
+            <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
+    </div>
+    <div class="w-full sm:w-auto">
+        <a href="{{route('daily_sale')}}"
+            class="w-full justify-center px-5 py-3 bg-green-500 text-white rounded-2xl font-bold text-sm hover:bg-green-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
+            <i class="fas fa-chart-line"></i> Daily Sale
+        </a>
+    </div>
+</div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+        <div
+            class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative overflow-hidden group">
+            <div onclick="openModal(1)" class="cursor-pointer">
+                <div class="flex items-center justify-between mb-6 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500">
+                            <i class="fas fa-chart-simple text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 uppercase italic leading-none">
+                                FA
+                            </h3>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                Summary of status</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-green-500 uppercase">Efficiency</p>
+                    </div>
+                </div>
+                <div class="mt-4" style="margin: 0 auto;">
+                    <div>
+                        <div id="chart-1"></div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
+            </div>
         </div>
-        <div>
-            <button onclick="location.reload()" type="button"
-                class="px-6 py-3 mb-5 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
-                <i class="fas fa-sync-alt"></i> Refresh Data
-            </button></div>
+        <div
+            class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative overflow-hidden group">
+            <div onclick="openModal(1)" class="cursor-pointer">
+                <div class="flex items-center justify-between mb-6 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500">
+                            <i class="fas fa-chart-simple text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 uppercase italic leading-none">
+                                FA
+                            </h3>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                Summary of status</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-green-500 uppercase">Efficiency</p>
+                    </div>
+                </div>
+                <div class="mt-4" style="margin: 0 auto;">
+                    <div>
+                        <div id="chart-1-1"></div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
+            </div>
+        </div>
+        <div
+            class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative overflow-hidden group">
+            <div onclick="openModal(1)" class="cursor-pointer">
+                <div class="flex items-center justify-between mb-6 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500">
+                            <i class="fas fa-chart-simple text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 uppercase italic leading-none">
+                                FA
+                            </h3>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                Summary of changing</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-green-500 uppercase">Efficiency</p>
+                    </div>
+                </div>
+                <div class="mt-4" style="margin: 0 auto;">
+                    <div>
+                        <div id="chart-1-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
+            </div>
+        </div>
+
     </div>
 
+<br>
+    {{--  <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+        <div
+            class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative overflow-hidden group">
+            <div onclick="openModal(1)" class="cursor-pointer">
+                <div class="flex items-center justify-between mb-6 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500">
+                            <i class="fas fa-chart-simple text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 uppercase italic leading-none">
+                                SO
+                            </h3>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                Summary of status</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-green-500 uppercase">Efficiency</p>
+                    </div>
+                </div>
+                <div class="mt-4" style="margin: 0 auto;">
+                    <div>
+                        <div id="chart-12"></div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
+            </div>
+        </div>
+        <div
+            class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative overflow-hidden group">
+            <div onclick="openModal(1)" class="cursor-pointer">
+                <div class="flex items-center justify-between mb-6 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500">
+                            <i class="fas fa-chart-simple text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 uppercase italic leading-none">
+                                SO
+                            </h3>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                Summary of status</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-green-500 uppercase">Efficiency</p>
+                    </div>
+                </div>
+                <div class="mt-4" style="margin: 0 auto;">
+                    <div>
+                        <div id="chart-1-1"></div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
+            </div>
+        </div>
+        
+        <div
+            class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative overflow-hidden group">
+            <div onclick="openModal(1)" class="cursor-pointer">
+                <div class="flex items-center justify-between mb-6 relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="size-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500">
+                            <i class="fas fa-chart-simple text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 uppercase italic leading-none">
+                                SO
+                            </h3>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                Summary of changing</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold text-green-500 uppercase">Efficiency</p>
+                    </div>
+                </div>
+                <div class="mt-4" style="margin: 0 auto;">
+                    <div>
+                        <div id="chart-1-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
+            </div>
+        </div>
+
+    </div>
+
+    <br>  --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-8">
         @foreach($sections as $section)
+        @if($section->id!=1 && $section->id!=12)
         <div
             class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative overflow-hidden group">
             <div onclick="openModal('{{ $section->id }}')" class="cursor-pointer">
@@ -66,12 +272,14 @@
                     <div id="chart-{{ $section->id }}"></div>
                 </div>
             </div>
-        <div
-            class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
+            <div
+                class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
+            </div>
         </div>
+        @endif
+
+        @endforeach
     </div>
-    @endforeach
-</div>
 </div>
 
 <el-dialog>
@@ -190,8 +398,12 @@
             xaxis: {
                 categories: rawData.map(item => item.section),
                 position: 'bottom',
-                axisBorder: { show: false },
-                axisTicks: { show: false },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                },
                 labels: {
                     style: {
                         fontSize: '12px'
@@ -200,12 +412,18 @@
             },
             // 6. กำหนดขอบเขตแกน Y เผื่อพื้นที่ด้านบนไว้ให้ตัวเลขหัวเสาไม่โดนตัด
             yaxis: {
-                axisBorder: { show: false },
-                axisTicks: { show: false },
-                labels: { show: true }
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                },
+                labels: {
+                    show: true
+                }
             },
             // เลือกโทนสีน้ำเงินเท่ๆ สไตล์ Dashboard โรงงาน (สามารถเปลี่ยนสีเดี่ยวได้ตามใจชอบ)
-            colors: ['#1E90FF'], 
+            colors: ['#1E90FF'],
             title: {
                 text: 'Employees Working 6 Days/Week by Section',
                 align: 'left',
@@ -637,13 +855,13 @@
     chart_pr.render();
 
     // QA
-   const data_qa = @json($data_qa);
+    const data_qa = @json($data_qa);
 
     // กำหนดสีตามปีให้เหมือนต้นฉบับ
     const yearColors = {
         '2025': '#1E90FF', // ฟ้า
         '2023': '#00008B', // น้ำเงินเข้ม
-        '2024': '#E66E33'  // ส้ม
+        '2024': '#E66E33' // ส้ม
     };
 
     var options_qa = {
@@ -656,7 +874,9 @@
             width: '100%',
             height: 380, // เพิ่มความสูงให้เหมาะสมกับกราฟแท่ง
             type: 'bar', // 2. เปลี่ยนประเภทจาก 'pie' เป็น 'bar'
-            toolbar: { show: false }
+            toolbar: {
+                show: false
+            }
         },
         // 3. ตั้งค่าการแสดงผลของแท่งกราฟและการสลับสีตามปี
         plotOptions: {
@@ -671,7 +891,7 @@
         },
         // 4. จับคูู่สีให้ตรงกับปีของแต่ละไอเทมแบบอัตโนมัติ
         colors: data_qa.map(item => yearColors[item.year] || '#666'),
-        
+
         // 5. เปิดแสดงตัวเลขจำนวนเต็มบนหัวเสา (ลบ % ออกเพื่อให้ตรงกับธรรมชาติของกราฟแท่ง)
         dataLabels: {
             enabled: true,
@@ -715,7 +935,7 @@
         },
         // 7. ซ่อน Legend (คำอธิบายสี) ด้านข้างเพราะชื่อบนแกน X อธิบายชัดเจนอยู่แล้ว
         legend: {
-            show: false 
+            show: false
         },
         grid: {
             strokeDashArray: 4,
@@ -800,68 +1020,109 @@
     chart_qc.render();
 
     //SO
-    const data_so = @json($data_so);
-    const options_so = {
-        series: data_so.map(item => parseFloat(item.total_qty)),
-        labels: data_so.map(item => item.defect),
-        chart: {
-            type: 'donut',
-            height: 400,
-        },
-        plotOptions: {
-            pie: {
-                donut: {
-                    size: '60%' // ปรับขนาดวงกลมตรงกลาง
-                }
-            }
-        },
-        dataLabels: {
-            enabled: true,
-            formatter: function (val, opts) {
-                // แสดงจำนวน qty และเปอร์เซ็นต์ (เช่น 354 (45.8%))
-                const qty = opts.w.globals.series[opts.seriesIndex];
-                return qty + " (" + val.toFixed(2) + "%)";
-            },
-            dropShadow: {
-                enabled: false
-            },
-            style: {
-                fontSize: '12px',
-                colors: ['#f8f8f8']
-            },
-            connectorColors: ['#333'],
-            // ตั้งค่าให้ Label เด้งออกไปด้านนอกพร้อมเส้นชี้
-            distributed: true,
-            position: 'outside'
-        },
-        legend: {
-            position: 'right',
-            offsetY: 50
-        },
-        // กำหนดโทนสีน้ำเงิน-ฟ้า ตามรูป image_4770e0.png
-        colors: ['#003366', '#0066cc', '#0099ff', '#66ccff', '#13a05a'],
-        title: {
-            text: 'Top 5 Defect by Year',
-            align: 'left',
-            style: {
-                fontSize: '16px',
-            }
-        },
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 300
-                },
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }]
-    };
 
-    const chart_so = new ApexCharts(document.querySelector("#chart-12"), options_so);
-    chart_so.render();
+ const options_so = {
+    // 1. ผูกข้อมูลซีรีส์ตัวเลขเปอร์เซ็นต์
+    series: [{
+        name: 'Inspection Rate',
+        data: @json($inspectRates_so)
+    }],
+    chart: {
+        type: 'bar', 
+        height: 550, // เพิ่มความสูงขึ้นอีกนิดเพื่อให้ไอเทมทั้งหมดขยายตัว ไม่ทับกัน
+        toolbar: {
+            show: false
+        }
+    },
+    colors: ['#3b99fc'], 
+    plotOptions: {
+        bar: {
+            horizontal: true, // กราฟแท่งแนวนอน
+            barHeight: '75%', // ปรับขนาดความหนาของแท่งให้พอดี
+            dataLabels: {
+                position: 'inside', // นำป้ายตัวเลขไปแสดงด้านใน/ปลายแท่ง
+            }
+        },
+    },
+    dataLabels: {
+        enabled: true, 
+        textAnchor: 'start',
+        style: {
+            colors: ['#333'], 
+            fontSize: '11px',
+            fontWeight: 'bold'
+        },
+        formatter: function (val) {
+            return val + "%"; // ใส่เครื่องหมาย %
+        },
+        offsetX: 10,
+        background: {
+            enabled: true,
+            foreColor: '#333',
+            padding: 4,
+            borderRadius: 4,
+            borderWidth: 0,
+            opacity: 0.85 
+        }
+    },
+    // *** จุดสำคัญที่ต้องแก้ไข ***
+    xaxis: {
+        type: 'numeric', // แกน X ด้านล่างเป็นตัวเลขเปอร์เซ็นต์ (0% - 150%)
+        labels: {
+            formatter: function (val) {
+                return val + "%";
+            }
+        },
+        title: {
+            text: 'Inspection Plan (pcs. / % )',
+            style: {
+                fontSize: '13px',
+                fontWeight: '600'
+            }
+        },
+        min: 0,
+        max: 150 
+    },
+    yaxis: {
+        type: 'category', // *** บังคับให้แกน Y เป็นข้อความ (Category) ป้องกันไม่ให้มันคำนวณเป็นตัวเลขพิกัด ***
+        categories: @json($inspectItems_so), // ผูกชื่อไอเทมเข้าที่นี่โดยตรง
+        labels: {
+            style: {
+                fontSize: '11px' // ปรับขนาดตัวอักษรชื่อไอเทมให้อ่านง่าย ไม่เบียดกัน
+            }
+        },
+        title: {
+            text: 'Items'
+        }
+    },
+    title: {
+        text: 'Inspection output by item :',
+        align: 'left',
+        style: {
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#222'
+        }
+    },
+    grid: {
+        borderColor: '#e5e5e5',
+        strokeDashArray: 3, 
+        xaxis: {
+            lines: {
+                show: true // เปิดเส้นไกด์แนวดิ่ง
+            }
+        },
+        yaxis: {
+            lines: {
+                show: false // ปิดเส้นแนวนอนตามแกนไอเทม
+            }
+        }
+    }
+};
+
+// ตรวจสอบให้มั่นใจว่า ID ตรงกับตัวคอมโพเนนต์ <div id="chart-inspect"></div> ในหน้า Blade นะครับ
+const chart_so = new ApexCharts(document.querySelector("#chart-12"), options_so);
+chart_so.render();
 
     //TL
     const data_tl = @json($data_tl);
@@ -870,7 +1131,7 @@
     const colorPalette = {
         '2025': ['#1E90FF', '#33CCFF'], // ฟ้าเข้ม / ฟ้าอ่อน
         '2023': ['#101D8B', '#1E3A8A'], // น้ำเงินมืด / น้ำเงินปกติ
-        '2024': ['#E66E33', '#F28C5A']  // ส้มเข้ม / ส้มอ่อน
+        '2024': ['#E66E33', '#F28C5A'] // ส้มเข้ม / ส้มอ่อน
     };
 
     const options_tl = {
@@ -883,7 +1144,9 @@
             width: '100%',
             height: 380,
             type: 'bar', // 2. เปลี่ยนเป็นกราฟแท่ง
-            toolbar: { show: false }
+            toolbar: {
+                show: false
+            }
         },
         plotOptions: {
             bar: {
@@ -923,7 +1186,9 @@
             }
         },
         yaxis: {
-            title: { text: 'Cost (THB)' },
+            title: {
+                text: 'Cost (THB)'
+            },
             labels: {
                 formatter: function (val) {
                     return (val / 1000).toFixed(0) + "K";
@@ -941,7 +1206,7 @@
         },
         // 7. ซ่อน Legend เพราะข้อความที่แกน X ระบุประเภทและปีชัดเจนอยู่แล้วครับ
         legend: {
-            show: false 
+            show: false
         },
         grid: {
             strokeDashArray: 4,
@@ -953,75 +1218,249 @@
 
     //FA 
     const options_fa = {
-        series: [{
-            name: 'external',
-            data: @json($externalData_fa)
-        }, {
-            name: 'internal',
-            data: @json($internalData_fa)
-        }],
-        chart: {
-            type: 'bar',
-            height: 350,
-            stacked: true, // ทำให้กราฟซ้อนกันตาม image_470878.png
-            toolbar: {
-                show: false
-            }
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '55%',
-                dataLabels: {
-                    position: 'top', // กำหนดให้ยอดรวมอยู่ด้านบน
+    series: [{
+        name: 'external',
+        data: @json($externalData_fa)
+    }, {
+        name: 'internal',
+        data: @json($internalData_fa)
+    }],
+    chart: {
+        type: 'bar',
+        height: 350,
+        stacked: true, // ทำให้กราฟซ้อนกัน
+        toolbar: {
+            show: false
+        }
+    },
+    // สลับมาใช้สีม่วง/น้ำเงินหม่น (external) และสีฟ้าสด (internal) ตามหน้าตา Power BI
+    colors: ['#5c6bc0', '#00b0ff'], 
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '45%', // ขยับให้แท่งเล็กลงเรียวขึ้นใกล้เคียงต้นฉบับ
+            dataLabels: {
+                total: {
+                    enabled: true, // เปิดการแสดงผล "ยอดรวม" ไว้บนยอดสุดของแท่งกราฟ
+                    style: {
+                        color: '#000',
+                        fontWeight: 'bold'
+                    },
+                    // ตกแต่งป้ายยอดรวมข้างบนด้วย background สีฟ้าใสๆ สไตล์ Power BI
+                    formatter: function(val) {
+                        return val;
+                    }
                 }
-            },
-        },
-        dataLabels: {
-            enabled: true,
-            style: {
-                colors: ['#fff']
-            },
-            offsetY: 10,
-            formatter: function (val, opts) {
-                // แสดงตัวเลขในแต่ละส่วนของแท่งกราฟ
-                return val;
             }
         },
-        colors: ['#5C7CEA', '#1E90FF'], // สีฟ้าโทนอ่อนและเข้มตามภาพต้นฉบับ
+    },
+    dataLabels: {
+        enabled: true, // แสดงตัวเลขในแต่ละเซกเมนต์ย่อยภายในแท่ง
+        style: {
+            colors: ['#fff'],
+            fontWeight: 'normal'
+        },
+        offsetY: 0
+    },
+    xaxis: {
+        categories: @json($customers_fa),
+        title: {
+            text: 'customer',
+            style: {
+                fontWeight: 'bold'
+            }
+        }
+    },
+    yaxis: {
+        title: {
+            text: 'Count of PCR level',
+            style: {
+                fontWeight: 'normal'
+            }
+        },
+        max: 150 // กำหนด Limit เส้นแนวตั้งตามภาพของคุณ
+    },
+    legend: {
+        position: 'top',
+        horizontalAlign: 'left',
+        offsetY: -10,
+        markers: {
+            radius: 12 // เปลี่ยนจุดสัญลักษณ์คุมสีให้กลมมน
+        }
+    },
+    title: {
+        text: '',
+        align: 'left',
+        style: {
+            fontSize: '16px',
+            fontWeight: '500',
+            color: '#333'
+        }
+    },
+    grid: {
+        borderColor: '#e0e0e0',
+        strokeDashArray: 4, // เส้นพิกัดฉากแนวนอนแบบโปร่ง (Dash) 
         xaxis: {
-            categories: @json($customers_fa),
-            title: {
-                text: 'customer'
+            lines: {
+                show: false // ปิดเส้นตารางแนวตั้ง
             }
         },
         yaxis: {
-            title: {
-                text: 'Count of PCR level'
+            lines: {
+                show: true // เปิดเฉพาะเส้นไกด์แนวนอน
             }
-        },
-        legend: {
-            position: 'top',
-            horizontalAlign: 'left',
-            title: {
-                text: 'PCR level'
-            }
-        },
-        title: {
-            text: 'Summary PCR by Customer',
-            align: 'left',
-            style: {
-                fontSize: '16px',
-            }
-        },
-        grid: {
-            borderColor: '#ccc',
-            strokeDashArray: 3,
         }
-    };
+    }
+};
 
-    const chart_fa = new ApexCharts(document.querySelector("#chart-1"), options_fa);
-    chart_fa.render();
+const chart_fa = new ApexCharts(document.querySelector("#chart-1"), options_fa);
+chart_fa.render();
+
+
+{{--  FA2  --}}
+
+const options_status = {
+    // ผูกข้อมูลตัวเลขยอดรวมที่ดึงมาจาก Laravel Controller
+    series: @json($statusSeries_fa), 
+    chart: {
+        type: 'pie', // หรือเปลี่ยนเป็น 'donut' หากชอบแบบมีรูตรงกลาง
+        height: 350,
+    },
+    // กำหนดชื่อป้ายสถานะตามแนวแกน
+    labels: @json($statusLabels_fa), 
+    
+    // ถอดรหัสสีให้ใกล้เคียงกับภาพต้นฉบับบน Power BI (Approved: เขียว, On Process: เหลือง, Cancel: แดง)
+    colors: ['#4ecdc4', '#f1d355', '#e96666'], 
+    
+    dataLabels: {
+        enabled: true,
+        // รูปแบบการแสดงผลบนชิ้นเค้ก: ให้โชว์ทั้ง "จำนวนจริง" และ "เปอร์เซ็นต์" เช่น 194 (74.05%)
+        formatter: function (val, opts) {
+            const quantity = opts.w.globals.series[opts.seriesIndex];
+            const percentage = val.toFixed(2) + '%';
+            return quantity + " (" + percentage + ")";
+        },
+        style: {
+            fontSize: '13px',
+            fontFamily: 'Helvetica, Arial, sans-serif',
+            fontWeight: 'normal',
+            colors: ['#333'] // สีตัวอักษรบนตัวกราฟ เพื่อให้อ่านง่ายบนสีพื้นพาสเทล
+        },
+        dropShadow: {
+            enabled: false // ปิดเงาตัวอักษรเพื่อให้กราฟดูคลีนสะอาดยิ่งขึ้น
+        }
+    },
+    legend: {
+        show: true,
+        position: 'right', // ย้ายคำอธิบายสถานะไปอยู่ด้านขวาเหมือนในภาพ
+        horizontalAlign: 'center',
+        verticalAlign: 'middle',
+        title: {
+            text: 'Status',
+            style: {
+                fontWeight: 'bold',
+                fontSize: '14px',
+                color: '#666'
+            }
+        },
+        markers: {
+            radius: 12 // เปลี่ยนจุดสัญลักษณ์นำทางสีให้เป็นทรงกลมมน
+        }
+    },
+    title: {
+        text: '',
+        align: 'left',
+        style: {
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#333'
+        }
+    }
+};
+
+const chart_fa2 = new ApexCharts(document.querySelector("#chart-1-1"), options_status);
+chart_fa2.render();
+
+
+
+const options_changing = {
+    // ผูกข้อมูลตัวเลขยอดรวมที่ส่งมาจาก Laravel Controller
+    series: @json($changingSeries_fa), 
+    chart: {
+        type: 'donut', // กำหนดเป็นกราฟโดนัทตามภาพต้นฉบับ
+        height: 380,
+    },
+    // กำหนดป้ายชื่อกลุ่มตามข้อมูลที่ดึงมา
+    labels: @json($changingLabels_fa), 
+    
+    // ตั้งค่าชุดสีพาสเทลเรียงตามลำดับความนิยม (ม่วง, เขียวมินต์, ชมพู, ชมพูเข้ม, ฟ้า, ฯลฯ)
+    colors: [
+        '#9580ed', '#a3e4b7', '#f7b1d6', '#d67bc8', 
+        '#58c4f5', '#8889ec', '#e0427f', '#a9b841', '#456a29'
+    ], 
+    
+    dataLabels: {
+        enabled: true,
+        // รูปแบบการแสดงผลชี้ออกจากตัวกราฟ หรือแสดงบนตัวกราฟ
+        // ให้โชว์ทั้ง "จำนวนตัวเลข" และ "เปอร์เซ็นต์" เช่น 89 (33.97%)
+        formatter: function (val, opts) {
+            const quantity = opts.w.globals.series[opts.seriesIndex];
+            const percentage = val.toFixed(2) + '%';
+            return quantity + " (" + percentage + ")";
+        },
+        style: {
+            fontSize: '12px',
+            fontWeight: 'normal',
+            colors: ['#333'] // ใช้ตัวหนังสือสีเข้มเพื่อให้อ่านง่ายบนพื้นสีพาสเทลอ่อน
+        },
+        dropShadow: {
+            enabled: false // เอาเงาสะท้อนสีดำๆ ด้านหลังตัวหนังสือออกเพื่อให้ดูคลีน
+        }
+    },
+    plotOptions: {
+        pie: {
+            donut: {
+                size: '60%', // ปรับขนาดรูกลางโดนัทให้สัดส่วนพอดีกับภาพต้นฉบับ
+                labels: {
+                    show: false // ปิดตัวหนังสือตรงกลางรูกราฟเพื่อให้เหมือนต้นฉบับ
+                }
+            }
+        }
+    },
+    legend: {
+        show: true,
+        position: 'right', // จัดป้ายคำอธิบาย (Reason of change) ไว้ฝั่งขวา
+        horizontalAlign: 'center',
+        verticalAlign: 'middle',
+        offsetY: 0,
+        title: {
+            text: 'Reason of change',
+            style: {
+                fontWeight: 'bold',
+                fontSize: '14px',
+                color: '#555'
+            }
+        },
+        markers: {
+            radius: 12 // เปลี่ยนปุ่มสีหน้าข้อความให้เป็นวงกลมมนๆ
+        },
+        itemMargin: {
+            vertical: 4 // ขยับช่องไฟแนวตั้งให้ระยะห่างดูพอดีไม่ติดกันเกินไป
+        }
+    },
+    title: {
+        text: '',
+        align: 'left',
+        style: {
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#333'
+        }
+    }
+};
+
+const chart_fa3 = new ApexCharts(document.querySelector("#chart-1-3"), options_changing);
+chart_fa3.render();
 
 </script>
 @endsection

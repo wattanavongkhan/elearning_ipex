@@ -184,6 +184,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     Route::get('/dashboardall', [PowerbiController::class, 'index'])->name('dashboardall.index');
     Route::get('/dashboardall.show/{id}', [PowerbiController::class, 'show'])->name('dashboardall.show');
+    Route::get('/daily_sale', [PowerbiController::class, 'daily_sale'])->name('daily_sale');
+
+
+    Route::get('/upload-excel', [PowerbiController::class, 'upload_excel'])->name('upload-excel');
+
 
     Route::get('/dashboard.mng', [PowerbiController::class, 'dashboard_mng'])->name('dashboard.mng');
 
