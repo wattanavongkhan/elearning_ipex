@@ -5,7 +5,6 @@ use App\Models\User;
 use App\Models\Enrollment;
 use App\Models\Course;
 use Illuminate\Http\Request;
-use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -179,34 +178,4 @@ class ReportController extends Controller
         return view('admin.reports.quiz_report', compact('quizzes'));
     }
 
-
-    // public function getPowerBIToken()
-    // {
-    // $tokenResponse = Http::withOptions(['verify' => false]) // ใส่ verify false กรณีรันใน XAMPP แล้วติด SSL
-    //     ->asForm()->post("https://login.microsoftonline.com/" . env('PBI_TENANT_ID') . "/oauth2/v2.0/token", [
-    //         'client_id'     => env('PBI_CLIENT_ID'),
-    //         'scope'         => 'https://analysis.windows.net/powerbi/api/.default',
-    //         'client_secret' => env('PBI_CLIENT_SECRET'),
-    //         'grant_type'    => 'client_credentials',
-    //     ]);
-
-    // // --- จุดเช็คที่ 1: ถ้าหน้าจอค้างตรงนี้ แสดงว่า Client ID หรือ Secret ผิด ---
-    // if ($tokenResponse->failed()) {
-    //     dd("1. Azure Auth Failed", $tokenResponse->json(), "Check your .env Client ID/Secret");
-    // }
-
-    // $accessToken = $tokenResponse->json()['access_token'];
-
-    // $embedResponse = Http::withToken($accessToken)
-    //     ->post("https://api.powerbi.com/v1.0/myorg/groups/" . env('PBI_WORKSPACE_ID') . "/reports/" . env('PBI_REPORT_ID') . "/GenerateToken", [
-    //         'accessLevel' => 'View'
-    //     ]);
-
-    // // --- จุดเช็คที่ 2: ถ้าหน้าจอค้างตรงนี้ แสดงว่าลืมแอด App เข้า Workspace ---
-    // if ($embedResponse->failed()) {
-    //     dd("2. Power BI API Failed", $embedResponse->json(), "Did you add the App to Workspace Members?");
-    // }
-
-    // $embedToken = $embedResponse->json()['token'];
-    // }
 }

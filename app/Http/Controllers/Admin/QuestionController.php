@@ -101,10 +101,4 @@ class QuestionController extends Controller {
         }
     }
 
-    // 4. หน้าฟอร์มแก้ไข
-    // public function manageQuestions(Quiz $quiz) {
-    //     $questions=$quiz->questions;
-    //     return view('admin.quizzes.questions', compact('quiz', 'questions'));
-    // }
-
 }

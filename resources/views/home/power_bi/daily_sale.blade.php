@@ -1,5 +1,7 @@
 @extends('layouts.layout_public')
 @section('content')
+
+
 <div class="min-h-screen bg-[#f8fafc] p-5 font-kanit flex flex-col gap-6">
     <div class="bg-white rounded-[2rem] p-7 border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden group">
         
@@ -29,7 +31,7 @@
                     <i class="fas fa-chart-bar"></i> Power BI
                 </a>
                 
-                <a href="{{ route('dashboard.mng') }}" 
+                <a href="{{route('daily_sale_mgn')}}"
                     class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-bold shadow-md shadow-amber-100 transition-all cursor-pointer inline-flex items-center gap-2">
                     <i class="fas fa-external-link-alt"></i> Manage data
                 </a>
@@ -41,7 +43,6 @@
             <div id="cumulativeApexChart" class="w-full"></div>
             <div id="apexDataTable" class="mt-5 overflow-x-auto"></div>
         </div>
-
         <div class="absolute -right-10 -bottom-10 size-40 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
     </div>
 </div>
@@ -49,283 +50,294 @@
 @section('scripts')
 <script>
     let chart;
-    function initChart(initialSeries, initialLabels) {
-       const options = {
-        series: initialSeries,
+ function initChart(initialSeries, initialLabels) {
+    const chartSeries = initialSeries.filter(s => s.name !== 'Accum Progressive Acc').map(s => {
+        let cleanData = [...s.data];
+        
+        if (s.name.includes('Actual')) {
+            let lastValidIndex = -1;
+            for (let i = cleanData.length - 1; i >= 0; i--) {
+                if (cleanData[i] !== null && cleanData[i] !== undefined && cleanData[i] > 0) {
+                    lastValidIndex = i;
+                    break;
+                }
+            }
+            for (let i = lastValidIndex + 1; i < cleanData.length; i++) {
+                cleanData[i] = null;
+            }
+        }
+
+        if (s.name.includes('JPY')) {
+            return { name: s.name, type: 'column', data: cleanData };
+        }
+        return { name: s.name, type: 'line', data: cleanData };
+    });
+
+    const options = {
+        series: chartSeries,
         chart: {
-            height: 600,
-            type: 'area',
+            height: 700,
+            type: 'line',
             dropShadow: { enabled: true, color: '#000', top: 5, left: 3, blur: 5, opacity: 0.1 },
             toolbar: { show: true },
             events: {
-                
                 mounted: function(chartContext, config) {
-                    generateDataTable(config.config.series, config.config.xaxis.categories);
+                    generateDataTable(initialSeries, config.config.xaxis.categories);
                 },
                 updated: function(chartContext, config) {
-                    // เมื่อสลับเดือน/ปี ให้วาดตารางใหม่ให้ค่าตรงกันทันที
-                    generateDataTable(config.config.series, config.config.xaxis.categories);
+                    generateDataTable(initialSeries, config.config.xaxis.categories);
                 }
             }
         },
-          colors: ['#ff3c00', '#3157ff', '#05c23e'], 
-        fill: {
-            type: ['solid', 'solid', 'solid'],
-            opacity: [0.15, 0.04, 0.1] 
+      // 🎯 จัดการ dataLabels: เอาพื้นหลังออก และยังคงเยื้องหลบซ้าย-ขวาตามปกติ
+        dataLabels: { 
+            enabled: true,
+            enabledOnSeries: [0, 1, 2, 3, 4], 
+            textAnchor: 'middle', 
+            style: {
+                fontSize: '9px',
+                fontWeight: 'bold',
+                colors: ['#1447E6', '#7c3aed', '#2ec4b6', '#ff7a00', '#db2777']
+            },
+            background: {
+               enabled: true,
+                padding: 1,
+                borderRadius: 2,
+                borderWidth: 1,
+                borderColor: '#888686',
+                opacity: 0.90
+            },
+            formatter: function (val, opts) {
+                if (val === null || val === undefined || val === 0) return '';
+                const seriesName = opts.w.config.series[opts.seriesIndex].name;
+                
+                if (seriesName === 'Accum Annual JPY') {
+                    return ''; 
+                }
+
+                const formattedVal = val.toLocaleString();
+                const dayIndex = opts.dataPointIndex;
+
+                const planSeries = initialSeries.find(s => s.name === 'Accum PLAN THB');
+                const annualSeries = initialSeries.find(s => s.name === 'Accum Annual THB');
+                const actualSeries = initialSeries.find(s => s.name === 'Accum Actual THB');
+
+                if (planSeries && annualSeries && actualSeries) {
+                    const planVal = planSeries.data[dayIndex];
+                    const annualVal = annualSeries.data[dayIndex];
+                    const actualVal = actualSeries.data[dayIndex];
+
+                    // เช็คว่ามีวันไหนที่วิ่งมาทับกันบ้าง (< 2500)
+                    const isPlanAnnualOverlap = (planVal !== null && annualVal !== null && Math.abs(planVal - annualVal) < 2500);
+                    const isPlanActualOverlap = (planVal !== null && actualVal !== null && Math.abs(planVal - actualVal) < 2500);
+                    const isAnnualActualOverlap = (annualVal !== null && actualVal !== null && Math.abs(annualVal - actualVal) < 2500);
+
+                    if (isPlanAnnualOverlap || isPlanActualOverlap || isAnnualActualOverlap) {
+                        
+                        // 🔹 1. เส้น PLAN: ดีดไปทางซ้ายของ Marker
+                        if (seriesName === 'Accum PLAN THB') {
+                            return formattedVal + '                 '; 
+                        }
+                        
+                        // 🔹 2. เส้น Annual: ดีดไปทางขวาของ Marker
+                        if (seriesName === 'Accum Annual THB') {
+                            return '                 ' + formattedVal; 
+                        }
+
+                        // 🔹 3. เส้น Actual THB: อยู่ตรงกลาง Marker 
+                        if (seriesName === 'Accum Actual THB') {
+                            return formattedVal; 
+                        }
+                    }
+                }
+
+                // สำหรับกราฟแท่งหรือจุดที่ไม่มีการทับซ้อน ให้อยู่ตรงกลางปกติ
+                return formattedVal; 
+            },
+           // 🎯 เช็คการซ้อนทับโดยคำนวณจากสัดส่วนความสูงของกราฟ (เสมือนเช็คพิกัดพิกเซลของ Marker)
+            offsetX: function(val, opts) {
+                if (opts === undefined || opts.seriesIndex === undefined) return 0;
+
+                const dayIndex = opts.dataPointIndex;
+                const currentSeriesName = opts.w.config.series[opts.seriesIndex].name;
+
+                // 1. ดึงข้อมูลดิบ THB ทั้ง 3 เส้น
+                const planSeries = initialSeries.find(s => s.name === 'Accum PLAN THB');
+                const annualSeries = initialSeries.find(s => s.name === 'Accum Annual THB');
+                const actualSeries = initialSeries.find(s => s.name === 'Accum Actual THB');
+
+                if (planSeries && annualSeries && actualSeries) {
+                    const planVal = planSeries.data[dayIndex];
+                    const annualVal = annualSeries.data[dayIndex];
+                    const actualVal = actualSeries.data[dayIndex];
+
+                    // 2. ดึงค่าสูงสุด (Max) ของแกน Y ปัจจุบันจากออปชันมาคำนวณ (ในโค้ดของคุณตั้งไว้ที่ 80,000)
+                    const yAxisMax = 80000; 
+
+                    // 3. กำหนดความไว (Threshold): ถ้าค่าต่างกันน้อยกว่า 3% ของความสูงกราฟ แปลว่าบนหน้าจอ Marker ทับกันแน่ๆ
+                    const overlapLimit = yAxisMax * 0.03; // 3% ของ 80,000 คือ 2,400
+
+                    // ตรวจเช็คว่ามีคู่ใดคู่หนึ่งซ้อนทับกันหรือไม่
+                    const isPlanAnnualOverlap = (planVal !== null && annualVal !== null && Math.abs(planVal - annualVal) < overlapLimit);
+                    const isPlanActualOverlap = (planVal !== null && actualVal !== null && Math.abs(planVal - actualVal) < overlapLimit);
+                    const isAnnualActualOverlap = (annualVal !== null && actualVal !== null && Math.abs(annualVal - actualVal) < overlapLimit);
+
+                    // 4. ถ้า Marker เบียดกันจนซ้อนทับ สั่งดีดกล่องข้อความออกซ้าย-ขวาทันที
+                    if (isPlanAnnualOverlap || isPlanActualOverlap || isAnnualActualOverlap) {
+                        if (currentSeriesName === 'Accum PLAN THB') {
+                            return formattedVal + '                 '; // ดีดซ้าย
+                        }
+                        if (currentSeriesName === 'Accum Annual THB') {
+                            return '                 ' + formattedVal; // ดีดขวา
+                        }
+                    }
+                }
+
+                return 0; // ถ้า Marker อยู่ห่างกันเกิน 3% ให้แสดงตรงกลางปกติ
+            },
+            offsetY: -7 
         },
-        stroke: { 
-            curve: 'smooth', // 🎯 เส้นโค้งสมูทพริ้วสวย
-            width: [3, 2, 3] 
-        },
-        dataLabels: { enabled: false }, // ปิดตัวเลขลอยบนเส้นเพื่อให้ดูสะอาดตา
-        title: {
-            text: 'DAILY SALES PROGRESS (' + '{{ $year }})',
-            align: 'left',
-            style: { fontSize: '16px', fontWeight: 'bold' }
-        },
-        grid: {
-            borderColor: '#e7e7e7',
-            row: { colors: ['#f3f3f3', 'transparent'], opacity: 0.5 },
-        },
-        markers: { size: 4 },
-        xaxis: {
-            categories: initialLabels,
-            title: { text: 'Day' }
-        },
-        yaxis: {
-            title: { text: 'Sale amount (KTHB)' },
-            labels: { 
-                formatter: function (val) { 
-                    if (val === 0) return '0';
-                    // หาร 1000 เพื่อโชว์หน่วย K และตัดเศษทศนิยมให้สวยงาม
-                    return (val / 1000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + 'K'; 
-                } 
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    hideOverflowingLabels: true 
+                }
+            },
+            bar: {
+                dataLabels: {
+                    hideOverflowingLabels: true
+                }
             }
         },
-        legend: {
-            show: true, 
-            position: 'bottom', 
-            horizontalAlign: 'left', 
-            floating: false, 
-            fontSize: '14px', 
-            fontWeight: 600,
-            onItemClick: { 
-                toggleDataSeries: true // จิ้มเปิด-ปิดซ่อนเส้นที่แถบล่างได้ Dynamic
+        colors: ['#1447E6', '#7c3aed', '#2ec4b6', '#ff7a00', '#db2777'], 
+        fill: { type: 'solid', opacity: [1, 1, 0.85, 1, 0.85] },
+        stroke: { curve: 'smooth', width: [3.5, 3.5, 0, 3.5, 0] },
+        grid: {
+            borderColor: '#f1f5f9', 
+            row: { colors: ['#f8fafc', 'transparent'], opacity: 0.5 },
+        },
+        markers: { 
+            size: [5, 5, 0, 5, 0], 
+            {{--  colors: ['#1447E6', '#7c3aed', '#2ec4b6', '#ff7a00', '#db2777'],   --}}
+            strokeColors: '#ffffff', 
+            strokeWidth: 2,
+            hover: { sizeOffset: 2 }
+        },
+        xaxis: {
+            categories: initialLabels,
+            axisBorder: { show: false }, 
+            axisTicks: { show: false },  
+            title: { text: 'Day', style: { color: '#64748b' } },
+            labels: { style: { colors: '#64748b' } }
+        },
+        yaxis: [
+            {
+                seriesName: 'Accum PLAN THB',
+                min: 0, max: 80000, stepSize: 10000,
+                title: { text: 'Amount (Baht)', style: { color: '#64748b' } },
+                labels: { style: { colors: '#1447E6' }, formatter: (v) => v ? v.toLocaleString() : '0' }
             },
-            onItemHover: { highlightDataSeries: true }
+            { seriesName: 'Accum PLAN THB', show: false, min: 0, max: 80000, stepSize: 10000 },
+            {
+                seriesName: 'Accum Annual JPY',
+                opposite: true,
+                min: 0, max: 350000, stepSize: 50000,
+                title: { text: 'Amount (Yen)', style: { color: '#64748b' } },
+                labels: { style: { colors: '#2ec4b6' }, formatter: (v) => v ? v.toLocaleString() : '0' }
+            },
+            { seriesName: 'Accum PLAN THB', show: false, min: 0, max: 80000, stepSize: 10000 },
+            { seriesName: 'Accum Annual JPY', opposite: true, show: false, min: 0, max: 350000, stepSize: 50000 }
+        ],
+        annotations: {
+            position: 'back',
+            texts: [
+                {
+                    x: 15, y: 12,
+                    text: 'UNIT : K THB',
+                    textAnchor: 'start',
+                    style: { color: '#ef4444', fontSize: '13px', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }
+                }
+            ]
+        },
+        legend: {
+            show: true, position: 'bottom', horizontalAlign: 'left',
+            fontSize: '12px', fontWeight: 600, labels: { colors: '#475569' }
         }
     };
 
     chart = new ApexCharts(document.querySelector("#cumulativeApexChart"), options);
     chart.render();
-    }
+}
+function generateDataTable(series, categories) {
+    let tableHtml = `<table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; text-align: center; table-layout: auto;">`;
 
-
-    function fetchChartData() {
-        const year = document.getElementById('select-year').value;
-        const month = document.getElementById('select-month').value;
-
-        // เรียกยิงไปยัง API หลังบ้านที่เซ็ตไว้ใน Laravel Controller
-        fetch(`/get-dynamic-chart-data?year=${year}&month=${month}`)
-            .then(response => response.json())
-            .then(data => {
-                // เปลี่ยนหัวข้อวันตามเดือนและปีที่เปลี่ยน
-                chart.updateOptions({
-                    xaxis: { categories: data.labels },
-                    title: { text: `Cumulative Production Chart (${month}/${year})` }
-                });
-                
-                // อัปเดตข้อมูลยัดลง 3 เส้นกราฟ
-                chart.updateSeries([
-                    { name: 'AccumMonthly - PLAN ', data: data.accPlanData },
-                    { name: 'AccumAnnual - PLAN ', data: data.accAnnualData },
-                    { name: 'AccumActual - PLAN', data: data.accActualData }
-
-                ]);
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    }
-
-   
-    function generateDataTable(series, categories) {
-        let tableHtml = `<table style="width: 100%; border-collapse: collapse; font-family: Arial; font-size: 12px; text-align: center;">`;
+    tableHtml += `<tr style="background-color: #f8fafc;">`;
+    tableHtml += `<th style="border: 1px solid #b8b8b8; padding: 4px 6px; width: 130px; text-align: left; background-color: #f1f5f9;">Items</th>`;
     
-        tableHtml += `<tr style="background-color: #f8fafc;">`;
-        tableHtml += `<th style="border: 1px solid #b8b8b8; padding: 8px; width: 160px; text-align: left; background-color: #f1f5f9;">Items</th>`;
-        categories.forEach(day => { 
-            tableHtml += `<th style="border: 1px solid #b8b8b8; padding: 8px; min-width: 45px; background-color: #f1f5f9;">${parseInt(day)}</th>`; 
-        });
-        tableHtml += `</tr>`;
-            
-            series.forEach(s => {
-                let color = '#3157ff'; 
-                if (s.name.includes('AccumMonthly')) color = '#ff3c00';   
-                if (s.name.includes('AccumActual')) color = '#069906';
-
-                tableHtml += `<tr>`;
-                tableHtml += `<td style="border: 1px solid #b8b8b8; padding: 8px; text-align: left; font-weight: bold; color: ${color};">
-                                <span style="display:inline-block; width:15px; height:3px; background:${color}; margin-right:5px; vertical-align:middle;"></span>
-                                ${s.name}
-                            </td>`;
-            s.data.forEach(val => {
-                let displayVal = val !== null && val !== undefined && val > 0 ? val.toLocaleString() : '-';
-                tableHtml += `<td style="border: 1px solid #b8b8b8; padding: 8px; color: #333;">${displayVal}</td>`;
-            });
-                tableHtml += `</tr>`;
-            });
-        
-        tableHtml += `</table>`;
-        document.getElementById('apexDataTable').innerHTML = tableHtml;
-    }
-
-    // ทำงานอัตโนมัติเมื่อเปิดหน้าเว็บครั้งแรก
-    document.addEventListener("DOMContentLoaded", function() {
-        const labels = {!! json_encode($labels) !!};
-        const accPlanData = {!! json_encode($accPlanData) !!};
-        const accAnnualData = {!! json_encode($accAnnualData ?? []) !!}; 
-        const accActualData = {!! json_encode($accActualData) !!};
-
-        // เริ่มต้นวาดกราฟ
-        initChart([
-            { name: 'AccumMonthly - PLAN ', data: accPlanData },
-            { name: 'AccumAnnual - PLAN', data: accAnnualData },
-            { name: 'AccumActual - PLAN', data: accActualData }
-        ], labels);
-
-        // ผูกปุ่มกดค้นหาให้เรียกใช้ฟังก์ชันดึงค่าใหม่
-        document.getElementById('btn-search').addEventListener('click', fetchChartData);
+    categories.forEach(day => { 
+        tableHtml += `<th style="border: 1px solid #b8b8b8; padding: 4px 2px; background-color: #f1f5f9;">${parseInt(day)}</th>`; 
     });
-
-
-
-
-
-
-
-    // 📋 1. ฟังก์ชันสร้างตารางใต้กราฟ (ปรับแต่งสีให้ตรงกับธีมกราฟเข้มใหม่ของคุณ)
-    function generateDataTableInj(series, categories) {
-        let tableHtml = `<table style="width: 100%; border-collapse: collapse; font-family: Arial; font-size: 12px; text-align: center;">`;
+    tableHtml += `</tr>`;
         
-        // แถวหัวคอลัมน์ (Items และ วันที่ 1-30/31)
-        tableHtml += `<tr style="background-color: #f8fafc;">`;
-        tableHtml += `<th style="border: 1px solid #b8b8b8; padding: 8px; width: 160px; text-align: left; background-color: #f1f5f9;">Items</th>`;
-        categories.forEach(day => { 
-            // ถอดเครื่องหมาย -- ออกเพื่อให้แสดงเฉพาะตัวเลขวันที่คลีนๆ
-            tableHtml += `<th style="border: 1px solid #b8b8b8; padding: 8px; min-width: 45px; background-color: #f1f5f9;">${parseInt(day)}</th>`; 
-        });
-        tableHtml += `</tr>`;
-        
-        // วนลูปกรอกแถวข้อมูล (PLAN และ ACTUAL)
-        series.forEach(s => {
-            let color = '#333'; 
-            let rowBg = '#ffffff';
+    series.forEach(s => {
+        let color = '#334155';
+        let isProgressive = s.name.includes('Accum Progressive Acc');
 
-            // แมตช์สีตัวหนังสือและสัญลักษณ์ในตารางให้ตรงกับสีกราฟด้านบน
-            if (s.name.includes('PLAN')) {
-                color = '#1E3A8A';  // น้ำเงินเข้ม (Deep Navy)
-                rowBg = '#fffdec';  // พื้นหลังอมเหลืองอ่อนให้ตัดสายตา
-            } else if (s.name.includes('ACTUAL')) {
-                color = '#15803D';  // เขียวเข้ม (Forest Green)
-                rowBg = '#f4fff4';  // พื้นหลังอมเขียวอ่อน
-            }
+        if (s.name.includes('Accum PLAN THB')) color = '#00b4d8';   
+        else if (s.name.includes('Accum Annual THB')) color = '#7c3aed';
+        else if (s.name.includes('Accum Annual JPY')) color = '#2ec4b6';
+        else if (s.name.includes('Accum Actual THB')) color = '#ff7a00';
+        else if (s.name.includes('Accum Actual JPY')) color = '#db2777';
+        else if (isProgressive) color = '#ef4444'; // 🎯 3. เปลี่ยนแถว Progressive Acc ในตารางข้อมูลให้แสดงเป็นสีแดงตามตัวอย่างภาพแรก
 
-            tableHtml += `<tr style="background-color: ${rowBg};">`;
-            // คอลัมน์ป้ายหัวข้อแถว พร้อมเส้นขีดสีไอคอนหน้าชื่อ
-            tableHtml += `<td style="border: 1px solid #b8b8b8; padding: 8px; text-align: left; font-weight: bold; color: ${color};">
-                            <span style="display:inline-block; width:15px; height:4px; background:${color}; margin-right:8px; vertical-align:middle; border-radius:2px;"></span>
-                            ${s.name}
-                        </td>`;
-                        
-            // คอลัมน์ตัวเลขรายวัน
-            s.data.forEach(val => {
-                let displayVal = val !== null && val !== undefined && val > 0 ? val.toLocaleString() : '-';
-                tableHtml += `<td style="border: 1px solid #b8b8b8; padding: 8px; color: #333;">${displayVal}</td>`;
-            });
-            tableHtml += `</tr>`;
-        });
-        
-        tableHtml += `</table>`;
-        // ส่งตารางไปแสดงผลที่ div id="apexDataTableInj"
-        document.getElementById('apexDataTableInj').innerHTML = tableHtml;
-    }
+        tableHtml += `<tr>`;
+        tableHtml += `<td style="border: 1px solid #b8b8b8; padding: 4px 6px; text-align: left; font-weight: bold; color: ${color}; line-height: 1.2;">
+                        <span style="display:inline-block; width:10px; height:3px; background:${color}; margin-right:4px; vertical-align:middle;"></span>
+                        ${s.name}
+                     </td>`;
+                     
+        s.data.forEach(val => {
+            let displayVal = '';
+            // 🎯 4. ปรับเปลี่ยนการแสดงสีตัวเลขของเปอร์เซ็นต์ Progressive ให้กลายเป็นสีแดงเข้มสดใสสะดุดตา
+            let textStyle = isProgressive ? `color: #ef4444; font-weight: bold;` : `color: #333;`;
 
-    // 📊 2. การตั้งค่ากราฟ ApexCharts (ชุดคำสั่งของคุณ)
-    var options = {
-    series: [
-        { name: 'TOTAL ACC PLAN', data: @json($accPlanDatainj), color: '#A855F7' },    // สีม่วงลาเวนเดอร์เข้ม (Soft Purple)
-        { name: 'TOTAL ACC ACTUAL', data: @json($accActualDatainj), color: '#3B82F6' } // สีน้ำเงินสว่างโทนสบายตา (Soft Blue)
-    ],
-        title: {
-            text: "Production Daily Output for Tray Air Spoiler and Ramp in {{ $yearinj }}",
-            align: 'left', 
-            margin: 20,
-            style: {
-                fontSize: '18px',
-                fontWeight: 'bold',
-                color: '#333'
-            }
-        },
-        chart: { 
-            type: 'line', 
-            height: 400,
-            dropShadow: {
-                enabled: true,
-                color: '#000',
-                top: 6,
-                left: 2,
-                blur: 4,
-                opacity: 0.15
-            },
-            toolbar: { show: true }
-        },
-        stroke: { 
-            width: 4, 
-            curve: 'smooth' 
-        },
-        dataLabels: {
-            enabled: true,
-            background: {
-                enabled: true,
-                foreColor: '#fff',
-                borderRadius: 3,
-                padding: 4,
-                opacity: 0.9,
-                borderWidth: 1,
-                borderColor: '#fff'
-            },
-            formatter: function (val) {
-                return val > 0 ? val.toLocaleString() : '';
-            }
-        },
-        xaxis: { 
-            categories: @json($labelsinj),
-            title: { text: 'Days' }
-        },
-        yaxis: {
-            title: { text: 'Amount (Pcs)' }
-        },
-        tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-                formatter: function (val) {
-                    return val !== undefined ? val.toLocaleString() + " Pcs" : '';
+            if (val !== null && val !== undefined && val > 0) {
+                if (isProgressive) {
+                    displayVal = val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+                } else {
+                    displayVal = val.toLocaleString();
                 }
             }
-        },
-        markers: {
-            size: 4
-        }
-    };
-
-    // 🎬 3. สั่งวาดกราฟและตารางเมื่อโหลดหน้าจอเสร็จสมบูรณ์
-    document.addEventListener("DOMContentLoaded", function() {
-        // วาดกราฟเส้น
-        var charts = new ApexCharts(document.querySelector("#injectionChart"), options);
-        charts.render();
-
-        // เรียกฟังก์ชันสร้างตารางใต้กราฟทันที โดยดึงข้อมูลมาจากตัวแปรใน options ของกราฟโดยตรง
-        generateDataTableInj(options.series, options.xaxis.categories);
+            tableHtml += `<td style="border: 1px solid #b8b8b8; padding: 4px 2px; ${textStyle}">${displayVal}</td>`;
+        });
+        tableHtml += `</tr>`;
     });
+    
+    tableHtml += `</table>`;
+    document.getElementById('apexDataTable').innerHTML = tableHtml;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const labels = {!! json_encode($labels) !!};
+    const accPlanData = {!! json_encode($accPlanData) !!};
+    const accAnnualData = {!! json_encode($accAnnualData ?? []) !!}; 
+    const accumJpyData = {!! json_encode($accumJpyData ?? []) !!};
+    const accActualData = {!! json_encode($accActualData) !!};
+    const actualJpyData = {!! json_encode($actualJpyData ?? []) !!};
+    const progressiveData = {!! json_encode($progressive ?? []) !!};
+
+    const initialSeriesData = [
+        { name: 'Accum PLAN THB', data: accPlanData },
+        { name: 'Accum Annual THB', data: accAnnualData },
+        { name: 'Accum Annual JPY', data: accumJpyData },
+        { name: 'Accum Actual THB', data: accActualData },
+        { name: 'Accum Actual JPY', data: actualJpyData },
+        { name: 'Accum Progressive Acc', data: progressiveData } 
+    ];
+
+    initChart(initialSeriesData, labels);
+    {{--  document.getElementById('btn-search').addEventListener('click', fetchChartData);  --}}
+});
+
     </script>
 @endsection

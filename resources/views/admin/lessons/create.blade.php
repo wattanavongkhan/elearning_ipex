@@ -14,6 +14,7 @@
                         class="hover:text-blue-600 transition">จัดการบทเรียน/เพิ่มบทเรียน</a>
                 </nav>
             </div>
+            
             <div class="grid grid-cols-1 gap-y-6">
                 <div>
                     <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">หัวข้อบทเรียน <span

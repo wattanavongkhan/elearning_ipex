@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\PowerbiController;
 use App\Http\Controllers\Admin\CalendarController;
+use App\Http\Controllers\Admin\PCSaleController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 use App\Http\Controllers\Api\ShellyController;
@@ -185,6 +186,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboardall', [PowerbiController::class, 'index'])->name('dashboardall.index');
     Route::get('/dashboardall.show/{id}', [PowerbiController::class, 'show'])->name('dashboardall.show');
     Route::get('/daily_sale', [PowerbiController::class, 'daily_sale'])->name('daily_sale');
+
+    Route::get('/daily_sale_mgn', [PCSaleController::class, 'index'])->name('daily_sale_mgn');
+    Route::delete('daily_sale_mgn/{id}', [PCSaleController::class, 'destroy'])->name('daily_sale_mgn.destroy');
+    Route::post('/daily_sale_mgn.store', [PCSaleController::class, 'store'])->name('daily_sale_mgn.store');
 
 
     Route::get('/upload-excel', [PowerbiController::class, 'upload_excel'])->name('upload-excel');

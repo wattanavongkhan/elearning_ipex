@@ -498,49 +498,179 @@ class PowerbiController extends Controller
 
         $dailyAnnualStep = ($daysInMonth > 0) ? ($annualPlanValue / $daysInMonth / 1000) : 0;
         
-        $chartData = DB::connection('dashboard_bi_db')
-        ->table('tblsale_report_daily_pc')
-        ->select(
-                'date',
-                DB::raw('SUM(plan) as daily_plan'),
-                DB::raw('SUM(accplan) as daily_accplan'),
-                DB::raw('SUM(acture) as daily_acture'),
-                DB::raw('SUM(acc_acture) as daily_acc_acture'),
-                DB::raw('SUM(acc_annual) as daily_acc_annual')
-            )
-            // ใช้ตัวแปร startDate และ endDate ที่คำนวณไว้มาดักกรองวันที่
-            ->where('date', '>=', $startDate)
-            ->where('date', '<=', $endDate)
-            ->groupBy('date')
-            ->orderBy('date', 'asc')
-            ->get()
-            ->keyBy(function($item) {
-                return (int)date('j', strtotime($item->date)); // เอาเลขวัน (1-31) เป็น Key เพื่อนำไป map ข้อมูลได้ง่าย
-            });
 
-        // 6. ลูปสร้างข้อมูลรายวันให้ครบถ้วนตั้งแต่วันที่ 1 ถึงวันสุดท้ายของเดือนนั้นๆ
+
+        // $chartData = DB::connection('dashboard_bi_db')
+        // ->table('tblsale_report_daily_pc')
+        // ->select(
+        //         'date',
+        //         DB::raw('SUM(accplan) as daily_accplan'),
+        //         DB::raw('SUM(acc_acture) as daily_acc_acture'),
+        //         DB::raw('SUM(acc_annual) as daily_acc_annual')
+        //     )
+        //     ->where('date', '>=', $startDate)
+        //     ->where('date', '<=', $endDate)
+        //     ->groupBy('date')
+        //     ->orderBy('date', 'asc')
+        //     ->get()
+        //     ->keyBy(function($item) {
+        //         return (int)date('j', strtotime($item->date));
+        // });
+
+        // $labels = [];
+        // $accPlanData = [];
+        // $accAnnualData = [];
+        // $accActualData = [];
+
+        // for ($day = 1; $day <= $daysInMonth; $day++) {
+        //     $labels[] = $day; 
+        //     if (isset($chartData[$day])) {
+        //         $accPlanData[] = (float)$chartData[$day]->daily_accplan;
+        //         $accActualData[] = (float)$chartData[$day]->daily_acc_acture;
+        //         $accAnnualData[] = (float)$chartData[$day]->daily_acc_annual;
+        //     }
+        // }
+
+        $filePath = '\\\\192.168.230.3\\Power_BI\\PC\7-Daily Sale report Jul-26 Draft1.xlsx';
+
+        // 1. เช็คว่าเจอไฟล์ไหม
+        if (!file_exists($filePath)) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'หาไฟล์บน Network Share ไม่เจอ หรือไม่มีสิทธิ์เข้าถึงโฟลเดอร์นี้'
+            ], 404);
+        }
+
+        $zip = new \ZipArchive;
+
+        if ($zip->open($filePath) === TRUE) {
+        $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
+        $stringsXml = $zip->getFromName('xl/sharedStrings.xml');
+        $zip->close();
+
+        if (!$sheetXml) {
+            return response()->json(['status' => 'error', 'message' => 'ไม่พบโครงสร้างข้อมูลในไฟล์ Excel'], 500);
+        }
+
+        // แกะ Shared Strings ข้อมูลข้อความ
+        $sharedStrings = [];
+        if ($stringsXml) {
+            $xmlStrings = new \SimpleXMLElement($stringsXml);
+            foreach ($xmlStrings->si as $val) {
+                $sharedStrings[] = (string)$val->t;
+            }
+        }
+
+        // 🎯 2. ประกาศตัวแปรรับค่าตามที่คุณระบุ
+        $plan_THB = [];
+        $annual_THB = [];
+        $accum_JPY = [];
+        $actual_THB = [];
+        $actual_JPY = [];
+        $progressive_acc = [];
+
+        // ฟังก์ชันแปลงคอลัมน์ตัวอักษรเป็นตัวเลขเพื่อใช้ควบคุมช่วง C ถึง AG (C = 3, AG = 33)
+        $colToNum = function($col) {
+            $len = strlen($col);
+            $num = 0;
+            for ($i = 0; $i < $len; $i++) {
+                $num = $num * 26 + (ord($col[$i]) - 64);
+            }
+            return $num;
+        };
+
+        // อ่านโครงสร้างตาราง (Rows และ Columns)
+        $xmlSheet = new \SimpleXMLElement($sheetXml);
+        $isHeader = true;
+
+    foreach ($xmlSheet->sheetData->row as $row) 
+        {
+            $rowAttr = $row->attributes();
+            $rowNumber = (int)$rowAttr['r']; 
+
+            // 🎯 แก้ไขจุดที่ 1: กรองให้อ่านเฉพาะแถวที่ 65 ถึง 70 เท่านั้น (วิธีนี้จะตัดปัญหาเรื่องหัวแถวได้ 100%)
+            if ($rowNumber < 65 || $rowNumber > 70) {
+                continue;
+            }
+
+            $rowData = [];
+
+            // วนลูปแกะข้อมูลแต่ละเซลล์ในแถวปัจจุบัน
+            foreach ($row->c as $cell) {
+                $cellAttr = $cell->attributes();
+                $cellCoordinate = (string)$cellAttr['r'];
+                $columnLetter = preg_replace('/[0-9]/', '', $cellCoordinate); 
+
+                // กรองเฉพาะคอลัมน์ C ถึง AG (วันที่ 1 ถึง 31)
+                $colNum = $colToNum($columnLetter);
+                if ($colNum < 3 || $colNum > 33) {
+                    continue;
+                }
+
+                $cellType = isset($cellAttr['t']) ? (string)$cellAttr['t'] : '';
+                $value = isset($cell->v) ? (string)$cell->v : '';
+
+                if ($cellType === 's' && isset($sharedStrings[$value])) {
+                    $value = $sharedStrings[$value];
+                }
+
+                $value = is_numeric($value) ? (float)$value : 0;
+                $rowData[$columnLetter] = $value;
+            }
+
+            // 🎯 แก้ไขจุดที่ 2: แมปค่าเข้าตัวแปรตามเลขแถว และแก้ไขข้อความคอมเมนต์หลงของแถว 70
+            if ($rowNumber === 65) {
+                $plan_THB = $rowData;        // Accum PLAN THB
+            } elseif ($rowNumber === 66) {
+                $annual_THB = $rowData;      // Accum Annual THB
+            } elseif ($rowNumber === 67) {
+                $accum_JPY = $rowData;       // Accum Annual JPY
+            } elseif ($rowNumber === 68) {
+                $actual_THB = $rowData;      // Accum Actual THB
+            } elseif ($rowNumber === 69) {
+                $actual_JPY = $rowData;      // Accum Actual JPY
+            } elseif ($rowNumber === 70) {
+                $progressive_acc = $rowData; // Progressive Acc 👈 แก้ไขข้อความคอมเมนต์ให้ถูกต้อง
+            }
+        }
+
+        // 🎯 4. นำข้อมูลทั้งหมดมาแมปลงตัวแปร Chart ส่งกลับไปแสดงผล
         $labels = [];
         $accPlanData = [];
         $accAnnualData = [];
         $accActualData = [];
+        $accumJpyData = [];
+        $actualJpyData = [];
+        $progressive = []; 
 
         for ($day = 1; $day <= $daysInMonth; $day++) {
-            $labels[] = $day; // ได้เลขอาร์เรย์วัน [1, 2, 3, ..., 31]
+            $labels[] = $day; 
 
-            // ตรวจสอบว่าในฐานข้อมูลมีข้อมูลของวันนั้นๆ ไหม
-            if (isset($chartData[$day])) {
-                $accPlanData[] = (float)$chartData[$day]->daily_accplan;
-                $accActualData[] = (float)$chartData[$day]->daily_acc_acture;
-                $accAnnualData[] = (float)$chartData[$day]->daily_acc_annual;
-            } else {
-            //     // หากวันไหนไม่มีข้อมูลสะสมใน DB ให้สืบทอดดึงค่าล่าสุดของวันก่อนหน้ามาใส่ (สไตล์กราฟสะสม)
-                $accPlanData[] = end($accPlanData) !== false ? end($accPlanData) : 0;
-                $accActualData[] = end($accActualData) !== false ? end($accActualData) : 0;
+            $targetColNum = $day + 2; 
+            $colLetter = '';
+            $tempNum = $targetColNum;
+            while ($tempNum > 0) {
+                $modulo = ($tempNum - 1) % 26;
+                $colLetter = chr(65 + $modulo) . $colLetter;
+                $tempNum = (int)(($tempNum - $modulo) / 26);
             }
 
-            // $accAnnualData[] = round($dailyAnnualStep * $day);
+            // ดึงข้อมูลใส่ array รายวัน แบบไม่เอาทศนิยมทั้งหมด
+            $accPlanData[]   = isset($plan_THB[$colLetter]) ? (int)round($plan_THB[$colLetter]) : 0;
+            $accAnnualData[] = isset($annual_THB[$colLetter]) ? (int)round($annual_THB[$colLetter]) : 0;
+            $accActualData[] = isset($actual_THB[$colLetter]) ? (int)round($actual_THB[$colLetter]) : 0;
+            $accumJpyData[]  = isset($accum_JPY[$colLetter]) ? (int)round($accum_JPY[$colLetter]) : 0;
+            $actualJpyData[] = isset($actual_JPY[$colLetter]) ? (int)round($actual_JPY[$colLetter]) : 0;
+            
+        //    if (isset($progressive_acc[$colLetter])) {
+            $progressive[] = round((float)$progressive_acc[$colLetter] * 100, 1); // จะได้ค่า 1.7
+            // } else {
+            //     $progressive[] = 0.0;
+            // }
+            // dd($progressive);
         }
 
+        }
         // 7. อาเรย์รายชื่อเดือนภาษาอังกฤษตามที่ระบุ
         $months = [
             '01' => 'January',
@@ -549,76 +679,65 @@ class PowerbiController extends Controller
             '04' => 'April',
             '05' => 'May',
             '06' => 'June',
-            // '07' => 'July',
-            // '08' => 'August',
-            // '09' => 'September',
-            // '10' => 'October',
-            // '11' => 'November',
-            // '12' => 'December',
+            '07' => 'July',
+            '08' => 'August',
+            '09' => 'September',
+            '10' => 'October',
+            '11' => 'November',
+            '12' => 'December',
         ];
 
-        
-        $monthinj=$req->month ?? 5;
-        $yearinj=date('Y');
-        $totalDays = cal_days_in_month(CAL_GREGORIAN, (int)$monthinj, (int)$yearinj);
+        // $monthinj=$req->month ?? 5;
+        // $yearinj=date('Y');
+        // $totalDays = cal_days_in_month(CAL_GREGORIAN, (int)$monthinj, (int)$yearinj);
 
-        // สร้างกล่องแกน X บนกราฟเป็นวันที่ [1, 2, 3, ..., 30]
-        $labelsinj = range(1, $totalDays); 
+        // $labelsinj = range(1, $totalDays); 
 
-        // 2. Query ข้อมูลทั้งหมดของเดือนและปีนั้นมาแบบทีเดียวจบ (ใส่เงื่อนไขดักเดือน/ปี เพื่อความถูกต้องของข้อมูล)
-        $rawinj = DB::connection('dashboard_bi_db')
-            ->table('tblinjection_output_inj')
-            // ->where('date', 'like', "{$year}-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-%")
-            // ->orderBy('date', 'asc')
-            ->get();
+        // $rawinj = DB::connection('dashboard_bi_db')
+        //     ->table('tblinjection_output_inj')
+        //     ->get();
 
-        // 3. ยุบรวมข้อมูลดิบ: ใน 1 วันอาจจะมีหลายลูกค้า (หลาย Row) ให้เอามา SUM ยอดดิบรวมกันรายวันก่อน
-        $dailySumij = [];
-        foreach ($rawinj as $row) {
-            $dayNum = (int)date('d', strtotime($row->date));
+        // $dailySumij = [];
+        // foreach ($rawinj as $row) {
+        //     $dayNum = (int)date('d', strtotime($row->date));
             
-            if (!isset($dailySumij[$dayNum])) {
-                $dailySumij[$dayNum] = [
-                    'plan'   => 0,
-                    'actual' => 0
-                ];
-            }
+        //     if (!isset($dailySumij[$dayNum])) {
+        //         $dailySumij[$dayNum] = [
+        //             'plan'   => 0,
+        //             'actual' => 0
+        //         ];
+        //     }
             
-            // รวมยอดดิบของทุก cus_code ที่อยู่ในวันเดียวกันเข้าด้วยกัน
-            $dailySumij[$dayNum]['plan']   += (int)$row->plan;
-            $dailySumij[$dayNum]['actual'] += (int)$row->actual;
-        }
+        //     $dailySumij[$dayNum]['plan']   += (int)$row->plan;
+        //     $dailySumij[$dayNum]['actual'] += (int)$row->actual;
+        // }
 
-        // 4. เตรียมชุดข้อมูลสะสมรวม (Total Sum) รายวันส่งไปให้ View
-        $accPlan       = 0;
-        $accActual     = 0;
+        // $accPlan       = 0;
+        // $accActual     = 0;
 
-        $accPlanDatainj   = [];
-        $accActualDatainj = [];
+        // $accPlanDatainj   = [];
+        // $accActualDatainj = [];
 
-        for ($d = 1; $d <= $totalDays; $d++) 
-        {
-            if (isset($dailySumij[$d])) 
-            {
-                $accPlanDatainj[]   = $dailySumij[$d]['plan'];
-                $accActualDatainj[] = $dailySumij[$d]['actual'];
-            }
-        }
-
-        // 8. ส่งข้อมูลทั้ง 3 เส้นสถิติสะสม พร้อมรายชื่อเดือนออกไปยังหน้า View
-        return view('home.power_bi.daily_sale', compact(
-            'labels', 
-            'accPlanData', 
-            'accAnnualData', // 🔴 ส่งเส้นสีดำที่คำนวณใหม่เพิ่มเข้าไป
-            'accActualData', 
-            'months','month','year',
-
-            'labelsinj',
-            'accPlanDatainj', 
-            'accActualDatainj', 
-            'monthinj',
-            'yearinj'
-        ));
+        // for ($d = 1; $d <= $totalDays; $d++) 
+        // {
+        //     if (isset($dailySumij[$d])) 
+        //     {
+        //         $accPlanDatainj[]   = $dailySumij[$d]['plan'];
+        //         $accActualDatainj[] = $dailySumij[$d]['actual'];
+        //     }
+        // }
+      return view('home.power_bi.daily_sale', compact(
+        'labels', 
+        'accPlanData', 
+        'accAnnualData', // 🔴 เส้นสีดำหรือข้อมูลสะสมประจำปีที่คำนวณใหม่
+        'accActualData', 
+        'accumJpyData',   // 🆕 ส่งข้อมูลสะสม JPY เพิ่มเข้าไป (แถว 66)
+        'actualJpyData',  // 🆕 ส่งข้อมูล Actual JPY เพิ่มเข้าไป (แถว 69)
+        'progressive',
+        'months',
+        'month',
+        'year'
+    ));
     }
 
     public function pi_show() 
@@ -722,17 +841,22 @@ class PowerbiController extends Controller
     }
 
 
+    // Temp
     public function upload_excel()
     {
-        $filePath = public_path('pc_3.xlsx');
+        $filePath = '\\\\192.168.230.3\\Power_BI\\PC\\7-Daily Sale report Jul-26.xlsx';
 
+        // 2. เช็คว่าเจอไฟล์ไหม
         if (!file_exists($filePath)) {
-            return response()->json(['status' => 'error', 'message' => 'หาไฟล์ pc.xlsx ไม่เจอ'], 404);
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'หาไฟล์บน Network Share ไม่เจอ หรือไม่มีสิทธิ์เข้าถึงโฟลเดอร์นี้'
+            ], 404);
         }
 
         $sheetData = [];
         $zip = new \ZipArchive;
-
+        
         if ($zip->open($filePath) === TRUE) {
             $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
             $stringsXml = $zip->getFromName('xl/sharedStrings.xml');
@@ -799,11 +923,7 @@ class PowerbiController extends Controller
                             $value = $sharedStrings[$value];
                         }
 
-                        // if ($value !== '' && is_numeric($value)) {
-                            $value = round($value);
-                        // }
-
-                        // จัดเก็บข้อมูลลงอาร์เรย์แบบผูก Key ด้วยชื่อคอลัมน์ (เช่น $rowData['C'] = 250)
+                        $value = round($value);
                         $rowData[$columnLetter] = $value;
 
                     }
@@ -822,6 +942,8 @@ class PowerbiController extends Controller
                         $row_ACC_ACTUAL = $rowData;
                     }
                 }
+
+                dd($row_plan);
 
                    $day = 1;
                     foreach ($row_plan as $key => $value) 

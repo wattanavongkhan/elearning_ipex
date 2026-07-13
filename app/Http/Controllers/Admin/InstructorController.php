@@ -14,52 +14,51 @@ class InstructorController extends Controller {
 
     public function index()
     {
-        $filePath = storage_path('app/computer.csv');
+        // $filePath = storage_path('app/computer.csv');
     
-        if (!file_exists($filePath)) {
-            return "File not found!";
-        }
+        // if (!file_exists($filePath)) {
+        //     return "File not found!";
+        // }
 
-        $file = fopen($filePath, 'r');
-        $header = fgetcsv($file);
+        // $file = fopen($filePath, 'r');
+        // $header = fgetcsv($file);
         
-        $dataToInsert = [];
+        // $dataToInsert = [];
         
-        // เริ่มต้น Transaction เพื่อความเร็วและความปลอดภัย
-        DB::beginTransaction();
+        // // เริ่มต้น Transaction เพื่อความเร็วและความปลอดภัย
+        // DB::beginTransaction();
 
-        while (($row = fgetcsv($file)) !== FALSE) {
+        // while (($row = fgetcsv($file)) !== FALSE) {
 
-            // ระบุ .connection('central_staff') เพื่อให้ลง Database กลาง
-           DB::connection('dashboard_bi_db')->table('tblassets_it')->insert([
-                'user_name'         => trim($row[0]),  // Name
-                'department'        => trim($row[1]),  // Dept.
-                'office365_account' => trim($row[2]),  // Account office 365
-                'status'            => trim($row[3]),  // Status
-                'computer_name'     => trim($row[4]),  // Computer Name
-                'form_factor'       => trim($row[5]),  // Form
-                'cal_version'       => trim($row[6]),  // Cal
-                'maker'             => trim($row[7]),  // Maker
-                'model'             => trim($row[8]),  // Model
-                'ram_size'          => trim($row[9]),  // Ram
-                'mac_address'       => trim($row[10]), // Mac Address
-                'windows_license'   => trim($row[11]), // License Windows
-                'operating_system'  => trim($row[12]), // Operating System
-                'purchase_date'     => trim($row[13]), // วันที่ที่แปลงแล้ว
-                'office_version'    => trim($row[14])
-            ]);
-        }
+        //     // ระบุ .connection('central_staff') เพื่อให้ลง Database กลาง
+        //    DB::connection('dashboard_bi_db')->table('tblassets_it')->insert([
+        //         'user_name'         => trim($row[0]),  // Name
+        //         'department'        => trim($row[1]),  // Dept.
+        //         'office365_account' => trim($row[2]),  // Account office 365
+        //         'status'            => trim($row[3]),  // Status
+        //         'computer_name'     => trim($row[4]),  // Computer Name
+        //         'form_factor'       => trim($row[5]),  // Form
+        //         'cal_version'       => trim($row[6]),  // Cal
+        //         'maker'             => trim($row[7]),  // Maker
+        //         'model'             => trim($row[8]),  // Model
+        //         'ram_size'          => trim($row[9]),  // Ram
+        //         'mac_address'       => trim($row[10]), // Mac Address
+        //         'windows_license'   => trim($row[11]), // License Windows
+        //         'operating_system'  => trim($row[12]), // Operating System
+        //         'purchase_date'     => trim($row[13]), // วันที่ที่แปลงแล้ว
+        //         'office_version'    => trim($row[14])
+        //     ]);
+        // }
 
-        // Insert แถวที่เหลือ
-        if (!empty($dataToInsert)) {
-                DB::table('tblemployee')->insert($dataToInsert);
-        }
+        // // Insert แถวที่เหลือ
+        // if (!empty($dataToInsert)) {
+        //         DB::table('tblemployee')->insert($dataToInsert);
+        // }
 
-        DB::commit();
-        fclose($file);
-        return "Import Success!";
+        // DB::commit();
+        // fclose($file);
+        // return "Import Success!";
         
-        dd(0);
         $user=User::where('status', '1')->get();
 
         return view('admin.instructor.lecturer', compact('user'));
