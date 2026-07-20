@@ -104,10 +104,20 @@
             <div id="post-quiz-trigger"
                 class="hidden mt-8 p-8 bg-green-600/10 border border-green-500/20 rounded-3xl text-center">
                 <h3 class="text-white font-bold mb-4">ยินดีด้วย! คุณดูวิดีโอจบแล้ว</h3>
-                <a href="{{ route('quiz.show', $currentLesson->post_quiz->id) }}"
+
+                @if($currentLesson->post_quiz->microsoft_form!=null)
+
+                <a onclick="gotoQ({{ $currentLesson->post_quiz->microsoft_form }})" 
+                {{--  target="_blank"   --}}
                     class="inline-block px-6 py-3 bg-green-600 text-white rounded-xl font-black">
                     ทำแบบทดสอบหลังเรียน
                 </a>
+                @else
+                 <a href="{{ route('quiz.show', $currentLesson->post_quiz->id) }}"
+                    class="inline-block px-6 py-3 bg-green-600 text-white rounded-xl font-black">
+                    ทำแบบทดสอบหลังเรียน
+                </a>
+                @endif
             </div>
             @endif
             <div class="mt-8 text-white">
@@ -324,13 +334,13 @@
             }
         });
 
-/*
+
         video.addEventListener('seeking', function () {
             if (video.currentTime > watchedTime) {
                 video.currentTime = watchedTime;
             }
         });
-*/
+
         video.onended = function () {
             const hasPostQuiz = {{ $currentLesson->post_quiz_id ? 'true' : 'false' }};
             const alreadyPassed = {{ $hasDonePostQuiz ? 'true' : 'false' }};
@@ -446,6 +456,14 @@
     }
     });
 
+
+
+function gotoQ(link) 
+{
+console.log(link);
+// ไวยากรณ์: window.open(URL, target);
+window.open(link, '_blank');
+}
 
 </script>
 @endsection

@@ -162,6 +162,7 @@ class CourseController extends Controller
         }, 'lessons.pre_quiz', 'lessons.post_quiz'])->findOrFail($id);
 
         // 2. หาบทเรียนปัจจุบัน
+      
         if (!$lesson_id) {
             $lastCompleted = Lesson_user::where('user_id', $user->id)
                 ->where('course_id', $id)
@@ -179,6 +180,8 @@ class CourseController extends Controller
         } else {
             $currentLesson = $course->lessons->where('id', $lesson_id)->first();
         }
+
+        dd("-");
 
         // 3. ดึงรายการบทเรียนที่เรียนจบแล้ว
         $completedLessons = Lesson_user::where('user_id', $user->id)

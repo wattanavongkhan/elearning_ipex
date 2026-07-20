@@ -33,7 +33,7 @@ class ProfileController extends Controller {
             ->pluck('lesson_id')
             ->toArray();
         
-        
+
         return view('home.profile.index', compact('user', 'enrollments', 'totalCourses', 'completedCourses', 'completedLessonIds'));
     }
 }

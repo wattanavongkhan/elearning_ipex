@@ -14,6 +14,7 @@ class Question extends Model
         'question_text', 
         'options', // ตัวเลือก A, B, C, D (แนะนำให้เก็บเป็น JSON)
         'correct_answer',
+        'microsoft_form',
         'user_id', // เพิ่มฟิลด์ user_id เพื่อเก็บข้อมูลผู้สร้างคำถาม
         'question_image', // เพิ่มฟิลด์สำหรับเก็บ URL ของรูปภาพคำถาม (ถ้ามี)
         'option_images' // เพิ่มฟิลด์สำหรับเก็บ URL ของรูปภาพตัวเลือก (ถ้ามี)

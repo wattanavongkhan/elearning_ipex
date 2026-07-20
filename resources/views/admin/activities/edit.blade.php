@@ -19,7 +19,6 @@
             <div class="lg:col-span-1">
                 <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 sticky top-10 text-center">
                     <label class="block text-sm font-black text-slate-700 mb-4 uppercase">รูปภาพหน้าปก</label>
-
                     <div
                         class="relative group cursor-pointer aspect-video bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 overflow-hidden flex items-center justify-center">
                         <img id="preview" src="{{ asset('storage/' . $activity->thumbnail) }}"

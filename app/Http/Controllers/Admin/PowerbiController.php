@@ -531,7 +531,7 @@ class PowerbiController extends Controller
         //     }
         // }
 
-        $filePath = '\\\\192.168.230.3\\Power_BI\\PC\7-Daily Sale report Jul-26 Draft1.xlsx';
+        $filePath = '\\\\192.168.230.3\\Power_BI\\PC\Daily Sale report.xlsx';
 
         // 1. เช็คว่าเจอไฟล์ไหม
         if (!file_exists($filePath)) {
@@ -643,34 +643,30 @@ class PowerbiController extends Controller
         $actualJpyData = [];
         $progressive = []; 
 
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $labels[] = $day; 
+        for ($day = 1; $day <= $daysInMonth; $day++) 
+            {
+                $labels[] = $day; 
 
-            $targetColNum = $day + 2; 
-            $colLetter = '';
-            $tempNum = $targetColNum;
-            while ($tempNum > 0) {
-                $modulo = ($tempNum - 1) % 26;
-                $colLetter = chr(65 + $modulo) . $colLetter;
-                $tempNum = (int)(($tempNum - $modulo) / 26);
+                $targetColNum = $day + 2; 
+                $colLetter = '';
+                $tempNum = $targetColNum;
+                while ($tempNum > 0) {
+                    $modulo = ($tempNum - 1) % 26;
+                    $colLetter = chr(65 + $modulo) . $colLetter;
+                    $tempNum = (int)(($tempNum - $modulo) / 26);
+                }
+
+                // ดึงข้อมูลใส่ array รายวัน แบบไม่เอาทศนิยมทั้งหมด
+               // เปลี่ยนจาก (int) เป็น (float) และเก็บทศนิยม 1 ตำแหน่ง
+                $accPlanData[]    = isset($plan_THB[$colLetter]) ? (float)round($plan_THB[$colLetter]) : 0;
+                $accAnnualData[]  = isset($annual_THB[$colLetter]) ? (float)round($annual_THB[$colLetter]) : 0;
+                $accActualData[]  = isset($actual_THB[$colLetter]) ? (float)round($actual_THB[$colLetter]) : 0;
+                $accumJpyData[]   = isset($accum_JPY[$colLetter]) ? (float)round($accum_JPY[$colLetter]) : 0;
+                $actualJpyData[]  = isset($actual_JPY[$colLetter]) ? (float)round($actual_JPY[$colLetter]) : 0;
+                $progressive[] = round((float)$progressive_acc[$colLetter] * 100, 1); // จะได้ค่า 1.7
             }
-
-            // ดึงข้อมูลใส่ array รายวัน แบบไม่เอาทศนิยมทั้งหมด
-            $accPlanData[]   = isset($plan_THB[$colLetter]) ? (int)round($plan_THB[$colLetter]) : 0;
-            $accAnnualData[] = isset($annual_THB[$colLetter]) ? (int)round($annual_THB[$colLetter]) : 0;
-            $accActualData[] = isset($actual_THB[$colLetter]) ? (int)round($actual_THB[$colLetter]) : 0;
-            $accumJpyData[]  = isset($accum_JPY[$colLetter]) ? (int)round($accum_JPY[$colLetter]) : 0;
-            $actualJpyData[] = isset($actual_JPY[$colLetter]) ? (int)round($actual_JPY[$colLetter]) : 0;
-            
-        //    if (isset($progressive_acc[$colLetter])) {
-            $progressive[] = round((float)$progressive_acc[$colLetter] * 100, 1); // จะได้ค่า 1.7
-            // } else {
-            //     $progressive[] = 0.0;
-            // }
-            // dd($progressive);
         }
 
-        }
         // 7. อาเรย์รายชื่อเดือนภาษาอังกฤษตามที่ระบุ
         $months = [
             '01' => 'January',
@@ -728,16 +724,18 @@ class PowerbiController extends Controller
         // }
       return view('home.power_bi.daily_sale', compact(
         'labels', 
+       
         'accPlanData', 
         'accAnnualData', // 🔴 เส้นสีดำหรือข้อมูลสะสมประจำปีที่คำนวณใหม่
         'accActualData', 
         'accumJpyData',   // 🆕 ส่งข้อมูลสะสม JPY เพิ่มเข้าไป (แถว 66)
         'actualJpyData',  // 🆕 ส่งข้อมูล Actual JPY เพิ่มเข้าไป (แถว 69)
         'progressive',
+
         'months',
         'month',
         'year'
-    ));
+        ));
     }
 
     public function pi_show() 

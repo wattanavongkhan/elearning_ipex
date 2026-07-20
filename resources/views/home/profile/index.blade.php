@@ -98,6 +98,7 @@
                                 <span
                                     class="text-[10px] font-black text-slate-500 uppercase tracking-widest">ความคืบหน้า
                                     {{--({{ $doneLessons }} --}}
+
                                      {{App\Models\Lesson_user::where('course_id', $item->course->id)->where('user_id', auth()->id())->count() }} /{{ $totalLessons }} บท)</span>
                                 <span class="text-sm font-black text-blue-600">{{ $item->progress_percent }} %</span>
                             </div>
